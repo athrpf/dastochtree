@@ -159,12 +159,18 @@ where $\mathcal{M}(\mathbb{P, Q})$ is the space of Borel-measures with marginals
 \begin{Note}
   In this section, the Kantorovich Metric as applied to the stochastic process as a random variable has been proposed for measuring stochastic processes in SPs. In the derivation of the stability of multistage stochastic processes (\cite{Heitsch2010}), the $L^p$ norm (see eqn. \ref{Lp-norm} in conjunction with a ``filtration distance'' was used. Recently, it has been shown that previous heuristics (for example those in \cite{Dupacova2003}) that disregarded the filtration distance fail to uphold stability of the problem (\cite{Heitsch2009a}). These methods, as opposed to the one presented here, had obvious disregard for the filtration, because they were based on sums over all stages with stage-dependent terms. Even though the proposed metric does not fail in the specific cases outlined in \cite{Heitsch2009a}????, there is still no absolute certainty as to the stability of these methods. This analysis is, however, beyond the scope of this thesis.
 \end{Note}
-\paragraph{Kantorovich Distance for finite stochastic processes} The main advantage of the Kantorovich Distance is its simple and intuitive representation for finite dimensional stochastic processes. Consider now two finite dimensinal stochastic processes $P$ and $Q$ with sets of scenarios $I$ and $J$ respectively. Translating the items of eqn. \ref{eq:define_infinitedim_kantorovich} into this framework is straightforward. 
+\paragraph{Kantorovich Distance for finite stochastic processes} The main advantage of the Kantorovich Distance is its simple and intuitive representation for finite dimensional stochastic processes. Consider now two finite dimensinal stochastic processes $P$ and $Q$ with sets of scenarios $I$ and $J$ respectively. Translating the items of eqn. \ref{eq:define_infinitedim_kantorovich} into this framework is straightforward. The integral over the combination of all possible events of the two stochastic processes is replaced by a sum over this now finite set. The distance $c$ stays the same. The measure $\eta$ in its finite equivalent is a matrix of weights satisfying the same conditions of the marginal probabilities. These conditions are
+\begin{align}
+  \label{eq:finitedim-marginals-eta}
+  \sum_{i\in I} \eta_{ij} &= q_j\\
+  \sum_{j\in J} \eta_{ij} &= p_i.
+\end{align}
+Since in the finite case, the argument of the infimum is a finite sum over variables in a compact domain, the infimum can be replaced by the minimum. Combining these pieces into the full formulation yields
 \begin{equation}
   \label{eq:define_finitedim_Kantorovich}
-  \mu_c(\mathbb{P}, \mathbb{Q}) = inf\left\{\sum_{(i,j)\in I\times J}c(\xi_i,\hat{\xi}_j)\cdot \eta_{ij}\right\}.
+  \mu_c(\mathbb{P}, \mathbb{Q}) = \min\left\{\sum_{i\in I}\sum_{j\in J}c(\xi_i,\hat{\xi}_j)\cdot \eta_{ij},\; \sum_{i\in I}\eta_{ij}=q_j,\;\sum_{j\in J}\eta_{ij}=p_i\right\}.
 \end{equation}
-The 
+This formulation is a linear program, more specifically a minimum cost flow problem. This means that solutions are readily available even for large problems using state of the art LP solvers. The above minimum cost problem will be at the heart of the derivations of the following sections, as it will serve as the measure for the quality of approximations to infinite dimensional stochastic processes.
 % TODO: derive the min flow problem formulation. Explain here that the \sum_{j\in J}q_j =1 equation is redundant. Mention LICQ
 \subsubsection{The Kantorovich Distance in a function space approximation interpretation}
 \subsection{State of the Art}
