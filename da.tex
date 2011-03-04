@@ -187,8 +187,21 @@ In this section, two theorems will be presented that will be crucial in the algo
 In this section, we will prove a theorem that is of great practical significance for the remainder of this thesis. It is based on the ideas of \cite{Dupacova2003}, theorem 2, adapted to the needs of this paper.
 
 Consider two discrete stochastic processes represented by their
-\subsection{Optimal Tree for fixed flows}
-
+\todo[inline]{Insert a proof for optimal weights}
+\todo[inline]{check algorithm for how to compute the optimal weights (it was late...)}
+\begin{algorithm}
+  \KwIn{Sets $I$ and $J$, each representing one set of scenarios $\xi_i^t,\, i\in I$, $\nu_j^t,\, j\in J$}
+  \KwOut{Optimal weights $q_j$ for the scenarios $j\in J$ and optimal $D_K$}
+  Compute distances
+  \ForEach{$i\in I$}{
+    $k = argmin_{j\in J}\{c(\xi_i,\nu_j\}$\;
+    $q_k\leftarrow q_k + p_i$\;
+  }
+  \caption{Optimal weights}
+\end{algorithm}
+\subsection{Optimal Tree for fixed flow directions}
+\todo[inline]{Insert the proof for optimal tree fixed flow}
+\todo[inline]{Insert algorithm object for how to compute the optimal tree for fixed flow according to the proof}
 \subsection{State of the Art in Scenario Tree Approximations}
 Recent research in the field of generating scenario trees for stochastic programs has focused on the areas of theoretical derivation of stability results and heuristics for generating scenario trees from stochastic processes. 
 
