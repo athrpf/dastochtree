@@ -1,4 +1,6 @@
 \documentclass[a4paper, 12pt] {article}
+%\usepackage[pd,col,3d,turt]{mgtex_23}
+\usepackage{etex}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{amssymb}
@@ -7,6 +9,8 @@
 \usepackage[ruled,vlined]{algorithm2e}
 \usepackage{graphicx}
 \usepackage{todonotes}
+\usepackage{pgfplots}
+
 
 \newtheoremstyle{example}
      {\topsep}%      Space above
@@ -293,7 +297,7 @@ The algorithm for solving the stage-wise tree construction problem will be prese
   %\SetAlgoLined
   \KwIn{Set $I$ of $T$-stage scenarios $\xi_i^t$}
   \KwOut{Scenario tree consisting of nodes $\nu_n$ and probobilities $q_j$}
-  $F = \{1\}$\tcc*{root node}
+  $F = \{1\}$\tcc*{init set of father nodes with root node}
   \While{$F\neq \emptyset$}{
     \ForEach{$f\in F$}{
       $F = F\setminus \{f\}$\tcc*{remove this node from father set}
@@ -310,19 +314,22 @@ The algorithm for solving the stage-wise tree construction problem will be prese
 \caption{Stage-Wise MILP based Scenario generation}
 \label{alg:stage-wise-milp}
 \end{algorithm}
-In a nutshell, this algorithm performs at every branching point the search for the $n_c$ scenarios that best cover the distribution given by all scenarios that the current node in the previous stage was used to cover (figure?).
+In a nutshell, this algorithm performs at every branching point the search for the $n_c$ scenarios that best cover the distribution given by all scenarios that the current node in the previous stage was used to cover.
 
-The algorithm is presented outlined as algorithm \ref{alg:stage-wise-milp}. The algorithm is provided with a set of scenarios $I$ and a set of stages $T$. The distances $c(\xi_i^t, \xi_j^t)$ between the scenarios $\xi_i,\,\xi_j\; i,j\in I$ can be computed beforehand. Note that the $1$-norm is the only meaningful norm that can be constructed this way, since the full distance is effectively approximated as a sum over the stages. 
+The procedure is outlined as algorithm \ref{alg:stage-wise-milp}. The input is a set of scenarios $I$ defined over a set of stages $T$ and a tree structure, typically defined by the number of branchings of the tree at every node and timestep. The distances $c(\xi_i^t, \xi_j^t)$ between the scenarios $\xi_i,\,\xi_j\; i,j\in I$ can be computed beforehand. Note that the $1$-norm is the only meaningful norm that can be constructed this way, since the full distance is effectively approximated as a sum over the stages.
+
+The problem that is solved for each father node $f$ in the previously defined tree is the following MILP:
+\begin{eqnarray}
+  \label{eq:small-milp-in-alg}
+  \mathcal{M}_{sw}(f)\; \; \min_{\eta^f,z^f}&&\sum_{i\in I_f}\sum_{j\in I_f}\eta_{ij}^fc(\xi_i^t,\xi_j^t)\\
+  \mathrm{s.t.}&&\sum_{j\in I_f}\eta_{ij} = \eta_{if}^{father(f)}\\
+  &&\sum_{j\in I_f}z_j^f = n_c^f\\
+  &&0\leq \eta_{ij}^f
+\end{eqnarray}
+The MILP models the decision which scenarios will be selected as nodes into the tree. Figure \ref{fig:swmilp_explanation} shows the evolution of the algorithm.
+\input{swmilp_explanation}
 \todo[inline]{Describe each step of the algorithm im Freitext}
-
-      \begin{eqnarray}
-        \label{eq:small-milp-in-alg}
-        \mathcal{M}_{sw}(f)\min_{\eta^f}&&\sum_{i\in I_f}\sum_{j\in I_f}\eta_{ij}^fc(\xi_i^t,\xi_j^t)\\
-        \mathrm{s.t.}&&\sum_{j\in I_f}\eta_{ij} = \eta_{if}^{father(f)}\\
-        &&\sum_{j\in I_f}z_j^f = n_c^f\\
-        &&0\leq \eta_{ij}^f
-      \end{eqnarray}
-
+\todo[inline]{Create mgatex figure that illustrates the meanings of the sets}
 \subsubsection{Stochastic Search Solution to Large-Scale MILP}
 \todo[inline]{Describe the stochastic search solution}
 \todo[inline]{Create an algorithm object for the }
