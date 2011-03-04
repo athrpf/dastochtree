@@ -4,9 +4,9 @@
 \usepackage{amssymb}
 \usepackage{amsthm}
 \usepackage{amsmath}
-\usepackage{algorithm2e}
-%\usepackage{caption}
+\usepackage[ruled,vlined]{algorithm2e}
 \usepackage{graphicx}
+\usepackage{todonotes}
 
 \newtheoremstyle{example}
      {\topsep}%      Space above
@@ -27,6 +27,8 @@
 \maketitle
 \tableofcontents
 \newpage
+\section{Introduction}
+\todo{write an introduction}
 \section{Stochastic Programming Theory}
 Consider the following real world problem:
 
@@ -126,7 +128,7 @@ In general, a stochastic process (we will focus exclusively on time-discrete sto
   \label{eq:prob_measure_definition}
   \mathbb{P}_t : \mathcal{F}_t \rightarrow \left[0,1\right].
 \end{equation}
-The final two elements of the stochastic process are a set of values that the stochastic process can take, and a mapping $zeta$ from the sample space to the value space. For our purposes, the value space will always be a subset of the Euclidean space $\mathbb{R}^n$.
+The final two elements of the stochastic process are a set of values that the stochastic process can take, and a mapping $\zeta$ from the sample space to the value space. For our purposes, the value space will always be a subset of the Euclidean space $\mathbb{R}^n$.
 
 These elements that make up the stochastic process can lead to different interpretations, by fixing four of these five and considering the space of stochastic processes in terms of the fifth object. One popular way to do this is to fix everything but the mapping $\zeta$ from the sample space to the value space. An example of this usage is the proof of the stability properties of multi-stage stochastic linear programs in (\cite{Heitsch2010}). The corresponding space is the space of functions mapping $\Omega$ to $\mathbb{R}^n$. The exact space depends on the regularity of the functions one would like to consider. A natural choice is the space of p-integrable functions $L^p$ since there is no reason for the assumption of any kind of differentiability of $\zeta$ and $L^p$ has the nice feature of being a Banach Space, which allows for the definition of a norm
 \begin{equation}
@@ -157,7 +159,7 @@ In the context of stability analysis of stochastic programming problems, it has 
 where $\mathcal{M}(\mathbb{P, Q})$ is the space of Borel-measures with marginals $\mathbb{P}$ and $\mathbb{Q}$, represent a  ``natural and suitable'' distance for measuring stochastic processes in the context of stochastic programming problems. Here, $c$ is a mapping with certain properties, which are also specified in \cite{Dupacova2003}. For the purposes of this paper, it suffices to say that any vector norm satisfies these conditions. The above formulation is known as the \textit{Kantorovich-Rubinstein} or \textit{Wasserstein functional}.
 
 \begin{Note}
-  In this section, the Kantorovich Metric as applied to the stochastic process as a random variable has been proposed for measuring stochastic processes in SPs. In the derivation of the stability of multistage stochastic processes (\cite{Heitsch2010}), the $L^p$ norm (see eqn. \ref{Lp-norm} in conjunction with a ``filtration distance'' was used. Recently, it has been shown that previous heuristics (for example those in \cite{Dupacova2003}) that disregarded the filtration distance fail to uphold stability of the problem (\cite{Heitsch2009a}). These methods, as opposed to the one presented here, had obvious disregard for the filtration, because they were based on sums over all stages with stage-dependent terms. Even though the proposed metric does not fail in the specific cases outlined in \cite{Heitsch2009a}????, there is still no absolute certainty as to the stability of these methods. This analysis is, however, beyond the scope of this thesis.
+  In this section, the Kantorovich Metric as applied to the stochastic process as a random variable has been proposed for measuring stochastic processes in SPs. In the derivation of the stability of multistage stochastic processes (\cite{Heitsch2010}), the $L^p$ norm (see eqn. \ref{Lp-norm} in conjunction with a ``filtration distance'' was used. Recently, it has been shown that previous heuristics (for example those in \cite{Dupacova2003}) that disregarded the filtration distance fail to uphold stability of the problem (\cite{Heitsch2009a}). These methods, as opposed to the one presented here, had obvious disregard for the filtration, because they were based on sums over all stages with stage-dependent terms. Even though the proposed metric does not fail in the specific cases outlined in \cite{Heitsch2009a}????, there is still no absolute certainty as to the stability of these methods. This analysis is, however, beyond the scope of this thesis. 
 \end{Note}
 \paragraph{Kantorovich Distance for finite stochastic processes} The main advantage of the Kantorovich Distance is its simple and intuitive representation for finite dimensional stochastic processes. Consider now two finite dimensinal stochastic processes $P$ and $Q$ with sets of scenarios $I$ and $J$ respectively. Translating the items of eqn. \ref{eq:define_infinitedim_kantorovich} into this framework is straightforward. The integral over the combination of all possible events of the two stochastic processes is replaced by a sum over this now finite set. The distance $c$ stays the same. The measure $\eta$ in its finite equivalent is a matrix of weights satisfying the same conditions of the marginal probabilities. These conditions are
 \begin{align}
@@ -173,7 +175,22 @@ Since in the finite case, the argument of the infimum is a finite sum over varia
 This formulation is a linear program, more specifically a minimum cost flow problem. This means that solutions are readily available even for large problems using state of the art LP solvers. The above minimum cost problem will be at the heart of the derivations of the following sections, as it will serve as the measure for the quality of approximations to infinite dimensional stochastic processes.
 % TODO: derive the min flow problem formulation. Explain here that the \sum_{j\in J}q_j =1 equation is redundant. Mention LICQ
 \subsubsection{The Kantorovich Distance in a function space approximation interpretation}
-\subsection{State of the Art}
+\subsection{Two Theorems on fast evaluations of the Kantorovich Distance}
+In this section, two theorems will be presented that will be crucial in the algorithms for stochastic search presented througtout this paper.
+\subsection{Kantorovich Distance for optimal weights}
+In this section, we will prove a theorem that is of great practical significance for the remainder of this thesis. It is based on the ideas of \cite{Dupacova2003}, theorem 2, adapted to the needs of this paper.
+
+Consider two discrete stochastic processes represented by their
+\subsection{Optimal Tree for fixed flows}
+
+\subsection{State of the Art in Scenario Tree Approximations}
+Recent research in the field of generating scenario trees for stochastic programs has focused on the areas of theoretical derivation of stability results and heuristics for generating scenario trees from stochastic processes. 
+
+Despite the fact that these problems appear naturally in many contexts like manufacturing and financial services, the area of multistage stochastic programs has seen far less attention than its two-stage counterpart. Though this interes has grown over the recent years, researchers remain reluctant, mainly due to the computational complexity of the problems, even going so far as to call these problems generally intractable \cite{Shapiro2005}.
+
+
+
+In the area of stability results, significant progress was achieved. Stability of mu
 \subsubsection{The work of Roemisch}
 \subsection{Scenario Tree Generation: Problem Definition}
 In this section we will briefly state the problem definition for which solutions will be proposed below.
@@ -183,7 +200,7 @@ Let $\mathcal{P}$ denote a stochastic programming problem with the underlying st
 \item $\hat{\xi}$ minimizes the Kantorovich Distance $D_K(\xi,\hat{\xi})$ defined in eqn ...
 \item $\hat{\xi}$ exibits a given tree structure (see figure \ref{fig:generic-tree-structure}. We assume the general tree structure - that is the number and order of the nodes - to be fixed beforehand. 
 \end{enumerate}
-In the literature, especially in \cite{Heitsch2009} and related papers, not the tree structure is fixed beforehand, but instead the tree is reduced until a maximum distance $D_K(\xi,\hat{\xi})$ is reached. However, we believe that the approach of fixing the tree structure beforehand is a sensible assumption for the following reasons.
+In the literature, especially in \cite{Heitsch2009} and related papers (\cite{Dupacova2003}), not the tree structure is fixed beforehand, but instead the tree is reduced until a maximum distance $D_K(\xi,\hat{\xi})$ is reached. However, we believe that the approach of fixing the tree structure beforehand is a sensible assumption for the following reasons.
 \begin{itemize}
 \item a recursive tree structure makes sense in most applications, as the structure of the decisions to be made is recursive as well. Consider the operator of the pumped-hydro plant mentioned above. He faces the same decision at each time step, and his measure of uncertainty for any event happening a certain amount of time into the future is independent of the current situation.
 \item the number of scenarios is not determined by the error one will allow but is is the other way around: The error is determined by the maximum number of scenarios one can handle computationally. This number of scenarios will be known beforehand. As the correlation of using more scenarios and lowering the approximation error is strictly monotonic, there is no reason to use less scenarios than one could handle.
@@ -261,9 +278,9 @@ Suppose we start with a (index) set $I$ of $\left|I\right|$ scenarios of the ori
 \item equations (\ref{eq:full-milp-qsum}) and (\ref{eq:full-milp-psum}) represent the requirements on the marginal probabilities of the measure $\eta$.
 \item 
 \end{enumerate}
-The size of this mathematical program is prohibitively large. Common orders of magnitude for the cardinality of the set of scenarios is well above 1000. The tree size is dictated by the choice of $n_c$ and the time represented by the number of time steps $n_s$ one wants to look into the future. Even for very short times like $n_c=4$ and five branches to each node, the number of nodes quickly goes up to $n_N=155$. This leads to an MILP with $n_N\cdot n_s=125.000$, which means that it is computationally intractable. The intractability is not only due to the sheer size, but to the combination with the fact that the problem has a very weak relaxation.
+The size of this mathematical program is prohibitively large. Common orders of magnitude for the cardinality of the set of scenarios is well above 1000. The tree size is dictated by the choice of $n_c$ and the time represented by the number of time steps $n_s$ one wants to look into the future. Even for very short times like $n_c=4$ and five branches to each node, the number of nodes quickly goes up to $n_N=155$. This leads to an MILP with $n_N\cdot n_s=155,000$, which means that it is computationally intractable. The intractability is not only due to the sheer size, but to the combination with the fact that the problem has a very weak relaxation.
 \subsubsection{Stage-Decomposition of the MILP}
-To reduce the complexity of the model, instead of solving all stages at the same time, we will solve the problem stage by stage. At first glance, this reduction does not seem to suffice, since the final stage always holds at least half of the nodes, and would therefore lead to only a marginal reduction. However, after fixing a stage, we can utilize the filtration constraints. These constraints allow us to 
+To reduce the complexity of the model, instead of solving all stages at the same time, we will solve the problem stage by stage. This greatly reduces the computational burden, because using the filtration constraints, we can solve the branches of the tree one at a time. These constraints allow us to 
 \begin{enumerate}
 \item solve the branch starting from each of the previously fixed nodes independently.
 \item for the current branch starting at node $j$, discard all scenarios $i$ for which $\eta_{ij}=0$ in the problem corresponding to the father node of $j$.
@@ -271,6 +288,7 @@ To reduce the complexity of the model, instead of solving all stages at the same
 
 The algorithm for solving the stage-wise tree construction problem will be presented in the following.
 \begin{algorithm}
+  \SetAlgoLined
   \KwIn{Set $I$ of $T$-stage scenarios $\xi_i^t$}
   \KwOut{Scenario tree consisting of nodes $\nu_n$}
   \ForEach{Stage $t$}{
@@ -289,10 +307,14 @@ The algorithm for solving the stage-wise tree construction problem will be prese
       where $I_f$ is the set of all scenarios $i$, for which $\eta_{if}^{father(f)}>0$.
     }
   }
+\caption{Stage-Wise MILP based Scenario generation}
 \end{algorithm}
-In a nutshell, this algorithm performs at every branching point the search for the $n_c$ scenarios, that best cover the distribution given by the scenarios that best reconstructed the current node in the previous layer.
+In a nutshell, this algorithm performs at every branching point the search for the $n_c$ scenarios that best cover the distribution given by all scenarios that the current node in the previous stage was used to cover (figure?).
 
-It is interesting to note that the scenarios are always associated with a selected node with their full probability. This means that this algorithm will yield the same results as the Heuristic discussed in \cite{Heitsch2010} for the special case of $n_c = |I_f|-1$. This is due to the same property that will lead to problems with the gradient in section \ref{sec:nlp-formulation2}.
+The algorithm is presented in 
+\subsubsection{Stochastic Search Solution to Large-Scale MILP}
+
+
 \subsubsection{Results}
 In this section, we will evaluate the scenario trees generated with the algorithm of the previous paragraph. As discussed above, the general MILP approach is particularly suitable to problems with a discrete set of outcomes at each stage. Therefore, we will focus on processes with that characteristic feature.
 
@@ -408,16 +430,16 @@ if the variable ordering is $(c,\eta, q)$. This matrix obviously is not positive
   \left(n, n, T\cdot n\right)
 \end{equation}
 where $n=|I||J|$, and $T$ is the number of stages (Proof very easy, maybe in appendix?). \cite{Pardalos1991} showed that quadratic optimization problems with at least one negative eigenvalue are $\mathcal{NP}$-hard.
-\subsubsection{Results and issues with local (KKT)-NLP solvers}
+\subsubsection{Solution with local (KKT)-NLP solvers}
 In this section, we will discuss the applicability of general purpose KKT solvers to the problem stated above. There are several issues that make this problem particularly hard to solve for KKT based solvers. Among these problems are
 \begin{description}
 \item[Negative Curvature] KKT solvers use first and second derivatives to generate search directions. Note that KKT points are only stationary points, not guaranteed to be minima of the problem. In the situation of negative curvature, the local maximum is the attractor of Newton's method applied to the KKT-problem. Special care must be taken by the algorithm to reject search directions that lead to a KKT point that is a local maximizer for the objective function
 \item[Local Minima] KKT points are an inherently local property of an optimization problem. The only way to find the global optimum is through extensive spatial search. This search can be conducted by applying a deterministic KKT solver to many different, randomly selected starting points.
-\item[Large Scale] Due to the complicated problem of modeling the distances $c$, and the fact that using a greater number of original scenarios will always increase the accuracy of the approximation, the solver has to deal with a very large number of variables - typically on the order of one million.
+\item[Large Scale] Due to the complications in modeling the distances $c$, and the fact that using a greater number of original scenarios will always increase the accuracy of the approximation, the solver has to deal with a very large number of variables - typically on the order of one million.
 \end{description}
 We used the interior point solver IPOPT (\cite{IpoptImplementation2006} as the KKT solver. IPOPT is specifically designed to deal with large-scale non-convex programming problems. It has provisions that ensure global convergence to a KKT point associated with a local minimum under very soft assumptions.
 
-As was to be expected from the theoreticas analysis above, solving the problem from different starting points led to very different solutions of local minima. Figure \ref{fig:different-local-minima-with-ipopt} shows some examples of local minima the algorithm found. However we experienced an unexpectedly slow convergence in the vicinity of the optimal solution (vicinity in the space of objective function value), with very large steps taken by the algorithm. 
+As is to be expected from the theoreticas analysis above, solving the problem from different starting points leads to very different local minima. Figure \ref{fig:different-local-minima-with-ipopt} shows some examples of local minima the algorithm found. In addition to the locality of the solutions, we experienced an unexpectedly slow convergence as the objective value of the iterates approached the optimal solution, with very large primal steps taken by the algorithm. 
 
 The reason for the poor local convergence again lies in the structure of the problem. Consider the conditions derived for locally superlinear convergence of IPOPT given in \cite{Waechter2005}. There, it is stated that, in order to be able to achieve superlinear local convergence, the sufficient second order conditions (SSOC) must hold for the optimal point. 
 
@@ -440,7 +462,9 @@ In conclusion it must be stated that this method did not seem sufficient to adre
 In the next section, global search approaches are discussed, that are able to overcome some of the difficulties we have faced here.
 \subsubsection{Escaping local optima: Global Optimization}
 \label{sec:nlp-formulation2}
-Global optimization approaches can generally be assigned to one of two categories. The first of those two categories is the class of rigorous spatial branch and bound algorithms. These algorithms work on the idea of underestimating the given function on smaller subdomains by convex functions. The problem is solved for the convex underestimator, which yields a lower bound on the objective. This is conducted until the optimality gap is reasonably small.
+Global optimization approaches can generally be assigned to one of two categories. The first of those two categories is the class of rigorous spatial branch and bound algorithms. These algorithms work on the idea of underestimating the given function on smaller subdomains by convex functions. The problem is solved for the convex underestimator, which yields a lower bound on the objective. This is conducted until the optimality gap is reasonably small. The second approach is to use stochastic optimization algorithms such as genetic optimization and swarm intelligence.
+
+In this section, both of the above approaches will be applied to solve the NLP to full optimality. First, it will be shown that the spatial branch and bound algorithm can for this problem be expressed as an MILP, which makes the solution much more achievable. In the second part, the application of stochastic search routines to the NLP will be discussed.
 
 \paragraph{The global NLP as an MILP} For the current problem, we can actually derive a much smaller search region. From the property proven above (\ref{to-corresponding-proof}), that
 \begin{equation}
