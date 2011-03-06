@@ -10,7 +10,7 @@
 \usepackage{graphicx}
 \usepackage{todonotes}
 \usepackage{pgfplots}
-
+\usepackage[inline]{showlabels}
 
 \newtheoremstyle{example}
      {\topsep}%      Space above
@@ -56,6 +56,7 @@ This section serves as a short introduction to the mathematical concepts used th
 This section is organized as follows. First, the above description of a real world problem is tranlated into the context and notation of probability theory. Then the resulting abstract mathematical description is transformed into a numerically tangible formulation.
 \subsubsection{Notation}
 We will only deal with stochastic processes with discrete time steps. These time steps will be indexed from 1 to a final time T. For a stochastic process $\xi$ with a continuous distribution, $\xi^t$ denotes the mapping from events to outcomes at timestep $t$. For discrete stochastic processes, index sets for the events, typically denoted by $I$ and $J$, are introduced. For convenience the stochastic process and its index set are used interchangably. The outcome of event $i\in I$ of a discrete stochastic process $\xi$ at timestep $t$ is denoted by $\xi_i^t$. If the timestep is omitted, this denotes the full scenario $i$, that is the vector of the values $\xi_i^t$ sorted by their times $t$.
+The vector $e$ denotes a vector of ones in each dimension. The dimension will be chosen in accordance with the context. 
 \subsubsection{Stochastic Programming and Scenario Trees}
 Suppose a problem given in the following generic nonlinear multi-stage stochastic programming problem. 
 \begin{eqnarray}
@@ -69,7 +70,7 @@ In this problem, the stochastic process $\xi$ can be considered as a mapping $\x
  
 The difficulty in multi-stage stochastic programming problems arises from the measurability constraint (\ref{eqn:measurability-constraint}). This constraint is specific to multi-stage stochastic programs, since in two-stage stochastic programs, there are no future states associated with uncertain states. This additional constraint leads to a much increased computational complexity of multi-stage programs over two-stage programs \cite{Shapiro2005,Shapiro2008}. Practically, this constraint means that the condition
 \begin{equation}
-  \label{eq:mathematical_NAC}
+  \label{eq:mathematical-NAC}
   \omega_1,\omega_2\in \Omega \, : \, \xi_\tau(\omega_1) = \xi_\tau(\omega_2)\,\forall \tau\leq t\,\Rightarrow \, x_t(\omega_1) = x_t(\omega_2) 
 \end{equation}
 has to hold for all time steps $t$, and all pairs of events $(\omega_1,\omega_2)$. The decision variables $x_t$ must only depend on the events of the past up until the present $\xi_1$, ..., $\xi_t$, and explicitly \textbf{not} on $xi_{t+1},\, ...,\,\xi_T$. This property is often called \textit{non-anticipativity of the solution} $x$. Therefore, these equations model the uncertainty of the future.
@@ -121,7 +122,7 @@ The results, summarized in table \ref{tab:coin-toss-results}, show that the solu
 
 The above example has illustrated the need for tree structured stochastic processes. The construction of this tree structure will be the main point of the following paper. Before we can start constructing these scenario trees, we need to define a measure for the quality of a given approximation $\hat{\xi}$ to a stochastic process $\xi$. We would like to define a distance function 
 \begin{equation}
-  \label{eq:distance_function_intro}
+  \label{eq:distance-function-intro}
   D:\mathcal{S} \times \mathcal{S} \rightarrow \mathbb{R}_+,\;(\xi, \hat{\xi})\mapsto D(\xi, \hat{\xi})
 \end{equation}
 where $\mathcal{S}$ is the space of stochastic processes which remains to be defined. The distance function should satisfy at least the definition of a metric. Since the choices for $\mathcal{S}$ and $D$ are by no means obvious, they are discussed in the following section.
@@ -132,7 +133,7 @@ Stochastic processes are very versatile and complex objects. Depending on the pr
 
 In general, a stochastic process (we will focus exclusively on time-discrete stochastic processes) is a composition of five objects. The first three compose a probability space: a sample space $\Omega$, a filtration (family of $\sigma$-algebras) $\left\{\mathcal{F}_t\right\}_{t=1}^T$, and a probability measure $\mathbb{P}$ which is a mapping from the set of distinguishable events at time $t$ to a probability:
 \begin{equation}
-  \label{eq:prob_measure_definition}
+  \label{eq:prob-measure-definition}
   \mathbb{P}_t : \mathcal{F}_t \rightarrow \left[0,1\right].
 \end{equation}
 The final two elements of the stochastic process are a set of values that the stochastic process can take, and a mapping $\zeta$ from the sample space to the value space. For our purposes, the value space will always be a subset of the Euclidean space $\mathbb{R}^n$.
@@ -160,7 +161,7 @@ In this section, we will present the Kantorovich Distance as a meaningful and us
 
 In the context of stability analysis of stochastic programming problems, it has been shown by \cite{Dupacova2003} that the metric 
 \begin{equation}
-  \label{eq:define_infinitedim_kantorovich}
+  \label{eq:define-infinitedim-kantorovich}
   \mu_c(\mathbb{P}, \mathbb{Q}) = \inf\left\{\int_{\Omega\times\Omega}c(\omega, \hat{\omega})d\eta(\omega,\hat{\omega}),\, \eta\in\mathcal{M}\right\}
 \end{equation}
 where $\mathcal{M}(\mathbb{P, Q})$ is the space of Borel-measures with marginals $\mathbb{P}$ and $\mathbb{Q}$, represent a  ``natural and suitable'' distance for measuring stochastic processes in the context of stochastic programming problems. Here, $c$ is a mapping with certain properties, which are also specified in \cite{Dupacova2003}. For the purposes of this paper, it suffices to say that any vector norm satisfies these conditions. The above formulation is known as the \textit{Kantorovich-Rubinstein} or \textit{Wasserstein functional}.
@@ -176,7 +177,7 @@ where $\mathcal{M}(\mathbb{P, Q})$ is the space of Borel-measures with marginals
 \end{align}
 Since in the finite case, the argument of the infimum is a finite sum over variables in a compact domain, the infimum can be replaced by the minimum. Combining these pieces into the full formulation yields
 \begin{equation}
-  \label{eq:define_finitedim_Kantorovich}
+  \label{eq:define-finitedim-Kantorovich}
   \mu_c(\mathbb{P}, \mathbb{Q}) = \min\left\{\sum_{i\in I}\sum_{j\in J}c(\xi_i,\hat{\xi}_j)\cdot \eta_{ij},\; \sum_{i\in I}\eta_{ij}=q_j,\;\sum_{j\in J}\eta_{ij}=p_i\right\}.
 \end{equation}
 This formulation is a linear program, more specifically a minimum cost flow problem. This means that solutions are readily available even for large problems using state of the art LP solvers. The above minimum cost problem will be at the heart of the derivations of the following sections, as it will serve as the measure for the quality of approximations to infinite dimensional stochastic processes.
