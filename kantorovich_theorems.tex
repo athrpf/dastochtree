@@ -10,6 +10,7 @@ Consider two discrete stochastic processes represented by their index sets $I$ a
 \end{equation}
 with $c_{ij} = c(\xi_i,\nu_j)$. While not fixing $q$ at first seems to make the problem more difficult by introducing more free variables, it actually makes it possible to state both the probability distribution $q$ and the value of the Kantorovich Distance $D_K$ in closed form. The following theorem and algorithm \ref{alg:optimal-weights} will show how this can be achieved.
 \begin{thm}[Optimal Weights]
+  \label{thm:optimal-weights}
   The optimal weights $q$ in eqn. \ref{eq:define-optimal-weights-q} are given by
   \begin{equation}
     \label{eq:optimal-weights-in-thm}
@@ -23,7 +24,7 @@ with $c_{ij} = c(\xi_i,\nu_j)$. While not fixing $q$ at first seems to make the 
 \end{thm}
 Dupacova et al. proof a very similar theorem (\cite{Dupacova2003}, theorem 2), whith the difference that there, $J\subset I$. Their proof, which could be applied with only slight modifications, uses the primal and dual representations of the Kantorovich minimum flow problem. Instead, we will try to give the following, more intuitive
 \begin{proof}
-First, we will show the correctness of the representation of $D_K$ in eqn. \label{eq:define-Dk-optimalweights-thm}. $D_K$ is defined as
+First, we will show the correctness of the representation of $D_K$ in eqn. \ref{eq:define-Dk-optimalweights-thm}. $D_K$ is defined as
 \begin{align}
   D_K := \min\limits_{q, \eta}& \sum_{i\in I}\sum_{j\in J}\eta_{ij}c_{ij}\\
   \text{s.t.}&\sum_{i\in I}\eta_{ij} = q_j\label{eqn:eta-q-in-optimalweights-proof}\\
@@ -41,12 +42,13 @@ which is again implicit in (\ref{eqn:eta-p-in-optimalweights-proof}) as shown ab
 \end{align}
 and $q$ can be deduced from the resulting $\eta$. In this reduced problem, the constraint Jacobian decomposes into independent blocks, with the variables $\eta_{ij}$ and $\eta_{kl}$ being independent, if $i\neq k$. This allows us to reformulate the problem as a sum of optimal values of independent optimization problems:
 \begin{equation}
+  \label{eqn:Dk-decomposition-in-mi}
   D_K = \min \sum_{i\in I} m_i
 \end{equation}
 with
 \begin{align}
-  \mathcal{D}_i\; :\; m_i :=\min\limits_{\eta_j^i}&\sum_{j\in J}\eta_{j}^ic_{j}^i\\
-  &\sum_{ij}\eta_j^i = p_i\\
+  \mathcal{D}_i\; :\; m_i :=\min\limits_{\eta^i}&\sum_{j\in J}\eta_{j}^ic_{j}^i\\
+  \text{s.t.}&\sum_{ij}\eta_j^i = p_i\\
   &\eta_j^i\geq 0.
 \end{align}
 Each problem $\mathcal{D}_i$ is only has one constraint. The solution is trivial and can be easily deduced from the KKT conditions. The KKT conditions for a problem $\mathcal{D}_i$ are
@@ -65,13 +67,18 @@ Each problem $\mathcal{D}_i$ is only has one constraint. The solution is trivial
     \end{array}
 \right]
 \end{equation}
-\todo[inline]{$e$ should be in notation section as unit vector}
 with $\mu_j^i\geq 0$. As a linear problem which obviously satisfies LICQ, KKT conditions are sufficient for minimum. Since the values are computed as norms, we know that $c_j^i\geq 0$. With this information, the KKT conditions allows only for the following solution:
 \begin{align}
   \label{eq:optimal-eta-optmimalweightsproof}
-  \lambda &:= -\min\limits_{j\in J}c_j^i\\
-  \mu_j^i &:= c_j^i - \min\limits_{j\in J}c_j^i\\
+  \lambda^{\mathrm{opt}} &:= -\min\limits_{j\in J}c_j^i\\
+  \mu_j^{i,\mathrm{opt}} &:= c_j^i - \min\limits_{j\in J}c_j^i\\
+  \eta_j^{i,\mathrm{opt}} &:= \left\{ \begin{array}{lr}p_i&\text{if }j=\underset{j\in J}{\operatorname{argmin}}\, c_j^i\\0&\text{otherwise}\end{array}\right.
 \end{align}
+The KKT conditions for linear problems are sufficient conditions for optimality. Therefore, we have 
+\begin{equation}
+  m_i^{\mathrm{opt}} = \sum_{j\in J}\eta_j^{i,\mathrm{opt}}c_j^i = p_i\min\limits_{j\in J}c_j^i.
+\end{equation}
+Using this result in conjunction with (\ref{eqn:Dk-decomposition-in-mi}) yields the desired representation (\ref{eq:define-Dk-optimalweights-thm}) of $D_K$. The optimal solution postulated for $q$ (\ref{eq:optimal-weights-in-thm}) can be verified using the optimal weights $\eta_j^{i,\mathrm{opt}}$ in constraint (\ref{eqn:eta-q-in-optimalweights-proof}). This closes the proof.
 \end{proof}
 \begin{algorithm}
   \KwIn{Scenarios and probabilities for SP 1 $(\xi_i,p_i)\, i\in I$, scenarios $\nu_j,\, j\in J$ for SP 2}
@@ -88,5 +95,36 @@ with $\mu_j^i\geq 0$. As a linear problem which obviously satisfies LICQ, KKT co
   \label{alg:optimal-weights}
 \end{algorithm}
 \subsubsection{Optimal Tree for fixed flow directions}
+In this section, we analyze the computation of the Kantorovich distance for a different setup. Consider again two discrete stochastic processes $I$ and $J$ over time stages $T$ with values $\xi_i^t,\,i\in I$ and $\nu_j,\, j\in J,\;t\in T$. Here, the values $\xi_i^t$ and their probabilities $p_i$ for process $I$ are fixed, while the values $\nu_j^t$ and probabilities $q_j$ for process $J$ are to be selected such that the Kantorovich Distance $D_K(I,J)$ is minimal. The problem can be expressed as the NLP
+\begin{align}
+  \min\limits_{\eta,q,\nu}&\sum_{i\in I}\sum_{j\in J}\eta_{ij}c(\xi_i,\nu_j)\\
+  \text{s.t.}&\sum_{i\in I}\eta_{ij} = q_j\\
+  &\sum_{j\in J}\eta_{ij} = p_i\\
+  &\eta_{ij}\geq 0\\
+  &q\geq 0
+\end{align}
+As shown above in theorem \ref{thm:optimal-weights}, for any given set of $\nu_j^t$ the variables $\eta_{ij}$ and $q$ will take on the values 
+\begin{align}
+  \eta_{ij} &= \left\{\begin{array}{lr}p_i&\text{if }j=\underset{j\in J}{\operatorname{argmin}}\, c(\xi_i,\nu_j)\\0&\text{otherwise}\end{array}\right. ,\\
+  q_j &= \sum_{i\in I_j}p_i\text{ with } I_j= \left\{i\in I|j=\underset{k\in J}{\operatorname{argmin}}\, c(\xi_i,\nu_j)\right\}.
+\end{align}
+This corresponds to a \textit{set partitioning} of the set $I$ into $|J|$ parts, defined by a mapping 
+\[P:I\rightarrow J,\; i\mapsto \underset{j\in J}{\operatorname{argmin}}\, c(\xi_i, \nu_j)\]
+Given the distances $c(\xi_i,\nu_j)$, the optimal partitioning of $I$ can be computed using theorem \ref{thm:optimal-weights} and algorithm \ref{alg:optimal-weights}. 
+
+Consider now the inverse situation. Given a set partitioning $P$, compute the optimal values of the stochastic process $\nu_j^t$. A fast and direct way of computing these values without having to solve the optimization problem, is given by this
+\begin{thm}[optimal scenarios for fixed flows]
+  Given a partitioning of a stochastic process $I$ and a convex metric $c$, the (not necessarily unique) stochastic process $J$ that minimizes the objective of the Kantorovich Distance $D_K(I,J)$ (note that this is not equal to the Kantorovich Distance - it is actually strictly greater) is defined by
+  \begin{equation}
+    \nu_j := \frac{1}{2}\left(\xi_i+\xi_k)\right)\text{ with }(i,k) = \underset{(r,l)\in I_j^2}{\operatorname{argmax}}\, c(\xi_r,\xi_l)
+  \end{equation}
+  with $I_j:=P^{-1}(j)$. Given this representation, the Kantorovich Distance can be computed using algorithm \ref{alg:optimal-weights}. 
+\end{thm}
+\begin{proof}
+  o
+\end{proof}
+\begin{Note}
+  This is very interesting: The Optimal Kantorovich Distance can be expressed as a clustering problem.a
+\end{Note}
 \todo[inline]{Insert the proof for optimal tree fixed flow}
 \todo[inline]{Insert algorithm object for how to compute the optimal tree for fixed flow according to the proof}
