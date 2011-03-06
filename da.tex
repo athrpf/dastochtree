@@ -3,9 +3,9 @@
 \usepackage{etex}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{amsthm}
-\usepackage{amsmath}
 \usepackage[ruled,vlined]{algorithm2e}
 \usepackage{graphicx}
 \usepackage{todonotes}
@@ -25,6 +25,7 @@
 %     \theoremstyle{example}
      \newtheorem*{example}{Example}
 \newtheorem*{Note}{Note}
+\newtheorem{thm}{Theorem}
 \begin{document}
 \listoftodos
 \newpage
@@ -54,7 +55,7 @@ This section serves as a short introduction to the mathematical concepts used th
 
 This section is organized as follows. First, the above description of a real world problem is tranlated into the context and notation of probability theory. Then the resulting abstract mathematical description is transformed into a numerically tangible formulation.
 \subsubsection{Notation}
-We will only deal with stochastic processes with discrete time steps. These time steps will be indexed from 1 to a final time T. For a stochastic process $\xi$ with a continuous distribution, $\xi^t$ denotes the mapping from events to outcomes at timestep $t$. For discrete stochastic processes, index sets for the events, typically denoted by $I$ and $J$, are introduced. The outcome of event $i\in I$ of a discrete stochastic process $\xi$ at timestep $t$ is denoted by $\xi_i^t$. If the timestep is omitted, this denotes the full scenario $i$, that is the vector of the values $\xi_i^t$ sorted by their times $t$.
+We will only deal with stochastic processes with discrete time steps. These time steps will be indexed from 1 to a final time T. For a stochastic process $\xi$ with a continuous distribution, $\xi^t$ denotes the mapping from events to outcomes at timestep $t$. For discrete stochastic processes, index sets for the events, typically denoted by $I$ and $J$, are introduced. For convenience the stochastic process and its index set are used interchangably. The outcome of event $i\in I$ of a discrete stochastic process $\xi$ at timestep $t$ is denoted by $\xi_i^t$. If the timestep is omitted, this denotes the full scenario $i$, that is the vector of the values $\xi_i^t$ sorted by their times $t$.
 \subsubsection{Stochastic Programming and Scenario Trees}
 Suppose a problem given in the following generic nonlinear multi-stage stochastic programming problem. 
 \begin{eqnarray}
@@ -181,27 +182,6 @@ Since in the finite case, the argument of the infimum is a finite sum over varia
 This formulation is a linear program, more specifically a minimum cost flow problem. This means that solutions are readily available even for large problems using state of the art LP solvers. The above minimum cost problem will be at the heart of the derivations of the following sections, as it will serve as the measure for the quality of approximations to infinite dimensional stochastic processes.
 % TODO: derive the min flow problem formulation. Explain here that the \sum_{j\in J}q_j =1 equation is redundant. Mention LICQ
 \subsubsection{The Kantorovich Distance in a function space approximation interpretation}
-\subsection{Two Theorems on fast evaluations of the Kantorovich Distance}
-In this section, two theorems will be presented that will be crucial in the algorithms for stochastic search presented througtout this paper.
-\subsection{Kantorovich Distance for optimal weights}
-In this section, we will prove a theorem that is of great practical significance for the remainder of this thesis. It is based on the ideas of \cite{Dupacova2003}, theorem 2, adapted to the needs of this paper.
-
-Consider two discrete stochastic processes represented by their
-\todo[inline]{Insert a proof for optimal weights}
-\todo[inline]{check algorithm for how to compute the optimal weights (it was late...)}
-\begin{algorithm}
-  \KwIn{Sets $I$ and $J$, each representing one set of scenarios $\xi_i^t,\, i\in I$, $\nu_j^t,\, j\in J$}
-  \KwOut{Optimal weights $q_j$ for the scenarios $j\in J$ and optimal $D_K$}
-  Compute distances
-  \ForEach{$i\in I$}{
-    $k = argmin_{j\in J}\{c(\xi_i,\nu_j\}$\;
-    $q_k\leftarrow q_k + p_i$\;
-  }
-  \caption{Optimal weights}
-\end{algorithm}
-\subsection{Optimal Tree for fixed flow directions}
-\todo[inline]{Insert the proof for optimal tree fixed flow}
-\todo[inline]{Insert algorithm object for how to compute the optimal tree for fixed flow according to the proof}
 \subsection{State of the Art in Scenario Tree Approximations}
 Recent research in the field of generating scenario trees for stochastic programs has focused on the areas of theoretical derivation of stability results and heuristics for generating scenario trees from stochastic processes. 
 
@@ -243,21 +223,30 @@ The number of nodes in the tree can be computed with the formula for the geometr
   \label{eq:number-of-nodes}
   n_N = \frac{1-n_c^{n_s}}{1-n_c}
 \end{equation}
-
-Since both $\xi$ and $\hat{\xi}$ are discrete stochastic processes, the Kantorovich Distance is equivalent to the minimum (cost) flow problem described above (eqn. \ref{eqn:min-flow-problem-definition}). Including this definition yields
+Since both $\xi$ and $\hat{\xi}$ are discrete stochastic processes, the Kantorovich Distance is equivalent to the minimum cost flow problem described above (eqn. \ref{eq:define_finitedim_Kantorovich}). Including this definition yields
 \begin{equation}
   \label{eq:symbolic-optimization-with-minflow}
   \min_{\hat{\xi}}\left\{\min_{\eta,q}\left\{\sum_{i\in I}\sum_{j\in J}\eta_{ij}c(\hat{\xi}, \xi)\left|\sum_{i\in I}\eta_{ij}=q_j,\;\sum_{j\in J}\eta_{ij}=p_i\right.\right\}\left|\hat{\xi} \in \mathcal{T}\right.\right\}
 \end{equation}
-Note that the probability distribution $q$ of the stochastic process $\hat{\xi}$ is not postulated beforehand, but must be determined as part of the optimization problem. 
+The probability distribution $q$ of the stochastic process $\hat{\xi}$ is not postulated beforehand, but must be determined as part of the optimization problem. Note that even though $q$ is not explicitly defined as a probability distribution, the equation
+\begin{equation}
+  \label{eq:q-schliessbedingung}
+  \sum_{j\in J} q_j = 1
+\end{equation}
+is not necessary, and would in fact be redundant. The probabilities $p_i$ are known to form a probability distribution, therefore it holds that
+\begin{equation}
+  \label{eq:proof-sum-q-redundant}
+  1 = \sum_{i\in I}p_i = \sum_{i\in I}\left(\sum_{j\in J}\eta_{ij}\right)=\sum_{j\in J}\left(\sum_{i\in I}\eta_{ij}\right)=\sum_{j\in J} q_j.
+\end{equation}
+This is an important fact in formulating the optimization problems, since introducing this equaiton would violate the linear independence constraint qualification (LICQ).
 
 The inner minimization can, of course, be combined with the outer minimization to yield the final formulation
 \begin{equation}
   \label{eq:symbolic-optimization-with-minflow2}
   \min_{\hat{\xi},\eta,q}\left\{\sum_{i\in I}\sum_{j\in J}\eta_{ij}c(\hat{\xi}, \xi)\left|\sum_{i\in I}\eta_{ij}=q_j,\;\sum_{j\in J}\eta_{ij}=p_i,\;\hat{\xi} \in \mathcal{T}\right.\right\}
 \end{equation}
-
 The following sections discuss two different Solutions to (\ref{eq:symbolic-optimization-with-minflow2}). These two approaches differ in the way the set $\mathcal{T}$ is defined.
+\input{kantorovich_theorems}
 \subsection{MILP Formulation}
 \label{sec:MILP-selection-problem}
 In this section we will derive an algorithm for solving (\ref{eq:symbolic-optimization-with-minflow2}) that is taylored to a very specific case of the set $\mathcal{T}$.
@@ -342,7 +331,7 @@ The problem that is solved for each father node $f$ in the previously defined tr
 The MILP models the decision which scenarios will be selected as nodes into the tree. Figure \ref{fig:swmilp_explanation} shows the evolution of the algorithm.
 \input{swmilp_explanation}
 \todo[inline]{Describe each step of the algorithm im Freitext}
-\todo[inline]{Create mgatex figure that illustrates the meanings of the sets}
+\todo[inline]{in figure \ref{fig:swmilp_explanation}, explain the sets used in the algorithm}
 \subsubsection{Stochastic Search Solution to Large-Scale MILP}
 \todo[inline]{Describe the stochastic search solution}
 \todo[inline]{Create an algorithm object for the }
