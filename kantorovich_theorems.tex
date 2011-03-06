@@ -1,0 +1,92 @@
+\subsection{Two Theorems on fast evaluations of the Kantorovich Distance}
+In this section, two theorems will be presented that will be crucial in the algorithms for stochastic search presented througtout this paper.
+\subsubsection{Kantorovich Distance for optimal weights}
+In this section, we will prove a theorem that is of great practical significance for the remainder of this thesis. It is based on the ideas of \cite{Dupacova2003}, theorem 2. 
+
+Consider two discrete stochastic processes represented by their index sets $I$ and $J$. The values of each scenario $\xi_i^t,\, i\in I$ and $\nu_j^t,\, j\in J$ at each timestep are known, as are the discrete probabilities $p_i$ of the process $I$. The probabilities of process $J$ are not given explicitly, but defined as the set of weights that minimize the Kantorovich Distance $D_K(I,J)$ between the stochastic processes:
+\begin{equation}
+  \label{eq:define-optimal-weights-q}
+  q := \underset{q}{\operatorname{argmin}}\left\{\sum_{i\in I}\sum_{j\in J}\eta_{ij}c_{ij},\; \sum_{i\in I}\eta_{ij} = q_j,\; \sum_{j\in J}\eta_{ij} = p_i,\;\eta\geq 0,\; q\in \left[0,1\right]^{|J|} \right\}
+\end{equation}
+with $c_{ij} = c(\xi_i,\nu_j)$. While not fixing $q$ at first seems to make the problem more difficult by introducing more free variables, it actually makes it possible to state both the probability distribution $q$ and the value of the Kantorovich Distance $D_K$ in closed form. The following theorem and algorithm \ref{alg:optimal-weights} will show how this can be achieved.
+\begin{thm}[Optimal Weights]
+  The optimal weights $q$ in eqn. \ref{eq:define-optimal-weights-q} are given by
+  \begin{equation}
+    \label{eq:optimal-weights-in-thm}
+    q_j := \sum_{i\in I_j} p_i\;\text{ with } I_j:=\left\{i\in I| j = \underset{k\in J}{\operatorname{argmin}}\; c_{ik}\right\}.
+  \end{equation}
+  The value of $D_K$, defined as the minimum of the set in eqn. \ref{eq:define-optimal-weights-q} when fixing $q$ to the values given in eqn. \ref{eq:optimal-weights-in-thm}, takes on the value
+  \begin{equation}
+    \label{eq:define-Dk-optimalweights-thm}
+    D_K = \sum_{i\in I}p_i\min\limits_{j\in J}c_{ij}
+  \end{equation}
+\end{thm}
+Dupacova et al. proof a very similar theorem (\cite{Dupacova2003}, theorem 2), whith the difference that there, $J\subset I$. Their proof, which could be applied with only slight modifications, uses the primal and dual representations of the Kantorovich minimum flow problem. Instead, we will try to give the following, more intuitive
+\begin{proof}
+First, we will show the correctness of the representation of $D_K$ in eqn. \label{eq:define-Dk-optimalweights-thm}. $D_K$ is defined as
+\begin{align}
+  D_K := \min\limits_{q, \eta}& \sum_{i\in I}\sum_{j\in J}\eta_{ij}c_{ij}\\
+  \text{s.t.}&\sum_{i\in I}\eta_{ij} = q_j\label{eqn:eta-q-in-optimalweights-proof}\\
+  &\sum_{j\in J}\eta_{ij} = p_i\label{eqn:eta-p-in-optimalweights-proof}\\
+  &\eta \geq 0\\
+  &0 \leq q \leq 1
+\end{align}
+The problem can be solved disregarding the variables $q_j$. The variables only appear in (\ref{eqn:eta-q-in-optimalweights-proof}), and their bounds are implicit in the remainig equations: $q_j\geq 0$ is implicit in $\eta_{ij}\geq 0$, and $q_j\leq 1$ is implicit in 
+\[\sum_{j\in J}q_j=1\]
+which is again implicit in (\ref{eqn:eta-p-in-optimalweights-proof}) as shown above in  (\ref{eq:proof-sum-q-redundant}). Therefore, $D_K$ can be computed using the reduced problem
+\begin{align}
+  D_K := \min\limits_{\eta}& \sum_{i\in I}\sum_{j\in J}\eta_{ij}c_{ij}\\
+  \text{s.t.}&\sum_{j\in J}\eta_{ij} = p_i\\
+  &\eta \geq 0
+\end{align}
+and $q$ can be deduced from the resulting $\eta$. In this reduced problem, the constraint Jacobian decomposes into independent blocks, with the variables $\eta_{ij}$ and $\eta_{kl}$ being independent, if $i\neq k$. This allows us to reformulate the problem as a sum of optimal values of independent optimization problems:
+\begin{equation}
+  D_K = \min \sum_{i\in I} m_i
+\end{equation}
+with
+\begin{align}
+  \mathcal{D}_i\; :\; m_i :=\min\limits_{\eta_j^i}&\sum_{j\in J}\eta_{j}^ic_{j}^i\\
+  &\sum_{ij}\eta_j^i = p_i\\
+  &\eta_j^i\geq 0.
+\end{align}
+Each problem $\mathcal{D}_i$ is only has one constraint. The solution is trivial and can be easily deduced from the KKT conditions. The KKT conditions for a problem $\mathcal{D}_i$ are
+\begin{equation}
+  \label{eq:D-i-KKT-in-optimalweightsproof}
+  \left[
+  \begin{array}{c}
+  c_j^i + e\lambda^i -\mu_j^i\\
+  \sum_{j}\eta_j^i\\
+  \eta_j^i\mu_j^i
+  \end{array}
+  \right]
+  = \left[
+    \begin{array}{c}
+      0\\p_i\\0
+    \end{array}
+\right]
+\end{equation}
+\todo[inline]{$e$ should be in notation section as unit vector}
+with $\mu_j^i\geq 0$. As a linear problem which obviously satisfies LICQ, KKT conditions are sufficient for minimum. Since the values are computed as norms, we know that $c_j^i\geq 0$. With this information, the KKT conditions allows only for the following solution:
+\begin{align}
+  \label{eq:optimal-eta-optmimalweightsproof}
+  \lambda &:= -\min\limits_{j\in J}c_j^i\\
+  \mu_j^i &:= c_j^i - \min\limits_{j\in J}c_j^i\\
+\end{align}
+\end{proof}
+\begin{algorithm}
+  \KwIn{Scenarios and probabilities for SP 1 $(\xi_i,p_i)\, i\in I$, scenarios $\nu_j,\, j\in J$ for SP 2}
+  \KwOut{Optimal weights $q_j$ for the scenarios $j\in J$ and $D_K(I,J)$}
+  $c_{ij} \leftarrow \Vert \xi_i - \nu_j\Vert$\tcc*{Any norm can be chosen here}
+  $q_j \leftarrow 0$\;
+  $D_K(I,J) \leftarrow 0$\;
+  \ForEach{$i\in I$}{
+    $k = \underset{j\in J}{\operatorname{argmin}}\{c_{ij}\}$\;
+    $q_k\leftarrow q_k + p_i$\;
+    $D_K(I,J) \leftarrow D_K(I,J) + c_{ik}$\;
+  }
+  \caption{Optimal weights}
+  \label{alg:optimal-weights}
+\end{algorithm}
+\subsubsection{Optimal Tree for fixed flow directions}
+\todo[inline]{Insert the proof for optimal tree fixed flow}
+\todo[inline]{Insert algorithm object for how to compute the optimal tree for fixed flow according to the proof}
