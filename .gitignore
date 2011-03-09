@@ -1,0 +1,8 @@
+*.log
+*.bbl
+*.bib.bak
+*.pdf
+*.tdo
+*.toc
+*.blg
+*.aux
