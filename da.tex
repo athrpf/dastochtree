@@ -27,6 +27,7 @@
      \newtheorem*{example}{Example}
 \newtheorem*{Note}{Note}
 \newtheorem{thm}{Theorem}
+\newtheorem{problem}{Problem}
 \begin{document}
 \listoftodos
 \newpage
@@ -57,7 +58,11 @@ This section serves as a short introduction to the mathematical concepts used th
 This section is organized as follows. First, the above description of a real world problem is tranlated into the context and notation of probability theory. Then the resulting abstract mathematical description is transformed into a numerically tangible formulation.
 \subsubsection{Notation}
 We will only deal with stochastic processes with discrete time steps. These time steps will be indexed from 1 to a final time T. For a stochastic process $\xi$ with a continuous distribution, $\xi^t$ denotes the mapping from events to outcomes at timestep $t$. For discrete stochastic processes, index sets for the events, typically denoted by $I$ and $J$, are introduced. For convenience, the stochastic process and its index set are used interchangably. The outcome of an event $i\in I$ of a discrete stochastic process $\xi$ at timestep $t$ is denoted by $\xi_i^t$. If the timestep is omitted, this denotes the full scenario $i$, that is the vector of the values $\xi_i^t$ sorted by their times $t$.
+
 The vector $e$ denotes a vector of ones in each dimension. The dimension will be chosen in accordance with the context. 
+
+In optimization problems, if there are indices in an equation that are not explicitly declared, it is assumed that this equation is stated for each of the indices in the corresponding set.
+The corresponding set will always be obvious in context.
 \subsubsection{Stochastic Programming and Scenario Trees}
 Suppose a problem given in the following generic nonlinear multi-stage stochastic structure. 
 \begin{eqnarray}

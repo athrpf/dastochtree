@@ -99,13 +99,16 @@ The problem that is solved for each father node $f$ in the previously defined tr
   &&\sum_{j\in I_f}z_j^f = n_c^f\\
   &&0\leq \eta_{ij}^f
 \end{eqnarray}
-The MILP models the decision which scenarios will be selected as nodes into the tree. Figure \ref{fig:swmilp_explanation} shows the evolution of the algorithm.
+The MILP models the decision which scenarios will be selected as nodes into the tree. Figure \ref{fig:swmilp-explanation} shows the evolution of the algorithm.
 \input{swmilp_explanation}
 \todo[inline]{Describe each step of the algorithm im Freitext}
-\todo[inline]{in figure \ref{fig:swmilp_explanation}, explain the sets used in the algorithm}
+\todo[inline]{in figure \ref{fig:swmilp-explanation}, explain the sets used in the algorithm}
+\subsubsection{Stage-Decomposition with K-medioids}
+Even though the algorithm presented in the previous section is able to considerably reduce the computational burden of the problem, it still takes about 15 minutes to run. 
 \subsubsection{Stochastic Search Solution to Large-Scale MILP}
+
 \todo[inline]{Describe the stochastic search solution}
-\todo[inline]{Create an algorithm object for the }
+\todo[inline]{Create an algorithm object for the stochastic search solution}
 \subsubsection{Results}
 In this section, we will evaluate the scenario trees generated with the algorithm of the previous paragraph. As discussed above, the general MILP approach is particularly suitable to problems with a discrete set of outcomes at each stage. Therefore, we will focus on processes with that characteristic feature.
 

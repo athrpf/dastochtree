@@ -95,7 +95,67 @@ Using this result in conjunction with (\ref{eqn:Dk-decomposition-in-mi}) yields 
   \caption{Optimal weights}
   \label{alg:optimal-weights}
 \end{algorithm}
-\subsubsection{Optimal Tree for fixed flow directions}
+\subsubsection{Kantorovich Distance and Clustering Algorithms}
+In this section, a corrolary to theorem \ref{thm:optimal-weights} is proven, that will allow for a very efficient rephrasing of the problem defined in (\ref{eq:symbolic-optimization-with-minflow2}).
+For this section, we will disregard the time aspect of stochastic processes and only consider random variables.
+Suppose in (\ref{eq:symbolic-optimization-with-minflow2}), instead of a stochastic process we were given a set of samples from a random variable.
+The assignment is to find a smaller set of samples of a given carinality that best fits the original distribution under the Kantorovich Distance.
+This can be formalized as the following
+\begin{problem}[Optimal Kantorovich Approximation (Continuous)]
+\label{prb:CE-Kantorovich-randvar}
+  Given a discrete random variable $\xi :\Omega_1\rightarrow \mathbb{R}^n$, $|\Omega_1|<\infty$, find the discrete random variable $\nu : \Omega_2\rightarrow\mathbb{R}^n$ with $|\Omega_2 | \leq K$ events that minimizes the Kantorovich Distance $D_K(\xi,\nu)$.
+\end{problem}
+A related problem is to find the optimal reduction of a random variable:
+\begin{problem}[Optimal Kantorovich Approximation (Discrete)]
+  \label{prb:DE-Kantorovich-randvar}
+  Given a discrete random variable $\xi : \Omega_1\rightarrow \mathbb{R}^n$, $|\Omega_1|<\infty$, find the discrete random variable $\nu : \Omega_2\rightarrow\mathbb{R}^n$ with $|\Omega_2 | \leq K$ events that minimizes the Kantorovich Distance $D_K(\xi,\nu)$.
+  In additition, it must hold that $\forall \omega_2\in\Omega_2\exists\omega_1\in\Omega_1 : \xi(\omega_1) = \nu(\omega_2)$.
+\end{problem}
+These problems are the direct transcription of the Kantorovich Distance problems for discrete random variables.
+The difference between the two is that the random variable that is a solution to the second problem must map to values that actually appeare as outcomes of the first random variable.
+While there is no such restriction on the solution of the first problem.
+
+The goal of this section is to prove that these problems can be expressed in a much more well known form as the $K$-mean and $K$-medoid problems. We will introduce these two problems and discuss them.
+\begin{problem}[$K$-Means]
+  \label{prb:kmeans-problem-definition}
+  Given a number $K\in \mathbb{N}$, a finite set of points $\{x_1,\ldots , x_N\} = X\subset\mathbb{R}^n$ and a metric $c:I\times \mathbb{R}^n\rightarrow\mathbb{R}_+$, find the set $M\subset\mathbb{R}^{n}$, with $|M|=K$, such that
+  \begin{equation}
+    \label{eq:kmeans-problem-definition}
+    M = \underset{\hat{M}\subset\mathbb{R}^{n\cdot K}}{\operatorname{argmin}} \sum_{i=1}^N\min\limits_{m\in \hat{M}}c(x_i, m)
+  \end{equation}
+\end{problem}
+\begin{problem}[$K$-Medoids]
+  \label{prb:kmedoids-problem-definition}
+  Given a number $K\in \mathbb{N}$, a finite set of points $\{x_1,\ldots , x_N\} = X\subset\mathbb{R}^n$ and a metric $c:I\times \mathbb{R}^n\rightarrow\mathbb{R}_+$, find the set $M\subset X$, with $|M|=K$, such that
+  \begin{equation}
+    \label{eq:kmedoids-problem-definition}
+    M = \underset{\hat{M}\subset X}{\operatorname{argmin}} \sum_{i=1}^N\min\limits_{m\in \hat{M}}c(x_i, m)
+  \end{equation} 
+\end{problem}
+The $K$-mean and $K$-medoid problems are two of the most extensively used formulations in machine learning and data mining. 
+They are very useful for the unsupervised search of clusters in information. 
+
+We are now prepared for the following
+\begin{thm}[Equivalence of K-means and optimal Kantorovich Approximation]
+Consider a discrete random variable $\xi : \Omega_1\rightarrow \mathbb{R}^n$ and an integer $K$ as input to problem \ref{prb:CE-Kantorovich-randvar}.
+If the set $M$ is a solution to problem \ref{prb:kmeans-problem-definition} with input set $X=\xi(\Omega_1)$, then the random variable $\nu : M \rightarrow M,\, m\mapsto m$ is a solution to problem \ref{prb:CE-Kantorovich-randvar} for the data above.
+\end{thm}
+\todo[inline]{This proof only works for 1/n probability distributions.}
+\begin{proof}
+  The proof is very easy given theorem \ref{thm:optimal-weights}. 
+  We will derive sufficient conditions on the solution $\nu$ to problem \ref{prb:CE-Kantorovich-randvar} and show that the proposed solution $\nu$ meets these conditions.
+  The solution is defined by the Kantorovich mass transportation problem
+  \begin{align}
+    \label{eq:kantoro-in-problemequivalence-proof}
+    D_K = \min\limits_{\eta, q}& \sum_{i\in I}\sum_{j\in J}\eta_{ij}c(\xi_i,\nu_j)\\
+    \text{s.t.}&\sum_{i\in I}\eta_{ij} = q_j\\
+    &\sum_{j\in J}\eta_{ij} = p_i\\
+    &0\leq \eta
+  \end{align}
+  Such a solution trivially always exists, because the feasible set of the optimization problem is not empty, and the objective has a lower bound.
+  From theorem \ref{thm:optimal-weights} we know that for any fixed values $\nu$, for each $i\in I$, there is one $k\in J$ such that $\eta_{ik} = p_i$, and $\eta_{ij}\;\forall j\neq k$. Therefore, the problem can be reformulated as finding the indices $k(i)$.  
+\end{proof}
+\begin{comment}
 In this section, we analyze the computation of the Kantorovich distance for a different setup. Consider again two discrete stochastic processes $I$ and $J$ over time stages $T$ with values $\xi_i^t,\,i\in I$ and $\nu_j,\, j\in J,\;t\in T$. Here, the values $\xi_i^t$ and their probabilities $p_i$ for process $I$ are fixed, while the values $\nu_j^t$ and probabilities $q_j$ for process $J$ are to be selected such that the Kantorovich Distance $D_K(I,J)$ is minimal. The problem can be expressed as the NLP
 \begin{align}
   \min\limits_{\eta,q,\nu}&\sum_{i\in I}\sum_{j\in J}\eta_{ij}c(\xi_i,\nu_j)\\
@@ -129,3 +189,4 @@ Consider now the inverse situation. Given a set partitioning $P$, compute the op
 \end{Note}
 \todo[inline]{Insert the proof for optimal tree fixed flow}
 \todo[inline]{Insert algorithm object for how to compute the optimal tree for fixed flow according to the proof}
+\end{comment}
