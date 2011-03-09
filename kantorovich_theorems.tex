@@ -1,6 +1,7 @@
 \subsection{Two Theorems on fast evaluations of the Kantorovich Distance}
 In this section, two theorems will be presented that will be crucial in the algorithms for stochastic search presented througtout this paper.
 \subsubsection{Kantorovich Distance for optimal weights}
+\label{sec:optimal-weights-proof}
 In this section, we will prove a theorem that is of great practical significance for the remainder of this thesis. It is based on the ideas of \cite{Dupacova2003}, theorem 2. 
 
 Consider two discrete stochastic processes represented by their index sets $I$ and $J$. The values of each scenario $\xi_i^t,\, i\in I$ and $\nu_j^t,\, j\in J$ at each timestep are known, as are the discrete probabilities $p_i$ of the process $I$. The probabilities of process $J$ are not given explicitly, but defined as the set of weights that minimize the Kantorovich Distance $D_K(I,J)$ between the stochastic processes:
@@ -121,10 +122,10 @@ Consider now the inverse situation. Given a set partitioning $P$, compute the op
   with $I_j:=P^{-1}(j)$. Given this representation, the Kantorovich Distance can be computed using algorithm \ref{alg:optimal-weights}. 
 \end{thm}
 \begin{proof}
-  o
+  The objective fut
 \end{proof}
 \begin{Note}
-  This is very interesting: The Optimal Kantorovich Distance can be expressed as a clustering problem.a
+  This is very interesting: The Optimal Kantorovich Distance can be expressed as a clustering problem.
 \end{Note}
 \todo[inline]{Insert the proof for optimal tree fixed flow}
 \todo[inline]{Insert algorithm object for how to compute the optimal tree for fixed flow according to the proof}

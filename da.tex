@@ -7,6 +7,7 @@
 \usepackage{amssymb}
 \usepackage{amsthm}
 \usepackage[ruled,vlined]{algorithm2e}
+\usepackage{comment}
 \usepackage{graphicx}
 \usepackage{todonotes}
 \usepackage{pgfplots}
@@ -105,6 +106,7 @@ The parent node holds the information of the past, while each node is branched i
 It is, in fact, insufficient to represent the stochastic process as a set of non-interdependent scenarios with a common root. 
 As this is a common misconception, for illustration purposes we will give the following
 \begin{example}[Necessity of tree structure]
+  \label{ex:tree-necessity}
 %\hangindent=1cm
 Consider a game of coin tosses, plaied by a player against a bank. 
 The player will play the game for three consecutive coin tosses. 
@@ -200,8 +202,8 @@ The choice of the the space of probability measures as the underlying space for 
   \label{fig:example-wrong-distance}
 \end{figure}
 \subsubsection{The Kantorovich Distance}
-In this section, we will present the Kantorovich Distance as a meaningful and usable metric for stochastic processes. 
-Note that stochastic processes can be represented as random variables by considering each trajectory as an event.
+In this section, we will present the Kantorovich Distance as a meaningful and usable metric for stochastic processes. For a gentle introduction to the Kantorovich Distance see \cite{Deng2009}.
+%Note that stochastic processes can be represented as random variables by considering each trajectory as an event.
 
 In the context of stability analysis of stochastic programming problems, it has been shown by \cite{Dupacova2003} that the Kantorovich functional
 \begin{equation}
@@ -265,22 +267,26 @@ This set of scenarios itself can be considered as a new stochastic process $\xi$
 For a sufficiently large number of samples, we have $D_K(\xi,\xi_{\mathrm{orig}})<\epsilon$ with high probability.
 The task is to find a discrete stochastic process defined as the discrete stochastic process $\hat{\xi}$ that satisfies the following properties:
 \begin{enumerate}
-\item $\hat{\xi}$ minimizes the Kantorovich Distance $D_K(\xi,\hat{\xi})$ defined 
-\item $\hat{\xi}$ exibits a given tree structure (see figure \ref{fig:generic-tree-structure}. We assume the general tree structure - that is the number and order of the nodes - to be fixed beforehand. 
+\item $\hat{\xi}$ minimizes the Kantorovich Distance $D_K(\xi,\hat{\xi})$ defined in (\ref{eq:define-infinitedim-kantorovich}).
+\item $\hat{\xi}$ exibits a given tree structure (see figure \ref{fig:generic-tree-structure}.  We assume the general tree structure - that is the number and order of the nodes - to be fixed beforehand. 
 \end{enumerate}
-In the literature, especially in \cite{Heitsch2009} and related papers (\cite{Dupacova2003}), not the tree structure is fixed beforehand, but instead the tree is reduced until a maximum distance $D_K(\xi,\hat{\xi})$ is reached. However, we believe that the approach of fixing the tree structure beforehand is a sensible assumption for the following reasons.
+In the literature, especially in \cite{Heitsch2009} and related papers (\cite{Dupacova2003,Heitsch2003,Heitsch2009a,Heitsch2010}), not the tree structure is fixed beforehand, but instead a given tree is reduced by deleting nodes until a maximum distance $D_K(\xi,\hat{\xi})$ is reached.
+We view the approach of fixing the tree structure beforehand is a more sensible assumption for the following reasons.
 \begin{itemize}
 \item a recursive tree structure makes sense in most applications, as the structure of the decisions to be made is recursive as well. Consider the operator of the pumped-hydro plant mentioned above. He faces the same decision at each time step, and his measure of uncertainty for any event happening a certain amount of time into the future is independent of the current situation.
 \item the number of scenarios is not determined by the error one will allow but is is the other way around: The error is determined by the maximum number of scenarios one can handle computationally. This number of scenarios will be known beforehand. As the correlation of using more scenarios and lowering the approximation error is strictly monotonic, there is no reason to use less scenarios than one could handle.
 \item The value of the Kantorovich distance does not necessarily have a real-world interpretation. Therefore it might be difficult to postulate a meaningful bound.
+\item For the method described in the papers cited above, it is not obvious how the original tree which is then reduced was constructed in the first place.
 \end{itemize}
 
-In an abstract notation, the problem can be expressed as the following optimization problem:
+In an abstract notation, the problem of constructing a scenario tree from a given stochastic process can be expressed as the following optimization problem:
 \begin{equation}
   \label{eq:symbolic-optimization-problem}
   \min_{\hat{\xi}}\left\{D_K(\hat{\xi}, \xi)\left|\hat{\xi} \in \mathcal{T}\right.\right\}
 \end{equation}
-where $\mathcal{T}$ is the set of discrete stochastic processes that exhibit the demanded tree structure. This tree structure is represented by a set of nodes which have one father but several children. The probabilities of the nodes of each tree must be such that the probability of a node equals the sum of the probabilities of all children of this node. 
+where $\mathcal{T}$ is the set of discrete stochastic processes that exhibit the demanded tree structure.
+This tree structure is represented by a set of nodes which each have one father but several children.
+The probabilities of the nodes of each tree must be such that the probability of a node equals the sum of the probabilities of all children of this node. 
 
 A tree structure can be defined by the number of stages $n_s$ and the number of children (branches) $n_c$ to each node. For a tree defined in that way, the number of scenarios in this tree (which is the same as the number of leaf nodes) is
 \begin{equation}
@@ -292,7 +298,8 @@ The number of nodes in the tree can be computed with the formula for the geometr
   \label{eq:number-of-nodes}
   n_N = \frac{1-n_c^{n_s}}{1-n_c}
 \end{equation}
-Since both $\xi$ and $\hat{\xi}$ are discrete stochastic processes, the Kantorovich Distance is equivalent to the minimum cost flow problem described above (eqn. \ref{eq:define_finitedim_Kantorovich}). Including this definition yields
+Since both $\xi$ and $\hat{\xi}$ are discrete stochastic processes, the Kantorovich Distance is equivalent to the minimum cost flow problem described above (\ref{eq:define-finitedim-Kantorovich}).
+Including this definition yields
 \begin{equation}
   \label{eq:symbolic-optimization-with-minflow}
   \min_{\hat{\xi}}\left\{\min_{\eta,q}\left\{\sum_{i\in I}\sum_{j\in J}\eta_{ij}c(\hat{\xi}, \xi)\left|\sum_{i\in I}\eta_{ij}=q_j,\;\sum_{j\in J}\eta_{ij}=p_i\right.\right\}\left|\hat{\xi} \in \mathcal{T}\right.\right\}
@@ -307,7 +314,8 @@ is not necessary, and would in fact be redundant. The probabilities $p_i$ are kn
   \label{eq:proof-sum-q-redundant}
   1 = \sum_{i\in I}p_i = \sum_{i\in I}\left(\sum_{j\in J}\eta_{ij}\right)=\sum_{j\in J}\left(\sum_{i\in I}\eta_{ij}\right)=\sum_{j\in J} q_j.
 \end{equation}
-This is an important fact in formulating the optimization problems, since introducing this equaiton would violate the linear independence constraint qualification (LICQ).
+This is an important fact in formulating the optimization problems of the following sections, since introducing this equation would violate the constraint qualifications MFCQ and LICQ.
+A constraint qualification is crucial if KKT based optimization algorithms such as interior point methods are to be employed for the solution of the optimization problem \cite{Jongen2004}.
 
 The inner minimization can, of course, be combined with the outer minimization to yield the final formulation
 \begin{equation}
@@ -316,105 +324,7 @@ The inner minimization can, of course, be combined with the outer minimization t
 \end{equation}
 The following sections discuss two different Solutions to (\ref{eq:symbolic-optimization-with-minflow2}). These two approaches differ in the way the set $\mathcal{T}$ is defined.
 \input{kantorovich_theorems}
-\subsection{MILP Formulation}
-\label{sec:MILP-selection-problem}
-In this section we will derive an algorithm for solving (\ref{eq:symbolic-optimization-with-minflow2}) that is taylored to a very specific case of the set $\mathcal{T}$.
-%\subsubsection{Motivation: Coin Toss}
-
-Consider the stochastic process arising from a repetetive coin toss. In order to translate this process, we will assign the values 0 to heads and 1 to tails. Here, not only is the process discrete, but so is the underlying space of events and values. Generating a tree with values other than those encountered in the original stochastic process would not respect the underlying model. This places a restriction on the space of allowable solution trees $\mathcal{T}$: The tree may only contain values that were part of the original set of scenarios.
-
-The restrictions added by the discrete nature of the value space turn problem (\ref{eq:symbolic-optimization-with-minflow2}) into a \textbf{selection problem}:
-\begin{center}
-  \textit{From the original set of scenarios, select nodes according to the tree structure, such that the Kantorovich Distance is minimized.}
-\end{center}
-This selection problem can be modeled as a mixed-integer linear program (MILP). In the following section, the MILP for the full problem will be derived. For the full-size model it will become apparent, that it is computationally intractable. To overcome the computational complexity, the model will be decomposed by time steps. Finally, some results for the decomposed model will be discussed.
-\subsubsection{The Full MILP Model}
-Suppose we start with a (index) set $I$ of $\left|I\right|$ scenarios of the original stochastic process. For each node $k$ in the proposed tree structure, we introduce binary variables $z_{ki}$ which are 1 if node $k$ will take on the value of scenario $k$ of scenario $i \in I$ at the corresponding time step $t$, namely $\xi_i^t$. Using these variables, problem (\ref{eq:symbolic-optimization-with-minflow2}) can be formulated as the following MILP:
-\begin{eqnarray}
-  % eta \in I \times I
-  \label{eq:full-milp-objective}
-  &\min_{\eta, q, z}&\sum_{i\in I}\sum_{j\in J}\sum_{t\in T}\eta_{ijt}c(\xi_i^t,\xi_j^t)\\
-  \label{eq:full-milp-qsum}
-  &\mathrm{s.t.}&\sum_{i\in I}\eta_{ijt} = q_k\\
-  \label{eq:full-milp-psum}
-  &&\sum_{j\in J}\eta_{ijt} = p_i\\
-  \label{eq:full-milp-q-distribution}
-  &&q_j = \sum_{k\in \mathrm{children}(j)}q_k\\
-  \label{eq:full-milp-tree}
-  &&\eta_{ijt} \leq \eta_{i,\mathrm{father}(j),t-1}\\
-  \label{eq:full-milp-only-selected}
-  &&\eta_{ijt} \leq z_{kj} \\% Der fluss zu scenario j darf nur > 0 sein, wenn es fuer irgend eine node ausgewaehlt ist.
-  \label{eq:full-milp-contibounds}
-  &&0\leq q \leq 1,\;0\leq eta \leq 1\\
-  \label{eq:full-milp-binarybounds}
-  &&z\in \left\{0,1\right\}
-\end{eqnarray}
-\textbf{Remarks}
-% The above model is incorrect - correct it
-\begin{enumerate}
-\item equations (\ref{eq:full-milp-qsum}) and (\ref{eq:full-milp-psum}) represent the requirements on the marginal probabilities of the measure $\eta$.
-\item 
-\end{enumerate}
-The size of this mathematical program is prohibitively large. Common orders of magnitude for the cardinality of the set of scenarios is well above 1000. The tree size is dictated by the choice of $n_c$ and the time represented by the number of time steps $n_s$ one wants to look into the future. Even for very short times like $n_c=4$ and five branches to each node, the number of nodes quickly goes up to $n_N=155$. This leads to an MILP with $n_N\cdot n_s=155,000$, which means that it is computationally intractable. The intractability is not only due to the sheer size, but to the combination with the fact that the problem has a very weak relaxation.
-\subsubsection{Stage-Decomposition of the MILP}
-To reduce the complexity of the model, instead of solving all stages at the same time, we will solve the problem stage by stage. This greatly reduces the computational burden, because using the filtration constraints, we can solve the branches of the tree one at a time. These constraints allow us to 
-\begin{enumerate}
-\item solve the branch starting from each of the previously fixed nodes independently.
-\item for the current branch starting at node $j$, discard all scenarios $i$ for which $\eta_{ij}=0$ in the problem corresponding to the father node of $j$.
-\end{enumerate}
-
-The algorithm for solving the stage-wise tree construction problem will be presented in the following.
-\begin{algorithm}
-  %\SetAlgoLined
-  \KwIn{Set $I$ of $T$-stage scenarios $\xi_i^t$}
-  \KwOut{Scenario tree consisting of nodes $\nu_n$ and probobilities $q_j$}
-  $F = \{1\}$\tcc*{init set of father nodes with root node}
-  \While{$F\neq \emptyset$}{
-    \ForEach{$f\in F$}{
-      $F = F\setminus \{f\}$\tcc*{remove this node from father set}
-      Solve the MILP $\mathcal{M}_{sw}(f)$\;
-      \ForEach{$k\in \{j\in S_f | z_j^f=1\}$}{
-        $S_k = \{i\in S_f| \eta_{ik}^f>0\}$\;
-        \If{$k$ has children}{
-          $F = F\cup \{k\}$\;
-        }
-      }
-    }
-  }
-  \tcc*{Compute probabilities $q_j$}
-\caption{Stage-Wise MILP based Scenario generation}
-\label{alg:stage-wise-milp}
-\end{algorithm}
-In a nutshell, this algorithm performs at every branching point the search for the $n_c$ scenarios that best cover the distribution given by all scenarios that the current node in the previous stage was used to cover.
-
-The procedure is outlined as algorithm \ref{alg:stage-wise-milp}. The input is a set of scenarios $I$ defined over a set of stages $T$ and a tree structure, typically defined by the number of branchings of the tree at every node and timestep. The distances $c(\xi_i^t, \xi_j^t)$ between the scenarios $\xi_i,\,\xi_j\; i,j\in I$ can be computed beforehand. Note that the $1$-norm is the only meaningful norm that can be constructed this way, since the full distance is effectively approximated as a sum over the stages.
-
-The problem that is solved for each father node $f$ in the previously defined tree is the following MILP:
-\begin{eqnarray}
-  \label{eq:small-milp-in-alg}
-  \mathcal{M}_{sw}(f)\; \; \min_{\eta^f,z^f}&&\sum_{i\in I_f}\sum_{j\in I_f}\eta_{ij}^fc(\xi_i^t,\xi_j^t)\\
-  \mathrm{s.t.}&&\sum_{j\in I_f}\eta_{ij} = \eta_{if}^{father(f)}\\
-  &&\sum_{j\in I_f}z_j^f = n_c^f\\
-  &&0\leq \eta_{ij}^f
-\end{eqnarray}
-The MILP models the decision which scenarios will be selected as nodes into the tree. Figure \ref{fig:swmilp_explanation} shows the evolution of the algorithm.
-\input{swmilp_explanation}
-\todo[inline]{Describe each step of the algorithm im Freitext}
-\todo[inline]{in figure \ref{fig:swmilp_explanation}, explain the sets used in the algorithm}
-\subsubsection{Stochastic Search Solution to Large-Scale MILP}
-\todo[inline]{Describe the stochastic search solution}
-\todo[inline]{Create an algorithm object for the }
-\subsubsection{Results}
-In this section, we will evaluate the scenario trees generated with the algorithm of the previous paragraph. As discussed above, the general MILP approach is particularly suitable to problems with a discrete set of outcomes at each stage. Therefore, we will focus on processes with that characteristic feature.
-
-The results in this section were created using an implementation of the above algorithm in C++. The commercial solver Gurobi was employed to solve the MILP subproblems at each stage.  
-
-\paragraph{Coin Toss} Consider the stochastic process created by successive random coin tosses. In order to analyze how well the algorithm does on unknown problems, we will pretend that the only information we have is a black box process that generates one scenario, which is a sequence of 3 successive coin tosses. We, of course, know that the actual probabilities of each state. We will compare the resulting scenario tree with
-\paragraph{Log-normal SP}
-\begin{itemize}
-\item the true solution, to assess the degree of suboptimality
-\item with a naive tree generated by random selection of nodes from the set of scenarios. This helps us evaluate whether the extra effort put in to solve the MILP actually improved the prediction of the state.
-\end{itemize}
+\input{milpformulation}
 \subsection{NLP Formulation}
 In this section, we will present a novel approach to approximating scenario trees. While the previous section was concerned with generating scenario trees for discrete underlying event spaces, continuous event spaces are very common. Obvious examples for stochastic processes with continuos state spaces are prices and demands.
 
