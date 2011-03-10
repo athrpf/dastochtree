@@ -144,16 +144,36 @@ If the set $M$ is a solution to problem \ref{prb:kmeans-problem-definition} with
 \begin{proof}
   The proof is very easy given theorem \ref{thm:optimal-weights}. 
   We will derive sufficient conditions on the solution $\nu$ to problem \ref{prb:CE-Kantorovich-randvar} and show that the proposed solution $\nu$ meets these conditions.
-  The solution is defined by the Kantorovich mass transportation problem
+  $\nu$ can be characterized by the following optimization problem:
+  \begin{equation}
+    \label{eq:characterize-nu-in-problemequivalence-proof}
+    \min\limits_{\nu}D_K(\xi,\nu)
+  \end{equation}
+  The objective function $D_K$ is defined by the Kantorovich mass transportation problem
   \begin{align}
     \label{eq:kantoro-in-problemequivalence-proof}
     D_K = \min\limits_{\eta, q}& \sum_{i\in I}\sum_{j\in J}\eta_{ij}c(\xi_i,\nu_j)\\
     \text{s.t.}&\sum_{i\in I}\eta_{ij} = q_j\\
-    &\sum_{j\in J}\eta_{ij} = p_i\\
-    &0\leq \eta
+    &\sum_{j\in J}\eta_{ij} = \frac{1}{n_i}\\
+    &0\leq \eta.
   \end{align}
-  Such a solution trivially always exists, because the feasible set of the optimization problem is not empty, and the objective has a lower bound.
-  From theorem \ref{thm:optimal-weights} we know that for any fixed values $\nu$, for each $i\in I$, there is one $k\in J$ such that $\eta_{ik} = p_i$, and $\eta_{ij}\;\forall j\neq k$. Therefore, the problem can be reformulated as finding the indices $k(i)$.  
+  A solution trivially always exists, because the feasible set of the optimization problem is not empty, and the objective has a lower bound ($D_K\geq 0$).
+  Note that the choice of the sets $\Omega_1$ and $\Omega_2$ is arbitrary since they do not appear in any form in the optimization problem.
+  All that matters are the sets $\xi(\Omega_1)$ and $\nu(\Omega_2)$.
+  From theorem \ref{thm:optimal-weights} we know that for any fixed values $\nu$, the solution to the inner problem can be directly computed using algorithm \ref{alg:optimal-weights}.
+  For given $\nu$, the solution (see (\ref{eq:define-Dk-optimalweights-thm})) is
+  \begin{equation}
+    \label{eq:repeat-Dk-optimalweights-for-kmeansproof}
+    D_K(\xi,\nu) = \sum_{i\in I}\frac{1}{n_i}\min\limits_{j\in J}c(\xi_i,\nu_j).
+  \end{equation}
+  Combining with (\ref{eq:characterize-nu-in-problemequivalence-proof}), $\nu$ is can finally be characterized by
+  \begin{equation}
+    \label{eq:end-of-kmeans-proof}
+    \nu(\Omega_2) = \argmin \frac{1}{n_i}\sum_{i\in I}\min\limits_{j\in J} c(\xi_i,\nu_j) = \argmin \sum_{i\in I}\min\limits_{j\in J} c(\xi_i,\nu_j).
+  \end{equation}
+  The constant factor $\frac{1}{n_i}$ is applied to all elements of the set and therefore does not change the result.
+  We now have characterized the set $\nu(\Omega_2)$ as a solution to problem \ref{prb:kmeans-problem-definition}.
+  This closes the proof.
 \end{proof}
 \begin{comment}
 In this section, we analyze the computation of the Kantorovich distance for a different setup. Consider again two discrete stochastic processes $I$ and $J$ over time stages $T$ with values $\xi_i^t,\,i\in I$ and $\nu_j,\, j\in J,\;t\in T$. Here, the values $\xi_i^t$ and their probabilities $p_i$ for process $I$ are fixed, while the values $\nu_j^t$ and probabilities $q_j$ for process $J$ are to be selected such that the Kantorovich Distance $D_K(I,J)$ is minimal. The problem can be expressed as the NLP
