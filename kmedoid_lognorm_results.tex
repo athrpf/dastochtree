@@ -1,0 +1,23 @@
+\begin{figure}
+  \begin{tikzpicture}
+    \begin{axis} % time over number of scenarios 
+      \addplot [color=black] coordinates {
+        (500, 0.082675)
+        (1000, 0.196757)
+        (5000, 5.069326)
+        (10000, 24.863489)
+      };
+    \end{axis}
+    \end{tikzpicture}
+    \begin{tikzpicture}
+    \begin{axis} % 
+      \addplot [error bars/.cd, y explicit] coordinates {
+        (500,  0.111438319659227) +- (0,0.3856365366939)
+        (1000, 0.106969745621786) +- (0,0.001648309731920)
+        (5000, 0.103710603975520) +- (0,0.000749656195408)
+        (10000,0.103426137163199) +- (0,0.000595482018280)
+      };
+    \end{axis}
+  \end{tikzpicture}
+\caption{Results for Lognormal Distribution trees computed }
+\end{figure}  
