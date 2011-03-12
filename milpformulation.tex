@@ -1,7 +1,7 @@
 \subsection{MILP Formulation}
 \label{sec:MILP-selection-problem}
 In this section we will derive algorithms for solving (\ref{eq:symbolic-optimization-with-minflow2}) that are taylored to a very specific case of the set $\mathcal{T}$.
-%\subsubsection{Motivation: Coin Toss}
+% \subsubsection{Motivation: Coin Toss}
 
 Consider again the stochastic process arising from a repetetive coin toss of example \ref{ex:tree-necessity}.
 In order to translate this process into a numerical framework, we will assign the values 0 to heads and 1 to tails.
@@ -21,36 +21,36 @@ In a first attempt, the model will be decomposed by time steps, each of which is
 To avoid the theoretical problems introduced with the stage-wise approximation, a genetic algorithm implementation is presented that makes use of theorem \ref{thm:optimal-weights} on optimal weights.
 Finally, some results for the methods are compared.
 \begin{comment}
-\subsubsection{The Full MILP Model}
-Suppose we start with a (index) set $I$ of scenarios generateg from the original stochastic process by sampling. For each node $k$ in the proposed tree structure, we introduce binary variables $z_{ki}$ which are 1 if node $k$ will take on the value of scenario $k$ of scenario $i \in I$ at the corresponding time step $t$, namely $\xi_i^t$. Using these variables, problem (\ref{eq:symbolic-optimization-with-minflow2}) can be formulated as the following MILP:
-\begin{eqnarray}
-  % eta \in I \times I
-  \label{eq:full-milp-objective}
-  &\min\limits_{\eta, q, z}&\sum_{i\in I}\sum_{j\in J}\sum_{t\in T}\eta_{ijt}c(\xi_i^t,\xi_j^t)\\
-  \label{eq:full-milp-qsum}
-  &\mathrm{s.t.}&\sum_{i\in I}\eta_{ijt} = q_j\\
-  \label{eq:full-milp-psum}
-  &&\sum_{j\in J}\eta_{ijt} = p_i\\
-  \label{eq:full-milp-q-distribution}
-  &&q_j = \sum_{k\in \mathrm{children}(j)}q_k\\
-  \label{eq:full-milp-tree}
-  &&\eta_{ijt} \leq \eta_{i,\mathrm{father}(j),t-1}\\
-  \label{eq:full-milp-only-selected}
-  &&\eta_{ijt} \leq z_{kj} \\% Der fluss zu scenario j darf nur > 0 sein, wenn es fuer irgend eine node ausgewaehlt ist.
-  \label{eq:full-milp-contibounds}
-  &&0\leq q \leq 1,\;0\leq \eta \leq 1\\
-  \label{eq:full-milp-binarybounds}
-  &&z\in \left\{0,1\right\}
-\end{eqnarray}
-\todo[inline]{ist das modell wirklich korrekt so? }
-The probability measures $q_{jt}$ and $\eta_{ijt}$ are modeled as probabilities for each scenario $j\in J$ of the tree. 
-Each scenario corresponds to a leaf node.
-Equations (\ref{eq:full-milp-qsum}) and (\ref{eq:full-milp-psum}) represent the requirements on the marginal probabilities of the measure $\eta$ (see (\ref{eq:define-borel-measures})).
-Equation \ref{eq:full-milp-q-distribution} ensures the consistency of the probabilities of the nodes.
-The inequalities \ref{eq:full-milp-tree} are constraints that preserve the filtration of the original scenarios.
-With the inequalities \ref{eq:full-milp-only-selected}, all variables $\eta_{ijt}$ that belong to nodes $j$ that 
+  \subsubsection{The Full MILP Model}
+  Suppose we start with a (index) set $I$ of scenarios generateg from the original stochastic process by sampling. For each node $k$ in the proposed tree structure, we introduce binary variables $z_{ki}$ which are 1 if node $k$ will take on the value of scenario $k$ of scenario $i \in I$ at the corresponding time step $t$, namely $\xi_i^t$. Using these variables, problem (\ref{eq:symbolic-optimization-with-minflow2}) can be formulated as the following MILP:
+  \begin{eqnarray}
+    % eta \in I \times I
+    \label{eq:full-milp-objective}
+    &\min\limits_{\eta, q, z}&\sum_{i\in I}\sum_{j\in J}\sum_{t\in T}\eta_{ijt}c(\xi_i^t,\xi_j^t)\\
+    \label{eq:full-milp-qsum}
+    &\mathrm{s.t.}&\sum_{i\in I}\eta_{ijt} = q_j\\
+    \label{eq:full-milp-psum}
+    &&\sum_{j\in J}\eta_{ijt} = p_i\\
+    \label{eq:full-milp-q-distribution}
+    &&q_j = \sum_{k\in \mathrm{children}(j)}q_k\\
+    \label{eq:full-milp-tree}
+    &&\eta_{ijt} \leq \eta_{i,\mathrm{father}(j),t-1}\\
+    \label{eq:full-milp-only-selected}
+    &&\eta_{ijt} \leq z_{kj} \\% Der fluss zu scenario j darf nur > 0 sein, wenn es fuer irgend eine node ausgewaehlt ist.
+    \label{eq:full-milp-contibounds}
+    &&0\leq q \leq 1,\;0\leq \eta \leq 1\\
+    \label{eq:full-milp-binarybounds}
+    &&z\in \left\{0,1\right\}
+  \end{eqnarray}
+  \todo[inline]{ist das modell wirklich korrekt so? }
+  The probability measures $q_{jt}$ and $\eta_{ijt}$ are modeled as probabilities for each scenario $j\in J$ of the tree. 
+  Each scenario corresponds to a leaf node.
+  Equations (\ref{eq:full-milp-qsum}) and (\ref{eq:full-milp-psum}) represent the requirements on the marginal probabilities of the measure $\eta$ (see (\ref{eq:define-borel-measures})).
+  Equation \ref{eq:full-milp-q-distribution} ensures the consistency of the probabilities of the nodes.
+  The inequalities \ref{eq:full-milp-tree} are constraints that preserve the filtration of the original scenarios.
+  With the inequalities \ref{eq:full-milp-only-selected}, all variables $\eta_{ijt}$ that belong to nodes $j$ that 
 
-The size of this mathematical program is prohibitively large. Common orders of magnitude for the cardinality of the set of scenarios is well above 1000. The tree size is dictated by the choice of $n_c$ and the time represented by the number of time steps $n_s$ one wants to look into the future. Even for very short times like $n_c=4$ and five branches to each node, the number of nodes quickly goes up to $n_N=155$. This leads to an MILP with $n_N\cdot n_s=155,000$, which means that it is computationally intractable. The intractability is not only due to the sheer size, but to the combination with the fact that the problem has a very weak relaxation.
+  The size of this mathematical program is prohibitively large. Common orders of magnitude for the cardinality of the set of scenarios is well above 1000. The tree size is dictated by the choice of $n_c$ and the time represented by the number of time steps $n_s$ one wants to look into the future. Even for very short times like $n_c=4$ and five branches to each node, the number of nodes quickly goes up to $n_N=155$. This leads to an MILP with $n_N\cdot n_s=155,000$, which means that it is computationally intractable. The intractability is not only due to the sheer size, but to the combination with the fact that the problem has a very weak relaxation.
 \end{comment}
 \subsubsection{Stage-Decomposition of the MILP}
 To reduce the complexity of the model, instead of solving all stages at the same time, we will solve the problem stage by stage. This greatly reduces the computational burden, because using the filtration constraints, we can solve the branches of the tree one at a time. These constraints allow us to 
@@ -61,26 +61,27 @@ To reduce the complexity of the model, instead of solving all stages at the same
 
 The algorithm for solving the stage-wise tree construction problem will be presented in the following.
 \begin{algorithm}
-  %\SetAlgoLined
+  % \SetAlgoLined
   \KwIn{Set $I$ of $T$-stage scenarios $\xi_i^t$, tree structure $\mathcal{T}$}
   \KwOut{Scenario tree consisting of nodes $\nu_n$ and probobilities $q_j$}
-  $F = \{1\}$\tcc*{init set of father nodes with root node}
-  $S_1 = I$\tcc*{All scenarios share the root node}
+  $F \leftarrow \{1\}$\tcc*{init set of father nodes with root node}
+  $S_1 \leftarrow I$\tcc*{All scenarios share the root node}
   \While{$F\neq \emptyset$}{
     \ForEach{$f\in F$}{
-      $F = F\setminus \{f\}$\tcc*{remove this node from father set}
+      $F \leftarrow F\setminus \{f\}$\tcc*{remove this node from father set}
       Solve the MILP $\mathcal{M}_{sw}(f)$\;
       \ForEach{$k\in \{j\in S_f | z_j^f=1\}$}{
-        $S_k = \{i\in S_f| \eta_{ik}^f>0\}$\;
+        Set value of next child of $f$ to $\xi_k^t$\;
+        $S_k \leftarrow \{i\in S_f| \eta_{ik}^f>0\}$\;
         \If{$k$ has children}{
-          $F = F\cup \{k\}$\;
+          $F \leftarrow F\cup \{k\}$\;
         }
       }
     }
   }
   $q_j\leftarrow $ optimal weights \tcc*{Using Algorithm \ref{alg:optimal-weights}}
-\caption{Stage-Wise MILP based Scenario generation}
-\label{alg:stage-wise-milp}
+  \caption{Stage-Wise MILP based Scenario generation}
+  \label{alg:stage-wise-milp}
 \end{algorithm}
 At every branching point, algorithm \ref{alg:optimal-weights} performs the search for the $n_c$ scenarios that best cover the distribution given by all scenarios that the current node in the previous stage was used to cover.
 
@@ -100,22 +101,86 @@ The problem that is solved for each father node $f$ in the previously defined tr
   &&0\leq \eta_{ij}^f
 \end{eqnarray}
 The MILP models the decision which scenarios will be selected as nodes into the tree. Figure \ref{fig:swmilp-explanation} shows the evolution of the algorithm.
-\input{swmilp_explanation}
-\todo[inline]{Describe each step of the algorithm im Freitext}
-\todo[inline]{in figure \ref{fig:swmilp-explanation}, explain the sets used in the algorithm}
+\input{swmilp_explanation} % figure fig:swmilp-explanation
 \subsubsection{Stage-Decomposition with K-medioids}
 Even though the algorithm presented in the previous section is able to considerably reduce the computational burden of the problem, it still takes about 15 minutes to run. 
-\subsubsection{Stochastic Search Solution to Large-Scale MILP}
+Using theorem \ref{thm:kmeans-kantorovich}, a heuristic algorithm can be derived, that is an order of magnitude faster than the stage-wise MILP algorithm presented above.
 
+Consider the above MILP $\mathcal{M}_{sw}(f)$ that is solved for every father node in the tree.
+This MILP is the direct solution to problem \ref{prb:DE-Kantorovich-randvar} of finding the subset of events of a discrete random variable that form the best approximation.
+With the help of theorem \ref{thm:kmedoids-kantorovich} we can replace the solution of the MILP with the solution to the k-medoids problem. 
+
+There are many algorithms for solving the k-medoids problem.
+For the purposes of this paper, a MATLAB implementation of the standard algorithm, ``Partitioning aroud Medoids''(PAM) was used.
+The adapted algorithm is presented as algorithm \ref{alg:stagewise-kmedoids}.
+It follows along the same lines as the stage-wise MILP algorithm and uses the same sets $F$ and $S_k$.
+The retrieval of the results was adapted to the output of the $PAM$ algorithm \ref{alg:pam}.
+The general evolution of the algorithm follows the one depicted in figure \ref{fig:swmilp-explanation}.
+\begin{algorithm}
+  \KwIn{ttt}
+  \caption{Partitioning Around Medoids (PAM)}
+  \label{alg:pam}
+\end{algorithm}
+\begin{algorithm}
+  \KwIn{Set $I$ of $T$-stage scenarios $\xi_i^t$, tree structure $\mathcal{T}$}
+  \KwOut{Scenario tree consisting of nodes $\nu_n$ and probobilities $q_j$}
+  $F \leftarrow \{1\}$\tcc*{init set of father nodes with root node}
+  $S_1 \leftarrow I$\tcc*{All scenarios share the root node}
+  \While{$F\neq \emptyset$}{
+    \ForEach{$f\in F$}{
+      $F \leftarrow F\setminus \{f\}$\tcc*{remove this node from father set}
+      $[m,idx(m)] \leftarrow \operatorname{PAM}(K=n_c, X=\{\xi_i^t|i\in S_f\})$\;
+      \For{$l=1\ldots n_c$}{
+        $k \leftarrow child(f,l)$\tcc*{get child no. $l$ of node $f$.} 
+        $\nu_k \leftarrow m_l$\;
+        $S_k \leftarrow idx(m_l)$\;
+        \If{$k$ has children}{
+          $F \leftarrow F\cup \{k\}$\;
+        }
+      }
+    }
+  }
+  $q_j\leftarrow $ optimal weights \tcc*{Using Algorithm \ref{alg:optimal-weights}}
+  \caption{Stage-wise $K$-Medoids}
+  \label{alg:stagewise-kmedoids}
+\end{algorithm}
+\todo[inline]{write PAM alg}
+\subsubsection{Stochastic Search Solution to Large-Scale MILP}
+While the stage-wise methodology is an easy way to reduce the complexity of the problem, it may lead to an oversimplification. Figure \ref{fig:stagewise-failure} shows an example how stage-wise operating algorithms may yield arbitrarily bad tree aproximations. 
+\input{stagewise_failure}
+The MILP model for the full tree is, however, not computationally tractable.
+In this section, we will present an algorithm based on genetic optimization techniques. 
+
+\todo[inline]{Decide whether this goes in or not}
+This algorithm makes use of theorem \ref{thm:optimal-weights} to achieve  
 \todo[inline]{Describe the stochastic search solution}
 \todo[inline]{Create an algorithm object for the stochastic search solution}
 \subsubsection{Results}
-In this section, we will evaluate the scenario trees generated with the algorithm of the previous paragraph. As discussed above, the general MILP approach is particularly suitable to problems with a discrete set of outcomes at each stage. Therefore, we will focus on processes with that characteristic feature.
-
-The results in this section were created using an implementation of the above algorithm in C++. The commercial solver Gurobi was employed to solve the MILP subproblems at each stage.  
-
-\paragraph{Coin Toss} Consider the stochastic process created by successive random coin tosses. In order to analyze how well the algorithm does on unknown problems, we will pretend that the only information we have is a black box process that generates one scenario, which is a sequence of 3 successive coin tosses. We, of course, know that the actual probabilities of each state. We will compare the resulting scenario tree with
+In this section, we will evaluate the scenario trees generated with the algorithms of the previous sections. As discussed above, the approach discussed in this part is particularly suitable to problems with a discrete set of outcomes at each stage. Therefore, we will focus on processes with that characteristic feature.
+%
+\paragraph{Implementations}
+As all methods presented in this paper are new, the focus clearly lies on the derivation of the algorithms.
+The results presented in this sections are based on ad-hoc implementations of these algorithms in MATLAB.
+The MILP subproblems were solved using the commercial solver GUROBI.
+The numbers on timing should be regarded only for a general orientation, and should not be judged on an absolute scale.
+Many of the subalgorithms of the methods are of a heuristic or combinatorial nature.
+Their performance is therefore susceptible to fine tuning, which was not conducted for the implementations.
+Future implementations may therefore realize significant speedups through a better implementation of the same methods.
+%
+\paragraph{Testing methodology} 
+Comparing scenario trees generated with different methods is not trivial.
+The procedure we used to ensure relative reproducability of the results is as follows.
+A set of scenarios was sampled from the original stochastic process.
+This same set of scenarios was handed to each of the algorithms as input for the tree generation.
+Using the same set of scenarios as input is important to not judge one of the tree generating algorithms for a singular event in its data scenarios.
+The trees were then tested against ten new randomly generated sets of scenarios.
+% The commercial solver Gurobi was employed to solve the MILP subproblems at each stage.
+\paragraph{Coin Toss} Consider the stochastic process created by successive random coin tosses.
+In order to analyze how well the algorithm does on unknown problems, we will pretend that the only information we have is a black box process that generates one scenario, which is a sequence of 3 successive coin tosses.
+We, of course, know that the actual probabilities of each state.
+We will compare the resulting scenario tree with
 \paragraph{Log-normal SP}
+\input{kmedoid_lognorm_results}
 \begin{itemize}
 \item the true solution, to assess the degree of suboptimality
 \item with a naive tree generated by random selection of nodes from the set of scenarios. This helps us evaluate whether the extra effort put in to solve the MILP actually improved the prediction of the state.
