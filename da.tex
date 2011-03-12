@@ -1,30 +1,27 @@
 \documentclass[a4paper, 12pt] {article}
-%\usepackage[pd,col,3d,turt]{mgtex_23}
 \usepackage{etex}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage{amsmath}
-\usepackage{amssymb}
-\usepackage{amsthm}
+\usepackage{amsmath, amssymb, amsthm}
 \usepackage[ruled,vlined]{algorithm2e}
 \usepackage{comment}
 \usepackage{graphicx}
 \usepackage{todonotes}
 \usepackage{pgfplots}
 \usepackage[inline]{showlabels}
-
+\pgfplotsset{compat=1.3}
 \newtheoremstyle{example}
-     {\topsep}%      Space above
-     {\topsep}%      Space below
-     {}%         Body font
-     {}%         Indent amount (empty = no indent, \parindent = para indent)
-     {\bfseries}% Thm head font
-     {}%        Punctuation after thm head
-     {}%     Space after thm head: " " = normal interword space;
-           %       \newline = linebreak
-     {\underline{\thmname{#1}\thmnumber{ #2}\thmnote{ (#3)}}}%         Thm head spec (can be left empty, meaning `normal')
-%     \theoremstyle{example}
-     \newtheorem*{example}{Example}
+{\topsep}%      Space above
+{\topsep}%      Space below
+{}%         Body font
+{}%         Indent amount (empty = no indent, \parindent = para indent)
+{\bfseries}% Thm head font
+{}%        Punctuation after thm head
+{}%     Space after thm head: " " = normal interword space;
+% \newline = linebreak
+{\underline{\thmname{#1}\thmnumber{ #2}\thmnote{ (#3)}}}%         Thm head spec (can be left empty, meaning `normal')
+% \theoremstyle{example}
+\newtheorem*{example}{Example}
 \newtheorem*{Note}{Note}
 \newtheorem{thm}{Theorem}
 \newtheorem{problem}{Problem}
@@ -33,7 +30,7 @@
 \begin{document}
 \listoftodos
 \newpage
-\title{Advanced Methods in Stochastic Programming}
+\title{Scenario Tree Generation for Stochastic Programming}
 \author{Hans Pirnay}
 \maketitle
 \tableofcontents
@@ -75,10 +72,10 @@ Suppose a problem given in the following generic nonlinear multi-stage stochasti
   &&x_t \, \mathrm{is}\,\mathcal{F}_t \mathrm{-measurable} \label{eqn:measurability-constraint}
 \end{eqnarray}
 In this problem, the stochastic process $\xi$ can be considered as a mapping $\xi:\Omega\rightarrow \mathbb{R}^{d\times T}$, where $\Omega$ is the sample space of the underlying probability space $(\Omega, \mathcal{F}, \mathbb{P})$. The solution is a mapping $x:\Omega\rightarrow \mathbb{R}^{n\times T}$.
- 
+
 The difficulty in multi-stage stochastic programming problems arises from the measurability constraint (\ref{eqn:measurability-constraint}). This constraint is specific to multi-stage stochastic programs.
 This additional constraint leads to a much increased computational complexity of multi-stage programs over two-stage programs \cite{Shapiro2005,Shapiro2008}.
-%
+% 
 \par{Measurability Constraints} 
 mean that the condition
 \begin{equation}
@@ -89,9 +86,9 @@ has to hold for all time steps $t$, and all pairs of events $(\omega_1,\omega_2)
 The decision variables $x_t$ must only depend on the events of the past up until the present $\xi_1$, ..., $\xi_t$, and explicitly \textbf{not} on $\xi_{t+1},\, ...,\,\xi_T$. 
 This property is often called \textit{non-anticipativity of the solution} $x$. 
 Therefore, these equations model the uncertainty of the future.
-%
+% 
 \paragraph{Discretization}
-%
+% 
 To transform the stochastic programming problem into a NLP/LP, the infinite dimensional stochastic process $\xi$ must be discretized into a finite stochastic process $\hat{\xi}$. If certain precautions are taken, it is possible to show (at least for linear stochastic programs) that the solution to the stochastic problem is stable under this discretization operation, meaning that there exists a factor $L$ such that the distance between the solution to the discretized problem $\hat{x}$ and the solution to the original problem $x$ are Lipschitz-continuous with respect to the discretization error:
 \begin{equation}
   D(x , \hat{x}) \leq L\cdot D(\xi,\hat{\xi})
@@ -114,51 +111,51 @@ It is, in fact, insufficient to represent the stochastic process as a set of non
 As this is a common misconception, for illustration purposes we will give the following
 \begin{example}[Necessity of tree structure]
   \label{ex:tree-necessity}
-%\hangindent=1cm
-Consider a game of coin tosses, plaied by a player against a bank. 
-The player will play the game for three consecutive coin tosses. 
-He has three Euros that he all wants to bet. 
-Predicting the outcome of the toss correctly will return $\frac{13}{6}$ the stakes $x$ in the first round, $2\cdot x$ in the second round, and only $1.5\cdot x$ in the final round. 
-Otherwise the stakes will be lost. 
-Earnings cannot be used to bet in the game.
+  % \hangindent=1cm
+  Consider a game of coin tosses, plaied by a player against a bank. 
+  The player will play the game for three consecutive coin tosses. 
+  He has three Euros that he all wants to bet. 
+  Predicting the outcome of the toss correctly will return $\frac{13}{6}$ the stakes $x$ in the first round, $2\cdot x$ in the second round, and only $1.5\cdot x$ in the final round. 
+  Otherwise the stakes will be lost. 
+  Earnings cannot be used to bet in the game.
 
-The player optimizes the expected return.
-Without the need for a calculator we can say that the optimal strategy is to bet everything in the first round, yielding a total expected return of $1.75$.
+  The player optimizes the expected return.
+  Without the need for a calculator we can say that the optimal strategy is to bet everything in the first round, yielding a total expected return of $1.75$.
 
-Consider now a transcription of the problem as an LP, using all possible scenarios (not in tree form). For three consecutive coin tosses, there are eight different scenarios. The player wants to use this LP to help him decide, how much he is supposed to bet in the first round. The corresponding LP is
-\begin{align*}
-  \min\limits_x &\; \sum_{s\in S}\sum_{t=1}^3p_sx_s^t\cdot c_s^t\\
-  \text{s.t.} &\; \sum_{t=1}^3x_s^t = 3 \;\forall\, s\in S\\
-  & \; x_s^1 = x_0^1\;\forall s\in S
-\end{align*}
-where $S$ is the set of scenarios, $c_s^t$ is the outcome of the game (return per Euro for win, $0$ for loss), $x_s^t$ is the amount that the player is willing to bet at timestep $t$ in scenario $s$. The first equation ensures that the player spends exactly the amount he has at his disposal. The second equation fixes the players decision in the first round.
+  Consider now a transcription of the problem as an LP, using all possible scenarios (not in tree form). For three consecutive coin tosses, there are eight different scenarios. The player wants to use this LP to help him decide, how much he is supposed to bet in the first round. The corresponding LP is
+  \begin{align*}
+    \min\limits_x &\; \sum_{s\in S}\sum_{t=1}^3p_sx_s^t\cdot c_s^t\\
+    \text{s.t.} &\; \sum_{t=1}^3x_s^t = 3 \;\forall\, s\in S\\
+    & \; x_s^1 = x_0^1\;\forall s\in S
+  \end{align*}
+  where $S$ is the set of scenarios, $c_s^t$ is the outcome of the game (return per Euro for win, $0$ for loss), $x_s^t$ is the amount that the player is willing to bet at timestep $t$ in scenario $s$. The first equation ensures that the player spends exactly the amount he has at his disposal. The second equation fixes the players decision in the first round.
 
-The results, summarized in table \ref{tab:coin-toss-results}, show that the solution of the LP does not match the optimal solution, even though the stochasticity was seemingly taken into account. 
-The flaw in the above formulation is that the non-anticipativity constraints are missing for stage 2. 
-The algorithm believes to know what will happen, as soon as the first value is revealed. 
-The game, as it is modeled in the LP is as follows: 
-``Make one decision with stochastic outcome, then make two decisions with perfect foresight''. 
-In this situation, the algorithm will correctly decide to wait and spend its money only on bets that it knows the result of beforehand.
-\begin{table}
-  \small\centering
-  \begin{tabular}{lcccccccc}
-    \hline 
-    Scenario&1&2&3&4&5&6&7&8\\\hline\hline
-    Result&WWW&WWL&WLW&WLL&LWW&LWL&LLW&LLL\\
-    Opt. Solution&300&300&300&300&300&300&300&300\\
-    LP Solution&030&030&003&003&030&030&003&003\\\hline
-  \end{tabular}
-  \vspace*{0.5cm}\\
-  \begin{tabular}{lcc}
-    \hline
-    &Opt. Solution&LP Solution\\\hline\hline
-    Opt. Value (computed)&1.75&1.875\\
-    Opt. Value (real)&1.75&1.5\\
-    \hline
-  \end{tabular}
-  \caption{Results of the coin-toss example}
-  \label{tab:coin-toss-results}
-\end{table}
+  The results, summarized in table \ref{tab:coin-toss-results}, show that the solution of the LP does not match the optimal solution, even though the stochasticity was seemingly taken into account. 
+  The flaw in the above formulation is that the non-anticipativity constraints are missing for stage 2. 
+  The algorithm believes to know what will happen, as soon as the first value is revealed. 
+  The game, as it is modeled in the LP is as follows: 
+  ``Make one decision with stochastic outcome, then make two decisions with perfect foresight''. 
+  In this situation, the algorithm will correctly decide to wait and spend its money only on bets that it knows the result of beforehand.
+  \begin{table}
+    \small\centering
+    \begin{tabular}{lcccccccc}
+      \hline 
+      Scenario&1&2&3&4&5&6&7&8\\\hline\hline
+      Result&WWW&WWL&WLW&WLL&LWW&LWL&LLW&LLL\\
+      Opt. Solution&300&300&300&300&300&300&300&300\\
+      LP Solution&030&030&003&003&030&030&003&003\\\hline
+    \end{tabular}
+    \vspace*{0.5cm}\\
+    \begin{tabular}{lcc}
+      \hline
+      &Opt. Solution&LP Solution\\\hline\hline
+      Opt. Value (computed)&1.75&1.875\\
+      Opt. Value (real)&1.75&1.5\\
+      \hline
+    \end{tabular}
+    \caption{Results of the coin-toss example}
+    \label{tab:coin-toss-results}
+  \end{table}
 \end{example}
 
 The above example illustrates the need for tree structured stochastic processes. The construction of this tree structure will be the main point of the following paper. Before we can start constructing these scenario trees, we need to define a measure for the quality of a given approximation $\hat{\xi}$ to a stochastic process $\xi$. The goal is to define a distance function 
@@ -210,7 +207,7 @@ The choice of the the space of probability measures as the underlying space for 
 \end{figure}
 \subsubsection{The Kantorovich Distance}
 In this section, we will present the Kantorovich Distance as a meaningful and usable metric for stochastic processes. For a gentle introduction to the Kantorovich Distance see \cite{Deng2009}.
-%Note that stochastic processes can be represented as random variables by considering each trajectory as an event.
+% Note that stochastic processes can be represented as random variables by considering each trajectory as an event.
 
 In the context of stability analysis of stochastic programming problems, it has been shown by \cite{Dupacova2003} that the Kantorovich functional
 \begin{equation}
@@ -228,11 +225,11 @@ The distance $c$ is a mapping with certain properties, which are specified in \c
 For the purposes of this paper, it suffices to say that any vector norm satisfies these conditions.
 
 \begin{Note}
-In this section, the Kantorovich Metric as applied to the stochastic process as a random variable has been proposed for measuring stochastic processes in stochastic programming.
-In the derivation of the stability of multistage stochastic processes (\cite{Heitsch2010}), the $L^p$ norm (see eqn. \ref{eq:Lp-norm} in conjunction with a ``filtration distance'' was used.
-Recently, it has been shown that previous heuristics (for example those in \cite{Dupacova2003}) that disregarded the filtration distance fail to uphold stability of the problem (\cite{Heitsch2009a}).
-These methods, as opposed to the one presented here, had obvious disregard for the filtration, because they were based on sums over all stages with stage-dependent terms.
-The methods for scenario tree construction presented in this paper ensure the correctness of the filtration through the tree structure, that is postulated beforehand.
+  In this section, the Kantorovich Metric as applied to the stochastic process as a random variable has been proposed for measuring stochastic processes in stochastic programming.
+  In the derivation of the stability of multistage stochastic processes (\cite{Heitsch2010}), the $L^p$ norm (see eqn. \ref{eq:Lp-norm} in conjunction with a ``filtration distance'' was used.
+  Recently, it has been shown that previous heuristics (for example those in \cite{Dupacova2003}) that disregarded the filtration distance fail to uphold stability of the problem (\cite{Heitsch2009a}).
+  These methods, as opposed to the one presented here, had obvious disregard for the filtration, because they were based on sums over all stages with stage-dependent terms.
+  The methods for scenario tree construction presented in this paper ensure the correctness of the filtration through the tree structure, that is postulated beforehand.
 \end{Note}
 \paragraph{Kantorovich Distance for finite stochastic processes}
 The main advantage of the Kantorovich Distance is its simple and intuitive representation for finite dimensional stochastic processes.
@@ -254,7 +251,7 @@ Since in the finite case, the argument of the infimum is a finite sum over varia
 \end{equation}
 This formulation is a linear program, more specifically a minimum cost flow problem. This means that solutions are readily available even for large problems using state of the art LP solvers. The above minimum cost problem will be at the heart of the derivations of the following sections, as it will serve as the measure for the quality of approximations to infinite dimensional stochastic processes.
 % TODO: derive the min flow problem formulation. Explain here that the \sum_{j\in J}q_j =1 equation is redundant. Mention LICQ
-%\subsubsection{The Kantorovich Distance in a function space approximation interpretation}
+% \subsubsection{The Kantorovich Distance in a function space approximation interpretation}
 \subsection{State of the Art in Scenario Tree Approximations}
 Recent research in the field of generating scenario trees for stochastic programs has focused on the areas of theoretical derivation of stability results and heuristics for generating scenario trees from stochastic processes. 
 
@@ -374,7 +371,7 @@ As was shown above, these equations already ensure, that the probabilities of th
 completes the problem except for the distances $c_{ijt}$.
 
 To model the distances, a metric must be selected. The choice of the best metric depends on the problem belongs to the domain of modeling rather than algorithmic questions that we address here. In the following, we will show how to model the distance $c_{ijt}=c(\xi_i^t,\nu_j^t)$ in the most common norms $\Vert\cdot\Vert_1$, $\Vert\cdot\Vert_2$, and $\Vert\cdot\Vert_\infty$.
-%
+% 
 \paragraph{$\infty$-norm} The one norm is defined as the maximum over the absolute value of all components. 
 \begin{equation}
   \label{eq:max-c-definition}
@@ -460,7 +457,7 @@ With this reformulation, the SSOC for the problem can be determined by simple al
 \begin{figure}
   \centering
   \includegraphics[scale=0.6]{sixgraphs}
-\caption{Six solutions of the NLP using IPOPT, starting from random starting points. The distribution to be approximated are independent gaussian distributions. The optimal solution would consist of each node placing its child nodes at the }
+  \caption{Six solutions of the NLP using IPOPT, starting from random starting points. The distribution to be approximated are independent gaussian distributions. The optimal solution would consist of each node placing its child nodes at the }
   \label{fig:different-local-minima-with-ipopt}
 \end{figure}
 
@@ -525,8 +522,8 @@ There are several well-studied, stochastic optimization
 algorithms available. We chose Particle Swarm Optimization for the
 following reasons:
 \begin{description}
-  \item[swarm] The local optima are located in distinctly different places of the search space. Algorithms that imitate swarm behaviour intuitively act like multiple starting points in this situation
-    \item[locality of the search] At every iteration, the inner linear optimization problem must be solved. If the variables $\nu$ are chosen as perturbations of the previous iterate, the solution of the inner LP is likely not to change.
+\item[swarm] The local optima are located in distinctly different places of the search space. Algorithms that imitate swarm behaviour intuitively act like multiple starting points in this situation
+\item[locality of the search] At every iteration, the inner linear optimization problem must be solved. If the variables $\nu$ are chosen as perturbations of the previous iterate, the solution of the inner LP is likely not to change.
 \end{description}
 
 \subsection{Results}
@@ -548,16 +545,18 @@ The pumped storage hydro power plant is determined by three variables – The fl
 \subsubsection{Mathematical Formulation and analysis}
 Given a stochastic process $\xi$, the problem in its complete form is
 \begin{equation}
-\begin{array}{cc}
-\displaystyle \min_{x,y,P} &\displaystyle\int_0^T \int_{\omega \in\Omega}\xi(\omega,t)\left[x(\omega,t)-y(\omega,t)\right]p(\omega,t)d\omega dt\\
-s.t.& \displaystyle\frac{\partial P}{\partial t} = \eta x -y\\
-&0\leq x \leq x_{\mathrm{max}}\\
-&0\leq y \leq y_{\mathrm{max}}\\
-&0\leq P \leq P_{\mathrm{max}}\\
-&\displaystyle x(\omega, t)\:\mathrm{ is }\:\mathcal{F}_t(\xi)\:\mathrm{ - measurable.}
-\end{array}
+  \begin{array}{cc}
+    \displaystyle \min_{x,y,P} &\displaystyle\int_0^T \int_{\omega \in\Omega}\xi(\omega,t)\left[x(\omega,t)-y(\omega,t)\right]p(\omega,t)d\omega dt\\
+    s.t.& \displaystyle\frac{\partial P}{\partial t} = \eta x -y\\
+    &0\leq x \leq x_{\mathrm{max}}\\
+    &0\leq y \leq y_{\mathrm{max}}\\
+    &0\leq P \leq P_{\mathrm{max}}\\
+    &\displaystyle x(\omega, t)\:\mathrm{ is }\:\mathcal{F}_t(\xi)\:\mathrm{ - measurable.}
+  \end{array}
 \end{equation}
 The single part of this problem that is causing the most problems is the measurability constraint. 
+\paragraph{Acknowledgements}
+I would like to acknowledge several contributions that helped in putting together this paper: Gurobi, made available by Gurobi Inc. through Gurobi Optimization. The Kmeans++ algorithm implemented for Matlab by Laurent Sorber. The Kmedoids algorithm implemented in Matlab by Benjamin Sapp.
 \newpage
 \bibliographystyle{plain}
 \bibliography{da}
