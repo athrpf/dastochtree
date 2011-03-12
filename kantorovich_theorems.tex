@@ -109,7 +109,7 @@ A related problem is to find the optimal reduction of a random variable:
 \begin{problem}[Optimal Kantorovich Approximation (Discrete)]
   \label{prb:DE-Kantorovich-randvar}
   Given a discrete random variable $\xi : \Omega_1\rightarrow \mathbb{R}^n$, $|\Omega_1|<\infty$, find the discrete random variable $\nu : \Omega_2\rightarrow\mathbb{R}^n$ with $|\Omega_2 | \leq K$ events that minimizes the Kantorovich Distance $D_K(\xi,\nu)$.
-  In additition, it must hold that $\forall \omega_2\in\Omega_2\exists\omega_1\in\Omega_1 : \xi(\omega_1) = \nu(\omega_2)$.
+  In additition, it must hold that $\nu(\Omega_2)\subset\xi(\Omega_1)$.
 \end{problem}
 These problems are the direct transcription of the Kantorovich Distance problems for discrete random variables.
 The difference between the two is that the random variable that is a solution to the second problem must map to values that actually appeare as outcomes of the first random variable.
@@ -137,6 +137,7 @@ They are very useful for the unsupervised search of clusters in information.
 
 We are now prepared for the following
 \begin{thm}[Equivalence of K-means and optimal Kantorovich Approximation]
+  \label{thm:kmeans-kantorovich}
 Consider a discrete random variable $\xi : \Omega_1\rightarrow \mathbb{R}^n$ and an integer $K$ as input to problem \ref{prb:CE-Kantorovich-randvar}.
 If the set $M$ is a solution to problem \ref{prb:kmeans-problem-definition} with input set $X=\xi(\Omega_1)$, then the random variable $\nu : M \rightarrow M,\, m\mapsto m$ is a solution to problem \ref{prb:CE-Kantorovich-randvar} for the data above.
 \end{thm}
@@ -175,6 +176,9 @@ If the set $M$ is a solution to problem \ref{prb:kmeans-problem-definition} with
   We now have characterized the set $\nu(\Omega_2)$ as a solution to problem \ref{prb:kmeans-problem-definition}.
   This closes the proof.
 \end{proof}
+The same relationship can be easily shown for problems \ref{prb:DE-Kantorovich-randvar} and \ref{prb:kmedoids-problem-definition}. As this proof follows the same idea as the one above, it will not be presented here.
+\todo[inline]{State theorem on DE problem (no need to prove)}
+\todo[inline]{maybe include standard algorithms for kmeans and kmedoids (PAM)}
 \begin{comment}
 In this section, we analyze the computation of the Kantorovich distance for a different setup. Consider again two discrete stochastic processes $I$ and $J$ over time stages $T$ with values $\xi_i^t,\,i\in I$ and $\nu_j,\, j\in J,\;t\in T$. Here, the values $\xi_i^t$ and their probabilities $p_i$ for process $I$ are fixed, while the values $\nu_j^t$ and probabilities $q_j$ for process $J$ are to be selected such that the Kantorovich Distance $D_K(I,J)$ is minimal. The problem can be expressed as the NLP
 \begin{align}
