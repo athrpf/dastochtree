@@ -1,3 +1,5 @@
+\pgfdeclarelayer{background}
+\pgfsetlayers{background,main}
 \begin{figure}
   \centering
     \begin{tikzpicture}[node distance=5cm, auto]
@@ -15,6 +17,11 @@
       \path [line] (xi) -- (nlp);
       \path [line] (nlp) -- (x);
       \path [line] (infsolver) -- (xorig);
+
+      \node [node distance=1.4cm,below of=xi] (focus){Focus of this paper};
+      \begin{pgfonlayer}{background}
+        \node (selection) [draw, rounded corners,dotted, fill=orange!20, fit=(xiorig) (xi) (xierror) (focus)] {};
+      \end{pgfonlayer}
     \end{tikzpicture}
   \caption{Steps in the discretization of a stochastic program. Since the infinite dimensional solver is just a theoretical enitiy, The path below must be used. A discretization error is introduced when converting $\xi$ to $\hat{\xi}$. This error is propagated through the NLP. For linear stochastic programs, \cite{Heitsch2010} have shown that there exists a problem specific constant $L$ such that the error between the discretized and the original solution is bounded by the error in the discretization of the stochastic process.}
   \label{fig:abstract-discretization}
