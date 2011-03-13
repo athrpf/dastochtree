@@ -1,0 +1,21 @@
+\begin{figure}
+  \centering
+    \begin{tikzpicture}[node distance=5cm, auto]
+      \node [block] (xiorig) {$\xi$};
+      \node [block, below of=xiorig] (xi) {$\hat{\xi}$};
+      \node [block, text width=10em, right of=xiorig] (infsolver){Infinite Dim. Solver};
+      \node [block, right of=infsolver] (xorig){$x$};
+      \node [block, text width=10em, below of=infsolver] (nlp) {(N)LP Solver};
+      \node [block, below of=xorig] (x) {$x$};
+
+      \path [line] (xiorig) -- node (xierror) {$D(\xi,\hat{\xi})$} (xi);
+      \path [line] (x) -- node (xerror) {$D(x,\hat{x})$} (xorig);
+      \path [line,dashed] (xierror) -- node {$L\cdot D(\xi,\hat{\xi})\geq D(x,\hat{x})$} (xerror);
+      \path [line] (xiorig) -- (infsolver);
+      \path [line] (xi) -- (nlp);
+      \path [line] (nlp) -- (x);
+      \path [line] (infsolver) -- (xorig);
+    \end{tikzpicture}
+  \caption{Steps in the discretization of a stochastic program. Since the infinite dimensional solver is just a theoretical enitiy, The path below must be used. A discretization error is introduced when converting $\xi$ to $\hat{\xi}$. This error is propagated through the NLP. For linear stochastic programs, \cite{Heitsch2010} have shown that there exists a problem specific constant $L$ such that the error between the discretized and the original solution is bounded by the error in the discretization of the stochastic process.}
+  \label{fig:abstract-discretization}
+\end{figure}
