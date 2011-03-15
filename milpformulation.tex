@@ -42,7 +42,9 @@ This will be made possible by theorem \ref{thm:optimal-weights} on optimal weigh
 Finally, some results for the methods are compared.
 \begin{comment}
   \subsubsection{The Full MILP Model}
-  Suppose we start with a (index) set $I$ of scenarios generated from the original stochastic process by sampling. For each node $k$ in the proposed tree structure, we introduce binary variables $z_{ki}$ which are 1 if node $k$ will take on the value of scenario $k$ of scenario $i \in I$ at the corresponding time step $t$, namely $\xi_i^t$. Using these variables, problem (\ref{eq:symbolic-optimization-with-minflow2}) can be formulated as the following MILP:
+  Suppose we start with a (index) set $I$ of scenarios generated from the original stochastic process by sampling.
+  For each node $k$ in the proposed tree structure, we introduce binary variables $z_{ki}$ which are 1 if node $k$ will take on the value of scenario $k$ of scenario $i \in I$ at the corresponding time step $t$, namely $\xi_i^t$.
+  Using these variables, problem (\ref{eq:symbolic-optimization-with-minflow2}) can be formulated as the following MILP:
   \begin{eqnarray}
     % eta \in I \times I
     \label{eq:full-milp-objective}

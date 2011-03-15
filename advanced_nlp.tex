@@ -1,0 +1,68 @@
+\subsection{Continuous Decision Trees}
+In this section, 
+\subsubsection{Escaping local optima: Global Optimization}
+\label{sec:nlp-formulation2}
+Global optimization approaches can generally be assigned to one of two categories. The first of those two categories is the class of rigorous spatial branch and bound algorithms. These algorithms work on the idea of underestimating the given function on smaller subdomains by convex functions. The problem is solved for the convex underestimator, which yields a lower bound on the objective. This is conducted until the optimality gap is reasonably small. The second approach is to use stochastic optimization algorithms such as genetic optimization and swarm intelligence.
+
+In this section, both of the above approaches will be applied to solve the NLP to full optimality. First, it will be shown that the spatial branch and bound algorithm can for this problem be expressed as an MILP, which makes the solution much more achievable. In the second part, the application of stochastic search routines to the NLP will be discussed.
+
+\paragraph{The global NLP as an MILP} For the current problem, we can actually derive a much smaller search region. From the property proven above (\ref{to-corresponding-proof}), that
+\begin{equation}
+  \label{eq:restate-eta-either-p-or-0}
+  \eta_{ij} = p_i \;\vee \; \eta_{ij}=0,
+\end{equation}
+we can transform this problem into a selection problem: Find the mapping from $|I|$ to $|J|$ such that the following optimal value of the linear optimization problem
+\begin{eqnarray}
+  \label{eq:global-NLP-as-MILP-inner-LP}
+  &\min\limits_{c,\nu}&\sum_{i\in I}\sum_{j\in J}\eta_{ij}\sum_{t\in T}c_{ijt}\\
+  &\mathrm{s.t.}&c_{ijt} \geq \xi_{id}^t - \nu_{n(j,t)d},\\
+  &&c_{ijt} \geq \nu_{n(j,t)d} - \xi_{id}^t
+\end{eqnarray}
+The full problem can be expressed as an MILP using the \textbf{big-M}-formulation. The basic idea is not to use rule \ref{eq:restate-eta-either-p-or-0} directly, but instead set $\eta_{ij}=p_i$ and manipulate $c_{ijt}$ such that it is zero if the selection binary variable $z_{ij}$ is zero. A basic version of this is the model
+\begin{eqnarray}
+  \label{eq:NLP-as-MILP-full}
+  &\min\limits_{z,c,\nu}&\sum_{i\in I}\sum_{j\in J}\sum_{t\in T}p_i\cdot c_{ijt}\\
+  &\mathrm{s.t.}&c_{ijt}+ \nu_{n(j,t)d}+M(1-z_{ij} \geq \xi_{id}^t\\
+  &&c_{ijt} -\nu_{n(j,t)d} +M(1-z_{ij}\geq - \xi_{id}^t\\
+  &&0\leq c_{ijt} \leq M\cdot z_{ij}\\
+  \label{eq:NLP-as-MILP-full-bounds}
+  &&z_{ij}\in \left\{0,1\right\}
+\end{eqnarray}
+with a sufficiently large $M$. There are many ways this formulation could be improved. The big-M formulation might be replaced by a convex hull, and symmetry breaking constraints could be introduced, to just name two. However, with several hundred thousand binary variables,  this problem is way out of reach for today's computing technology to solve to full optimality.
+
+Similar to the MILP selection problem in section \ref{sec:MILP-selection-problem}, the problem size can be significantly reduced by decomposing the problem along the time dimension. If only one stage is solved at the same time, the number of binary variables is reduced from $n_I\cdot n_c^{n_s}$ to $n_I\cdot n_c$, where $n_s$ is the number of stages of the problem, $n_c$ is the number of children per node, and $n_I$ is the number of original scenarios, that were selected to belong to the father node. Even though the smaller problem has to be solved much more often ($n_c^{n_s-1}$ times), this approach is at least remotely feasible. The problem to be solved at each stage is exactly the same as the one presented in equations \ref{eq:NLP-as-MILP-full} through \ref{eq:NLP-as-MILP-full-bounds}, with the set $I$ replaced by the subset of the original nodes that the current node's parent node was selected to cover, and the set $J$ encompasses only the nodes of the tree that are children of the current node.
+
+The decomposition of the temporal dimension might, of course, lead to suboptimal solutions. It may well be, that pronounced suboptimalities introduced by this decomposition appear only in pathological examples. Nevertheless, it would be advantageous to have an algorithm, that could solve all stages simultaneosly. In the next section, we will show how stochastic optimization algorithm can achieve this goal.
+\paragraph{Stochastic Search Algorithms}
+Since the solution of the full scale MILP presented above is not yet a feasible alternative, we will apply a stochastic optimization algorithm to the problem. Stochastic optimization algorithms usually have the following common features;
+\begin{itemize}
+\item They rely solely on function values.
+\item The search path is stochastic
+\item They do not attempt to satisfy a descent property
+\end{itemize}
+As the algorithm only uses function values, and is in general unable to satisfy additional constraints, the search space will be reduced to the set of variables that are in fact free. These variables are the locations $\nu_{jd}^t$ of the tree nodes. The remainig variables that are necessary to evaluate the objective (e.g. the $\eta_{ij}$ will be computed implicitly. This means that the linear programming problem for the Kantorovich Distance has to be solved at each objective function iteration. The objective, as it is posed to the stochastic optimization solver, is
+\begin{eqnarray}
+  \label{eq:opt-problem-for-stochastic-solver}
+  \min_{\nu}&&f(\nu)\\
+  \mathrm{with}\; f(\nu)&=\min\limits_\eta &\sum_{i\in I}\sum_{j\in J}\sum_{t\in T}\eta_{ij}c(\nu_j^t,\xi_i^t)\\
+  &\mathrm{s.t.}&\sum_{j\in J}\eta_{ij} = p_i\\
+  &&0\leq \eta_{ij}
+\end{eqnarray}
+Note that that the equation
+\[
+\sum_{i \in I}\eta_{ij} = q_j
+\]
+is not necessary, since they do not impose any additional restriciton on the choice of $\eta_{ij}$ - they only serve to define the probabilities $q_j$. (The constraint $q_j\geq 0$ can be deduced from $\eta_{ij}\geq 0$.) These probabilities are, however, unnecessary for the evaluation of the objective function. Since $f(\nu)$ will have to be evaluated very often, it is advisable to keep the internal optimization problem as small as possible.
+
+There are several well-studied, stochastic optimization
+algorithms available. We chose Particle Swarm Optimization for the
+following reasons:
+\begin{description}
+\item[swarm] The local optima are located in distinctly different places of the search space. Algorithms that imitate swarm behaviour intuitively act like multiple starting points in this situation
+\item[locality of the search] At every iteration, the inner linear optimization problem must be solved. If the variables $\nu$ are chosen as perturbations of the previous iterate, the solution of the inner LP is likely not to change.
+\end{description}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "da"
+%%% End: 
