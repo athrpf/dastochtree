@@ -2,13 +2,27 @@
 \label{sec:MILP-selection-problem}
 In this section we will derive algorithms for solving (\ref{eq:symbolic-optimization-with-minflow2}) that are taylored to a very specific case of the set $\mathcal{T}$.
 % \subsubsection{Motivation: Coin Toss}
-
+\begin{comment}
 Consider again the stochastic process arising from a repetetive coin toss of example \ref{ex:tree-necessity}.
 In order to translate this process into a numerical framework, we will assign the values 0 to heads and 1 to tails.
 Here, the underlying space of events and values is discrete.
 Generating a tree with values other than those encountered in the original stochastic process would not generate meaningful results.
 This places a restriction on the space of allowable solution trees $\mathcal{T}$: 
 The tree may only contain values that were part of the original set of scenarios.
+\end{comment}
+Consider a study on the robustness of a plane-based mail delivery system to cancellation of flights.
+A large database of failures is available that can be used as data to form the initial stochastic process.
+The next step is to generate a scenario tree from this data.
+In order to evaluate the quality of a scenario tree, a metric for the space of all possible events is necessary.
+This discrete space does not have a natural underlying metric space.
+The metric must therefore be hand-crafted to fit this purpose.
+For each pair of events, a \textbf{dissimilarity measure} must be provided.
+Note that the tree generation algorithm will base its decision whether or not to aggregate scenarios o the values of the dissimilarity measure.
+The modeling and optimization process therefore starts with this problem.
+
+Another specialty of this problem is that generating a tree with values other than those encountered in the original stochastic process would not generate meaningful results.
+This places a restriction on the space of allowable solution trees $\mathcal{T}$.
+We denote this kind of problem as ``discrete-event''(DE) stochastic processes, as opposed to ``continuous-event''(CE) stochastic processes, for which intermediate values do make sense such as prices. CE processes will be discussed lateron in section \ref{sec:nlp}.
 
 The restrictions added by the discrete nature of the value space turn problem (\ref{eq:symbolic-optimization-with-minflow2}) into a \textbf{selection problem}:
 \begin{center}
@@ -17,12 +31,18 @@ The restrictions added by the discrete nature of the value space turn problem (\
 It is generally possible to model the selection problem as an MILP. 
 This full-size model, with far beyond 100,000 binary variables and a weak relaxation is, however, computationally intractable.
 Several approaches will be explored that aim to overcome this complexity.
+
 In a first attempt, the model will be decomposed by time steps, each of which is still modeled as an MILP.
-To avoid the theoretical problems introduced with the stage-wise approximation, a genetic algorithm implementation is presented that makes use of theorem \ref{thm:optimal-weights} on optimal weights.
+The model will be solved using a state-of-the-art mixed integer programming solver.
+Then it will be shown that the MILP can be solved with the K-medoids algorithm introduced in the previous section. This new approach will be shown to deliver extraordinary speedups.
+
+In a third part, the shortcomings of the stage-wise approach are discussed.
+Yet another algorithm is proposed, that aims to solve the full problem without stage decomposition using genetic optimization techniques.
+This will be made possible by theorem \ref{thm:optimal-weights} on optimal weights.
 Finally, some results for the methods are compared.
 \begin{comment}
   \subsubsection{The Full MILP Model}
-  Suppose we start with a (index) set $I$ of scenarios generateg from the original stochastic process by sampling. For each node $k$ in the proposed tree structure, we introduce binary variables $z_{ki}$ which are 1 if node $k$ will take on the value of scenario $k$ of scenario $i \in I$ at the corresponding time step $t$, namely $\xi_i^t$. Using these variables, problem (\ref{eq:symbolic-optimization-with-minflow2}) can be formulated as the following MILP:
+  Suppose we start with a (index) set $I$ of scenarios generated from the original stochastic process by sampling. For each node $k$ in the proposed tree structure, we introduce binary variables $z_{ki}$ which are 1 if node $k$ will take on the value of scenario $k$ of scenario $i \in I$ at the corresponding time step $t$, namely $\xi_i^t$. Using these variables, problem (\ref{eq:symbolic-optimization-with-minflow2}) can be formulated as the following MILP:
   \begin{eqnarray}
     % eta \in I \times I
     \label{eq:full-milp-objective}
@@ -52,7 +72,7 @@ Finally, some results for the methods are compared.
 
   The size of this mathematical program is prohibitively large. Common orders of magnitude for the cardinality of the set of scenarios is well above 1000. The tree size is dictated by the choice of $n_c$ and the time represented by the number of time steps $n_s$ one wants to look into the future. Even for very short times like $n_c=4$ and five branches to each node, the number of nodes quickly goes up to $n_N=155$. This leads to an MILP with $n_N\cdot n_s=155,000$, which means that it is computationally intractable. The intractability is not only due to the sheer size, but to the combination with the fact that the problem has a very weak relaxation.
 \end{comment}
-\subsubsection{Stage-Decomposition of the MILP}
+\subsubsection{Stage-Decomposition with MILP}
 To reduce the complexity of the model, instead of solving all stages at the same time, we will solve the problem stage by stage. This greatly reduces the computational burden, because using the filtration constraints, we can solve the branches of the tree one at a time. These constraints allow us to 
 \begin{enumerate}
 \item solve the branch starting from each of the previously fixed nodes independently.
@@ -83,13 +103,13 @@ The algorithm for solving the stage-wise tree construction problem will be prese
   \caption{Stage-Wise MILP based Scenario generation}
   \label{alg:stage-wise-milp}
 \end{algorithm}
-At every branching point, algorithm \ref{alg:optimal-weights} performs the search for the $n_c$ scenarios that best cover the distribution given by all scenarios that the current node in the previous stage was used to cover.
+%At every branching point, algorithm \ref{alg:optimal-weights} performs the search for the $n_c$ scenarios that best cover the distribution given by all scenarios that the current node in the previous stage was used to cover.
 
 The procedure is outlined as algorithm \ref{alg:stage-wise-milp}.
 The input is a set of scenarios $I$ defined over a set of stages $T$ and a tree structure $\mathcal{T}$, typically defined by the number of branchings of the tree at every node and timestep.
 The distances $c(\xi_i^t, \xi_j^t)$ between the scenarios $\xi_i,\,\xi_j\; i,j\in I$ can be computed beforehand.
 Note that the $1$-norm is the only meaningful norm that can be constructed this way, since the full distance is implicitly approximated as a sum over the stages.
-For consistency, $c$ should be chosen as the $1$-norm.
+For consistency, $c$ should therefore be chosen as the $1$-norm.
 A set $F$ is used to keep track of the nodes for which can be solved next. Note that it is necessary to know the solution to the father node to be able to formulate the MILP $\mathcal{M}_{sw}(f)$ for a given node $f$. This set is initilized with the root of the tree. Additional sets $S_f\subset I$ are introduced for all $f\in F$. These sets hold all scenarios of the scenario set $I$ that are associated with the node $f$ through the transport variables $\eta$. Only the scenarios that had a non-zero ``mass-flow'' $\eta$ in the Kantorovich functional evaluation of their father node will be used in the construction of node $f$'s children in the tree. This property preserves the filtration information in the stage wise algorithm.
 
 The problem that is solved for each father node $f$ in the previously defined tree is the following MILP:
@@ -102,25 +122,21 @@ The problem that is solved for each father node $f$ in the previously defined tr
 \end{eqnarray}
 The MILP models the decision which scenarios will be selected as nodes into the tree. Figure \ref{fig:swmilp-explanation} shows the evolution of the algorithm.
 \input{swmilp_explanation} % figure fig:swmilp-explanation
-\subsubsection{Stage-Decomposition with K-medioids}
-Even though the algorithm presented in the previous section is able to considerably reduce the computational burden of the problem, it still takes about 15 minutes to run. 
+\subsubsection{Stage-Decomposition with K-medoids}
+Even though the algorithm presented in the previous section is able to considerably reduce the computational burden of the problem, it still takes about 15 minutes to run on a dual core machine with 2500 Mhz and 4 Gbytes RAM, using Gurobi as the MILP solver.
 Using theorem \ref{thm:kmeans-kantorovich}, a heuristic algorithm can be derived, that is an order of magnitude faster than the stage-wise MILP algorithm presented above.
 
 Consider the above MILP $\mathcal{M}_{sw}(f)$ that is solved for every father node in the tree.
 This MILP is the direct solution to problem \ref{prb:DE-Kantorovich-randvar} of finding the subset of events of a discrete random variable that form the best approximation.
-With the help of theorem \ref{thm:kmedoids-kantorovich} we can replace the solution of the MILP with the solution to the k-medoids problem. 
+With the help of theorem \ref{thm:kmeans-kantorovich} we can replace the solution of the MILP with the solution to the K-medoids problem.
 
-There are many algorithms for solving the k-medoids problem.
-For the purposes of this paper, a MATLAB implementation of the standard algorithm, ``Partitioning aroud Medoids''(PAM) was used.
+There are many algorithms for solving the K-medoids problem.
+For the purposes of this paper, a MATLAB implementation of the standard algorithm, ``Partitioning aroud Medoids''(PAM) was used \cite{Kaufman1987}.
+PAM can be viewed as an implementation of algorithm \ref{alg:kmeans}, with a more specific maximization step. The details are not the concern here. The main point is that it can be computed orders of magnitude faster than the solution to the MILP and 
+
 The adapted algorithm is presented as algorithm \ref{alg:stagewise-kmedoids}.
 It follows along the same lines as the stage-wise MILP algorithm and uses the same sets $F$ and $S_k$.
-The retrieval of the results was adapted to the output of the $PAM$ algorithm \ref{alg:pam}.
 The general evolution of the algorithm follows the one depicted in figure \ref{fig:swmilp-explanation}.
-\begin{algorithm}
-  \KwIn{ttt}
-  \caption{Partitioning Around Medoids (PAM)}
-  \label{alg:pam}
-\end{algorithm}
 \begin{algorithm}
   \KwIn{Set $I$ of $T$-stage scenarios $\xi_i^t$, tree structure $\mathcal{T}$}
   \KwOut{Scenario tree consisting of nodes $\nu_n$ and probobilities $q_j$}
@@ -129,11 +145,11 @@ The general evolution of the algorithm follows the one depicted in figure \ref{f
   \While{$F\neq \emptyset$}{
     \ForEach{$f\in F$}{
       $F \leftarrow F\setminus \{f\}$\tcc*{remove this node from father set}
-      $[m,idx(m)] \leftarrow \operatorname{PAM}(K=n_c, X=\{\xi_i^t|i\in S_f\})$\;
+      $[m,r] \leftarrow \operatorname{PAM}(K=n_c, X=\{\xi_i^t|i\in S_f\})$\;
       \For{$l=1\ldots n_c$}{
         $k \leftarrow child(f,l)$\tcc*{get child no. $l$ of node $f$.} 
         $\nu_k \leftarrow m_l$\;
-        $S_k \leftarrow idx(m_l)$\;
+        $S_k \leftarrow \{i | r_{ik}=1\}$\;
         \If{$k$ has children}{
           $F \leftarrow F\cup \{k\}$\;
         }
@@ -143,16 +159,15 @@ The general evolution of the algorithm follows the one depicted in figure \ref{f
   $q_j\leftarrow $ optimal weights \tcc*{Using Algorithm \ref{alg:optimal-weights}}
   \caption{Stage-wise $K$-Medoids}
   \label{alg:stagewise-kmedoids}
-\end{algorithm}
-\todo[inline]{write PAM alg}
+verfuegungverfuegung\end{algorithm}
 \subsubsection{Stochastic Search Solution to Large-Scale MILP}
-While the stage-wise methodology is an easy way to reduce the complexity of the problem, it may lead to an oversimplification. Figure \ref{fig:stagewise-failure} shows an example how stage-wise operating algorithms may yield arbitrarily bad tree aproximations. 
+While the stage-wise methodology is an easy way to reduce the complexity of the problem, it may lead to an oversimplification. Figure \ref{fig:stagewise-failure} shows an example how stage-wise operating algorithms may yield arbitrarily bad tree approximations. 
 \input{stagewise_failure}
 The MILP model for the full tree is, however, not computationally tractable.
 In this section, we will present an algorithm based on genetic optimization techniques. 
 
-\todo[inline]{Decide whether this goes in or not}
-This algorithm makes use of theorem \ref{thm:optimal-weights} to achieve  
+When considering the full stochastic process at once, it is convenient to regard the scenarios as multidimensional events of a random variable. 
+Recall from theorem \ref{thm:optimal-weights} that if the values of the nodes of the stochastic process are fixed, the Kantorovich distance o
 \todo[inline]{Describe the stochastic search solution}
 \todo[inline]{Create an algorithm object for the stochastic search solution}
 \subsubsection{Results}
@@ -185,3 +200,8 @@ We will compare the resulting scenario tree with
 \item the true solution, to assess the degree of suboptimality
 \item with a naive tree generated by random selection of nodes from the set of scenarios. This helps us evaluate whether the extra effort put in to solve the MILP actually improved the prediction of the state.
 \end{itemize}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "da"
+%%% End: 
