@@ -1,0 +1,31 @@
+\begin{figure}
+  \centering
+  \begin{tikzpicture}
+    \node [draw,ellipse, fill=red!20] (n1) at (0,0) {$p_1=0.1$};
+    \node [draw,ellipse, fill=red!20] (n2) at (5.5,1) {$p_2=0.2$};
+    \node [draw,ellipse, fill=red!20] (n3) at (10,7.5) {$p_3=0.1$};
+    \node [draw,ellipse, fill=red!20] (n4) at (4.5,5.5) {$p_4=0.2$};
+    \node [draw,ellipse, fill=red!20] (n5) at (12,1) {$p_5=0.1$};
+    \node [draw,ellipse, fill=red!20] (n6) at (8,5) {$p_6=0.2$};
+    \node [draw,ellipse, fill=red!20] (n7) at (0.5,8) {$p_7=0.1$};
+
+    \node [draw,ellipse, fill=blue!20] (m1) at (2.3,3) {$q_1=0.3$};
+    \node [draw,ellipse, fill=blue!20] (m2) at (5.5,7.5) {$q_2=0.4$};
+    \node [draw,ellipse, fill=blue!20] (m3) at (9,3) {$q_3=0.3$};
+
+    \path [line] (n1) -- node [rectangle, draw,fill=white] (eta11){$\eta_{11}=0.1$} (m1);
+    \path [line] (n2) -- node [rectangle, draw,fill=white] (eta21){$\eta_{21}=0.1$} (m1);
+    \path [line] (n2) -- node [rectangle, draw,fill=white] (eta23){$\eta_{23}=0.1$} (m3);
+    \path [line] (n4) -- node [rectangle, draw,fill=white] (eta41){$\eta_{41}=0.1$} (m1);
+    \path [line] (n4) -- node [rectangle, draw,fill=white] (eta42){$\eta_{42}=0.1$} (m2);
+    \path [line] (n7) -- node [rectangle, draw,fill=white] (eta72){$\eta_{72}=0.1$} (m2);
+    \path [line] (n3) -- node [rectangle, draw,fill=white] (eta32){$\eta_{32}=0.1$} (m2);
+    \path [line] (n2) -- node [rectangle, draw,fill=white] (eta21){$\eta_{21}=0.1$} (m1);
+    \path [line] (n5) -- node [rectangle, draw,fill=white] (eta53){$\eta_{53}=0.1$} (m3);
+    \path [line] (n6) -- node [rectangle, draw,fill=white] (eta63){$\eta_{63}=0.1$} (m3);
+    \path [line] (n6) -- node [rectangle, draw,fill=white] (eta62){$\eta_{62}=0.1$} (m2);
+    
+  \end{tikzpicture}
+  \caption{Illustration of the parameters of the Kantorovich Distance. Two discrete probability distributions in $\mathbb{R}^2$ are shown. The position of the nodes represents their value in the 2-dimensional space. The probabilities of the discrete probability distributions $p$ and $q$ are given inside the nodes. The measure $\eta$ can be thought of as describing the flow from the nodes of one distribution to the other.}
+  \label{fig:finite-kantorovich-illustration}
+\end{figure}
