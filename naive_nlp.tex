@@ -1,19 +1,32 @@
 \subsection{Continuous Decision Trees}
+\label{sec:naive-cont-decis-trees}
 In this  section, we will present a derivation of the model used to construct the continuous-decision trees.
 Along the same lines as the previous section, we will then discuss the computational results.
 We will discover that the solution of the model with traditional NLP solvers is impossible.
 The reasons for their failure will be discussed, and a global optimization approach is introduced.
 \subsubsection{Derivation of the NLP}
-We start with the set of original scenarios $I$ with values $\xi_i^t$ and probabilities $p_i$. As before, we assume the structure of the tree to be given. We introduce additional sets $J$ for the scenarios of the trees, $T$ for the set of time steps, and $N$ for the nodes of the tree. The mapping $n:J\times T\rightarrow N$ is defined as the one-to-one mapping from scenarios and time steps to nodes (see figure \ref{fig:abstract-scenario-tree-for-NLP}). In the MILP model, there was no necessity to differentiate between the scenarios and the nodes, because the problem was solved stage by stage, so there was a one-to-one mapping between these two. Here, however, one scenario will always contain multiple nodes, and all nodes except for the leaf nodes will belong to more than one scenario.
+We start with the set of original scenarios $I$ with values $\xi_i^t$ and probabilities $p_i$.
+As before, we assume the structure of the tree to be given.
+We introduce additional sets $J$ for the scenarios of the trees, $T$ for the set of time steps, and $N$ for the nodes of the tree.
+The mapping $n:J\times T\rightarrow N$ is defined as the mapping from scenarios and time steps to nodes that associates the combination of a scenario and a time step with its corresponding tree node.
+%(see figure \ref{fig:abstract-scenario-tree-for-NLP}).
+In the MILP model, there was no necessity to differentiate between the scenarios of the tree and its nodes, because the problem was solved stage by stage, so there was a one-to-one mapping between these two.
+Here, however, one scenario will always contain multiple nodes, and all nodes except for the leaf nodes will belong to more than one scenario.
 
-The variables in this model are, in general the same as in the abstract model (\ref{eq:symbolic-optimization-with-minflow2}) and the MILP model, but there are some differences due to the structure. The probabilities $q$ of the nodes will not be defined directly over the set of nodes, but the set of scenarios. Given the probabilities of the scenarios, the probability of a node can easily be derived by adding up the probabilities of all scenarios this node belongs to. This definition has the advantage, that the probabilistic relations between nodes are automatically satisfied - for example the condition that the probability of every node has to be equal to the sum of probabilities of its children.  Similarly, the (discretized) measure $\eta_{ij}$ specifies the flow between an original scenario $i \in I$ and a scenario of a tree $j \in J$.
+The variables in this model are, in general, the same as in the abstract model (\ref{eq:symbolic-optimization-with-minflow2}) and the MILP model, but there are some differences due to the structure.
+The probabilities $q_j$ of the tree will not be defined over the set of nodes, but instead over the set of the tree's scenarios $J$.
+Given the probabilities of the scenarios, the probability of a node can easily be derived by adding up the probabilities of all scenarios this node belongs to.
+This definition has the advantage that the probabilistic relations between nodes are automatically satisfied - for example the condition that the probability of every node has to be equal to the sum of probabilities of its children.
+Similarly, the (discretized) measure $\eta_{ij}$, which will be used to calculate the Kantorovich Distance, specifies the flow between an original scenario $i \in I$ and a scenario of a tree $j \in J$.
 
-Since the exact values of the tree's nodes are not known beforehand, the distance between the nodes and the original scenarios are not known either. The distance is usually a nonlinear, non-differentiable function. For now, we will replace it with an additional variable $c$, and deal with modelling it farther below. Note that while we think of $c$ as a mapping on $I\times N$, this is - due to the one-to-one mapping induced by $n$ - the same as $I\times J\times T$, which is more convenient.
+Since the exact values of the tree's nodes are not known beforehand, the distance between the nodes and the original scenarios are not known either.
+The distance is usually a nonlinear, non-differentiable function.
+For now, we will replace it with an additional variable $c_{ij}$, and deal with modeling it below.
 
 The objective function is again the Kantorovich functional adopted to the particular tree structure.
 \begin{equation}
   \label{eq:NLP-derivation-objective}
-  \sum_{i\in I}\sum_{j\in J}\sum_{t\in T} \eta_{ij}\cdot c_{ijt}
+  \sum_{i\in I}\sum_{j\in J}\sum_{t\in T} \eta_{ij}\cdot c_{ij}
 \end{equation}
 As always, the following properties of the marginal distributions of the measure $\eta$ have to hold:
 \begin{eqnarray}
@@ -22,7 +35,7 @@ As always, the following properties of the marginal distributions of the measure
   \label{eq:eta-nlp-marginal-p}
   \sum_{j\in J}\eta_{ij} &=& p_i \;\forall\, i\in I
 \end{eqnarray}
-As was shown above, these equations already ensure, that the probabilities of the tree's scenarios sum to one. Introducing the bounds
+As was shown in \eqref{eq:proof-sum-q-redundant}, these equations already ensure, that the probabilities of the tree's scenarios sum to one. Introducing the bounds
 \begin{equation}
   \label{eq:bounds-nlp-q-eta}
   0 \leq \eta,\; 0\leq q
@@ -34,7 +47,7 @@ To model the distances, a metric must be selected. The choice of the best metric
 \paragraph{$\infty$-norm} The one norm is defined as the maximum over the absolute value of all components. 
 \begin{equation}
   \label{eq:max-c-definition}
-  c_{ijt} = \max\left\{\left|\xi_{id}^t-\nu_{n(j,t)d}\right|,\; d\in D\right\}
+  c_{ij} = \max\left\{\left|\xi_{id}^t-\nu_{n(j,t)d}\right|,\; d\in D,\, t\in T\right\}
 \end{equation}
 where $D=\left\{1,\, ...,\,n\right\}$ is the set of dimensional indices of the stochastic process. The absolute value can be replaced by the maximum expression
 \begin{equation}
@@ -44,8 +57,8 @@ where $D=\left\{1,\, ...,\,n\right\}$ is the set of dimensional indices of the s
 The maximum operator inside the maximum can, of course, be omitted. What is left is the maximum of a finite number of terms. This maximum can be expressed inside the NLP by adding $ |D| \cdot |I|\cdot |J|\cdot |T|$ pairs of inequality constraints of the form
 \begin{eqnarray}
   \label{eq:c-as-inftynorm}
-  c_{ijt} &\geq& \xi_{id}^t - \nu_{n(j,t)d},\\
-  c_{ijt} &\geq& \nu_{n(j,t)d} - \xi_{id}^t.  
+  c_{ij} &\geq& \xi_{id}^t - \nu_{n(j,t)d},\\
+  c_{ij} &\geq& \nu_{n(j,t)d} - \xi_{id}^t.  
 \end{eqnarray}
 \paragraph{$\mathbf{1}$-norm} Modeling the $1$-norm in the language of inequalities is somewhat more involved, but works basically the same way as the $\infty$-norm. Additional variables $a_{dijt}$ have to be introduced to express the absolute values of the differences in each dimension of each pair, defined by
 \begin{eqnarray}
@@ -56,16 +69,23 @@ The maximum operator inside the maximum can, of course, be omitted. What is left
 The distances are then defined by
 \begin{equation}
   \label{eq:c-as-1norm}
-  c_{ijt} = \sum_{d \in D} a_{ijtd}.
+  c_{ij} = \sum_{t\in T}\sum_{d \in D} a_{ijtd}.
 \end{equation}
-\paragraph{$\mathbf{2}$-norm} The $2$-norm is much easier to model than the $1$-norm and the $\infty$-norm since the squaring makes the absolute values that give rise to the excessive use of additional inequality constraints. Instead, the distance variables can be defined by the simple equations
+\paragraph{$\mathbf{2}$-norm} The $2$-norm is much easier to model than the $1$-norm and the $\infty$-norm since the squaring makes the absolute values that give rise to the excessive use of additional inequality constraints.
+Instead, the distance variables can be defined by the simple equations
 \begin{equation}
   \label{eq:c-as-2norm}
-  \left(c_{ijt} \right)^2 = \sum_{d \in D}\left( \nu_{n(j,t)d} - \xi_{id}^t \right)^2
+  \left(c_{ij} \right)^2 = \sum_{t\in T}\sum_{d \in D}\left( \nu_{n(j,t)d} - \xi_{id}^t \right)^2
 \end{equation}
-For our purposes, the choice is arbitrary. For the common case of single-valued stochastic processes, the three definitions coincide. In our implementations, we will use the formulation of the $\infty$-norm, since it offers the smallest number of additional variables while at the same time being a linear equation. The $2$-norm has only half the number of equations, but is subject to problems in the scaling and introduces a nonlinearity in the constraints, which seems favourable to avoid.
+For our purposes, the choice is arbitrary.
+For the common case of single-valued stochastic processes, the three definitions coincide.
+In our implementations, we will use the formulation of the $\infty$-norm, since it offers the smallest number of additional variables while at the same time being a linear equation.
+The $2$-norm has only half the number of equations, but is subject to problems in the scaling and introduces a non-linearity in the constraints, which seems favorable to avoid.
 
-The discussion closes the derivation of the NLP model for generating scenario trees. The following sections will be dedicated to solving this NLP. In the next esection, experiences with KKT-based solvers is discussed. The solution is found to be problematic, with convergence and local optimality issues. To solve the problem to full optimality, the use of global (heuristic) optimization techniques is explored in the following section.
+This completes the derivation of the NLP model for generating scenario trees.
+The following sections will be dedicated to solving this NLP.
+In the next section, experiences with KKT-based solvers is discussed.
+The solution is found to be problematic, with convergence and local optimality issues.
 \subsubsection{Structure of the Optimization Problem}
 In this section, the optimization problem derived in the previous section will be restated in its entirety, and its structural properties will be discussed to the degree that it is useful for solving it.
 \begin{eqnarray}
@@ -80,7 +100,7 @@ In this section, the optimization problem derived in the previous section will b
   &&c_{ijt} \geq \nu_{n(j,t)d} - \xi_{id}^t\\ 
   &&0 \leq \eta,\; 0\leq q
 \end{eqnarray}
-The problem is a nonconvex, quadratic optimization problem. For the example of three time steps, the Hessian of the objective function has the structure
+The problem is a non-convex, quadratic optimization problem. For the example of three time steps, the Hessian of the objective function has the structure
 \begin{equation}
   \label{eq:structure-of-quadratic-hessian}
   Q = \left[\begin{array}{ccccc}
@@ -96,31 +116,31 @@ where $n=|I||J|$, and $T$ is the number of stages (Proof very easy, maybe in app
 \subsubsection{Solution with local (KKT)-NLP solvers}
 In this section, we will discuss the applicability of general purpose KKT solvers to the problem stated above. There are several issues that make this problem particularly hard to solve for KKT based solvers. Among these problems are
 \begin{description}
-\item[Negative Curvature] KKT solvers use first and second derivatives to generate search directions. Note that KKT points are only stationary points, not guaranteed to be minima of the problem. In the situation of negative curvature, the local maximum is the attractor of Newton's method applied to the KKT-problem. Special care must be taken by the algorithm to reject search directions that lead to a KKT point that is a local maximizer for the objective function
+\item[Negative Curvature] KKT solvers use first and second derivatives to generate search directions. KKT points are only stationary points, not guaranteed to be minima of the problem. In the situation of negative curvature, the local maximum is the attractor of Newton's method applied to the KKT-problem. Special care must be taken by the algorithm to reject search directions that lead to a KKT point that is a local maximizer for the objective function
 \item[Local Minima] KKT points are an inherently local property of an optimization problem. The only way to find the global optimum is through extensive spatial search. This search can be conducted by applying a deterministic KKT solver to many different, randomly selected starting points.
 \item[Large Scale] Due to the complications in modeling the distances $c$, and the fact that using a greater number of original scenarios will always increase the accuracy of the approximation, the solver has to deal with a very large number of variables - typically on the order of one million.
 \end{description}
-We used the interior point solver IPOPT (\cite{IpoptImplementation2006} as the KKT solver. IPOPT is specifically designed to deal with large-scale non-convex programming problems. It has provisions that ensure global convergence to a KKT point associated with a local minimum under very soft assumptions.
+We used the interior point solver IPOPT \cite{IpoptImplementation2006} as the KKT solver. IPOPT is specifically designed to deal with large-scale non-convex programming problems. It has provisions that ensure global convergence to a KKT point associated with a local minimum under weak assumptions.
 
-As is to be expected from the theoreticas analysis above, solving the problem from different starting points leads to very different local minima. Figure \ref{fig:different-local-minima-with-ipopt} shows some examples of local minima the algorithm found. In addition to the locality of the solutions, we experienced an unexpectedly slow convergence as the objective value of the iterates approached the optimal solution, with very large primal steps taken by the algorithm. 
+As is to be expected from the theoretical analysis above, solving the problem from different starting points leads to very different local minima. Figure \ref{fig:different-local-minima-with-ipopt} shows some examples of local minima the algorithm found. In addition to the locality of the solutions, we experienced an unexpectedly slow convergence as the objective value of the iterates approached the optimal solution, with very large primal steps taken by the algorithm. 
 
 The reason for the poor local convergence again lies in the structure of the problem. Consider the conditions derived for locally superlinear convergence of IPOPT given in \cite{Waechter2005}. There, it is stated that, in order to be able to achieve superlinear local convergence, the sufficient second order conditions (SSOC) must hold for the optimal point. 
 
-One condition among these is that at the optimal point $\left(x^*,\lambda^*\right)$ the Hessian of the Lagrangean $\nabla_{xx}^2\mathcal{L}(x^*,\lambda^*)$ is positive definite when projected onto the nullspace of the constraint Jacobian matrix $\nabla c(x^*)^T$. In our specific case of a quadratic objective function with only linear constraints, the Hessian of the Lagrangean is the matrix $Q$ introduced in equation \ref{eq:structure-of-quadratic-hessian}. The constraints are stated in equations \ref{eq:full-nlp-restated-q} through \ref{eq:full-nlp-restated-ineq2}. IPOPT does not deal directly with inequality constraints, so slack variables $s_{1ijt},\,s_{2ijt} \geq 0$ are introduced and equations \ref{eq:full-nlp-restated-ineq1} and \ref{eq:full-nlp-restated-ineq2} restated as
+One condition among these is that at the optimal point $\left(x^*,\lambda^*\right)$ the Hessian of the Lagrangean $\nabla_{xx}^2\mathcal{L}(x^*,\lambda^*)$ is positive definite when projected onto the nullspace of the constraint Jacobian matrix $\nabla c(x^*)^T$. In our specific case of a quadratic objective function with only linear constraints, the Hessian of the Lagrangean is the matrix $Q$ introduced in \eqref{eq:structure-of-quadratic-hessian}. The constraints are stated in equations \eqref{eq:full-nlp-restated-q} through \eqref{eq:full-nlp-restated-ineq2}. IPOPT does not deal directly with inequality constraints, so slack variables $s_{1ijt},\,s_{2ijt} \geq 0$ are introduced and \eqref{eq:full-nlp-restated-ineq1} and \eqref{eq:full-nlp-restated-ineq2} restated as
 \begin{eqnarray}
   \label{eq:nlp-ineq1-with-slacks}
   c_{ijt} +s_{1ijt}&=& \xi_{id}^t - \nu_{n(j,t)d},\\
   c_{ijt} +s_{2ijt} &=& \nu_{n(j,t)d} - \xi_{id}^t.
 \end{eqnarray}
-With this reformulation, the SSOC for the problem can be determined by simple algebra: There are $|J|+|I||J|+3*|I||J||T|$ variables in the problem. The number of positive eigenvalues in the Hessian of the Lagrangean is $|I||J|$ (correponds to ``$n$'' in eqn. \ref{eq:inertia-of-hessian}). All remaining $|J|+3*|I||J||T|$ have to be matched by constraints, because each constraint can only eliminate one direction. There are, however, only $2*|I||J||T|+|I|+|J|$ constraints, so that a total of $|I||J||T|-|I|$ variables with eigenvalues of zero remain unmatched. These directions correspond to the distances $c_{ijt}$ which are not acive, e.g. these indices $i,j$ for which $\eta_{ij}=0$. For these distances, the solution is not unique, since any arbitrary feasible value chosen for them will - all else being equal - yield the same value of the objective function. Due to the barrier term that is added to the objective function, those variables $c$ will be driven arbitrarily far away from their bound, which is the behaviour that was observed.
+With this reformulation, the SSOC for the problem can be determined by simple algebra: There are $|J|+|I||J|+3*|I||J||T|$ variables in the problem. The number of positive eigenvalues in the Hessian of the Lagrangean is $|I||J|$ (corresponds to ``$n$'' in \eqref{eq:inertia-of-hessian}. All remaining $|J|+3*|I||J||T|$ have to be matched by constraints, because each constraint can only eliminate one direction. There are, however, only $2*|I||J||T|+|I|+|J|$ constraints, so that a total of $|I||J||T|-|I|$ variables with eigenvalues of zero remain unmatched. These directions correspond to the distances $c_{ijt}$ which are not active, e.g. these indices $i,j$ for which $\eta_{ij}=0$. For these distances, the solution is not unique, since any arbitrary feasible value chosen for them will - all else being equal - yield the same value of the objective function. Due to the barrier term that is added to the objective function, those variables $c$ will be driven arbitrarily far away from their bound, which is the behavior that was observed.
 \begin{figure}
   \centering
   \includegraphics[scale=0.6]{sixgraphs}
-  \caption{Six solutions of the NLP using IPOPT, starting from random starting points. The distribution to be approximated are independent gaussian distributions. The optimal solution would consist of each node placing its child nodes at the }
+  \caption{Six solutions of the NLP using IPOPT, starting from random starting points. The distribution to be approximated are independent Gaussian distributions. The optimal solution would consist of each node placing its child nodes at the }
   \label{fig:different-local-minima-with-ipopt}
 \end{figure}
 
-In conclusion it must be stated that this method did not seem sufficient to adress the problem. Due to the abundance of local optima, some kind of global search has to be conducted. However, due to the poor convergence property of the explored algorithm, the local searches are not fast enough to be able to cover the search space in a reasonable time. 
+In conclusion it must be stated that this method did not seem sufficient to address the problem. Due to the abundance of local optima, some kind of global search has to be conducted. However, due to the poor convergence property of the explored algorithm, the local searches are not fast enough to be able to cover the search space in a reasonable time. 
 
 In the next section, global search approaches are discussed, that are able to overcome some of the difficulties we have faced here.
 

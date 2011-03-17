@@ -38,6 +38,7 @@ The general evolution of the algorithm follows the one depicted in figure \ref{f
   \caption{Stage-wise $K$-Medoids}
   \label{alg:stagewise-kmedoids}
 verfuegungverfuegung\end{algorithm}
+\begin{comment}
 \subsubsection{Stochastic Search Solution to Large-Scale MILP}
 While the stage-wise methodology is an easy way to reduce the complexity of the problem, it may lead to an oversimplification.
 Figure \ref{fig:stagewise-failure} shows an example how stage-wise operating algorithms may yield arbitrarily bad tree approximations. 
@@ -49,6 +50,12 @@ When considering the full stochastic process at once, it is convenient to regard
 Recall from theorem \ref{thm:optimal-weights} that if the values of the nodes of the stochastic process are fixed, the Kantorovich distance o
 \todo[inline]{Describe the stochastic search solution}
 \todo[inline]{Create an algorithm object for the stochastic search solution}
+\end{comment}
+%
+\subsubsection{K-Medoids on Full Tree}
+\label{sec:k-medoids-full}
+In this section we will derive the main contribution of this thesis - a fast algorithm based on the idea of K-means/K-medoids expectation maximization, making use of theorems \ref{thm:optimal-weights} and \ref{thm:kmeans-kantorovich}.
+%
 \subsubsection{Results}
 In this section, we will evaluate the scenario trees generated with the algorithms of the previous sections.
 As discussed above, the approach discussed in this part is particularly suitable to problems with a discrete set of outcomes at each stage.

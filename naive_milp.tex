@@ -90,6 +90,16 @@ Note that this problem has the worst possible relaxation. The LP solution withou
 
 Figure \ref{fig:swmilp-explanation} shows the evolution of the algorithm.
 \input{swmilp_explanation} % figure fig:swmilp-explanation
+\subsubsection{Results}
+In this section, we will briefly discuss the preliminary results for this algorithm.
+In this section, we will focus on the two results that are important to the argument of the paper:
+\begin{enumerate}
+\item The results of this algorithm are considerably better than random trees generated from the correct distribution
+\item The algorithm is too slow for data sets of regular sizes
+\end{enumerate}
+Since the Kantorovich Distance is not in itself a meaningful value for evaluating algorithms, because it does not give a measure of how much better the algorithm performs against a completely naive solution of selecting random scenarios from the set of sampled scenarios and building a tree on them.
+\input{naive_milp_results}
+
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "da"

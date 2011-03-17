@@ -1,12 +1,17 @@
 \subsection{Continuous Decision Trees}
-In this section, 
+In this section, advanced algorithms for solving CE-trees are presented.
+These are necessary since the local solutions of the NLP in section \ref{sec:naive-cont-decis-trees} are not reliable. 
 \subsubsection{Escaping local optima: Global Optimization}
 \label{sec:nlp-formulation2}
 Global optimization approaches can generally be assigned to one of two categories. The first of those two categories is the class of rigorous spatial branch and bound algorithms. These algorithms work on the idea of underestimating the given function on smaller subdomains by convex functions. The problem is solved for the convex underestimator, which yields a lower bound on the objective. This is conducted until the optimality gap is reasonably small. The second approach is to use stochastic optimization algorithms such as genetic optimization and swarm intelligence.
 
-In this section, both of the above approaches will be applied to solve the NLP to full optimality. First, it will be shown that the spatial branch and bound algorithm can for this problem be expressed as an MILP, which makes the solution much more achievable. In the second part, the application of stochastic search routines to the NLP will be discussed.
+In this section, both of the above approaches will be explored to solve the NLP to full optimality.
+First, it will be shown that the spatial branch and bound algorithm can for this problem be expressed as an MILP, which makes the solution much more achievable.
+In the second part, the application of stochastic search routines to the NLP will be discussed.
 
-\paragraph{The global NLP as an MILP} For the current problem, we can actually derive a much smaller search region. From the property proven above (\ref{to-corresponding-proof}), that
+\paragraph{The global NLP as an MILP}
+For the current problem, we can actually derive a much smaller search region.
+From the property of optimal weights (theorem \ref{thm:optimal-weights}), that
 \begin{equation}
   \label{eq:restate-eta-either-p-or-0}
   \eta_{ij} = p_i \;\vee \; \eta_{ij}=0,
@@ -22,8 +27,8 @@ The full problem can be expressed as an MILP using the \textbf{big-M}-formulatio
 \begin{eqnarray}
   \label{eq:NLP-as-MILP-full}
   &\min\limits_{z,c,\nu}&\sum_{i\in I}\sum_{j\in J}\sum_{t\in T}p_i\cdot c_{ijt}\\
-  &\mathrm{s.t.}&c_{ijt}+ \nu_{n(j,t)d}+M(1-z_{ij} \geq \xi_{id}^t\\
-  &&c_{ijt} -\nu_{n(j,t)d} +M(1-z_{ij}\geq - \xi_{id}^t\\
+  &\mathrm{s.t.}&c_{ijt}+ \nu_{n(j,t)d}+M(1-z_{ij}) \geq \xi_{id}^t\\
+  &&c_{ijt} -\nu_{n(j,t)d} +M(1-z_{ij})\geq - \xi_{id}^t\\
   &&0\leq c_{ijt} \leq M\cdot z_{ij}\\
   \label{eq:NLP-as-MILP-full-bounds}
   &&z_{ij}\in \left\{0,1\right\}
@@ -46,12 +51,15 @@ As the algorithm only uses function values, and is in general unable to satisfy 
   \min_{\nu}&&f(\nu)\\
   \mathrm{with}\; f(\nu)&=\min\limits_\eta &\sum_{i\in I}\sum_{j\in J}\sum_{t\in T}\eta_{ij}c(\nu_j^t,\xi_i^t)\\
   &\mathrm{s.t.}&\sum_{j\in J}\eta_{ij} = p_i\\
+  \label{eq:3}
+  &&\sum_{i\in I}\eta_{ij} = q_j\\
   &&0\leq \eta_{ij}
 \end{eqnarray}
-Note that that the equation
-\[
-\sum_{i \in I}\eta_{ij} = q_j
-\]
+Note again that that the equation
+\begin{equation}
+  \label{eq:4}
+  \sum_{i \in I}\eta_{ij} = q_j
+\end{equation}
 is not necessary, since they do not impose any additional restriciton on the choice of $\eta_{ij}$ - they only serve to define the probabilities $q_j$. (The constraint $q_j\geq 0$ can be deduced from $\eta_{ij}\geq 0$.) These probabilities are, however, unnecessary for the evaluation of the objective function. Since $f(\nu)$ will have to be evaluated very often, it is advisable to keep the internal optimization problem as small as possible.
 
 There are several well-studied, stochastic optimization
