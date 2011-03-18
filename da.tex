@@ -64,7 +64,19 @@
 \tableofcontents
 \newpage
 \section{Introduction}
-\todo[inline]{write an introduction}
+%\todo[inline]{write an introduction}
+With the ongoing continuation of Moore's Law, previously computationally intractable problems attract researchers. Multi-Stage Stochastic Programming Problems belong to this class of problems. 
+
+Stochastic Programming solves Optimization problems with uncertainty in the data. These problems appear naturally in many of business and engineering applications. Some examples include the operation of a power grid with stochastic demand due to consumer needs and stochastic supply due to the emergence of renewable energies such as wind and solar, which exhibit a considerable amount of uncertainty in their loads.
+
+The scenario tree represents the future as it is seen by the optimization problem.
+The generation of this scenario tree is a key step in the solution of stochastic programming problems.
+
+In this paper, we will derive a new, powerful algorithm to generate scenario trees from arbitrary data.
+This algorithm leads to a whole new perspective on the problem.
+
+The paper is organized as follows. First, an introduction will be given to the mathematical theory of scenario tree generation. Then, two theorems on the Kantorovich distance, which will be the distance used for measuring similarity in stochastic processes, will be presented. Based on these theorems, the new algorithm will be derived. This new algorithm will shed light on some decisions made in the process of discretization of the problem, that would otherwise have gone unnoticed. The paper closes with the conclusion and some notes on possible future directions.
+\begin{comment}
 \section{Stochastic Programming Theory}
 Consider the following real world problem:
 
@@ -80,10 +92,12 @@ For an introduction into the general theory see \cite{Birge1997}. For a more rec
 The generation of the scenario tree is a key step in the solution of stochastic programming problems.
 
 In this paper we will present several ways to generate said scenario trees. The section is organized as follows. First, a short introduction to the basic mathematical theory will be given that is necessary to follow the derivations of the algorithms. Then, the state of the art in solving this problem is summarized. Finally, several new algorithms are derived. These new algorithms will differ from the ones proposed in the literature in that they attempt to solve the original problem to full optimality. The section will close with a discussion and comparison of the results of the presented algorithms.
+\end{comment}
 \include{math_foundations}
 \include{naive}
 \include{kantorovich_theorems}
-\include{advanced_algorithms}
+%\include{advanced_algorithms}
+\include{expectation_maximization}
 \include{conclusion}
 \newpage
 \bibliographystyle{plain}

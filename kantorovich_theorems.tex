@@ -104,6 +104,7 @@ This completes the proof.
   \label{alg:optimal-weights}
 \end{algorithm}
 \subsection{Kantorovich Distance and Clustering Algorithms}
+\label{sec:kantorovich-and-clusters}
 In this section, a corrolary to theorem \ref{thm:optimal-weights} is proven, that will allow for a very efficient rephrasing of the problem defined in (\ref{eq:symbolic-optimization-with-minflow2}).
 For this section, we will disregard the time aspect of stochastic processes and only consider random variables.
 Suppose in (\ref{eq:symbolic-optimization-with-minflow2}), instead of a stochastic process we were given a set of samples from a random variable.
@@ -144,8 +145,8 @@ We will introduce these two problems and discuss them.
 The $K$-mean and $K$-medoid problems are two of the most extensively used formulations in machine learning and data mining. 
 They are very useful for the unsupervised search of clusters in information. 
 Because of their wide range of applications, much work has gone into the development of efficient algorithms. See \cite{Bishop2006}, section 9.1 for an introduction. 
-Here, we will present the most basic algorithms for solving problems \ref{prb:kmeans-problem-definition} and \ref{prb:kmedoids-problem-definition}. Algorithm \ref{alg:kmeans} is, due to its simplicity and obviousness, commonly given the same name as the problem itself. 
-
+In section \ref{sec:k-means-standard}, we will present the most basic algorithms for solving problems \ref{prb:kmeans-problem-definition} and \ref{prb:kmedoids-problem-definition}. %Algorithm \ref{alg:kmeans} is, due to its simplicity and obviousness, commonly given the same name as the problem itself. 
+\begin{comment}
 For convenience, we will introduce a new assignment variable $r_{ij}$ defined as 
 \begin{equation}
   \label{eq:define_r_kmeans}
@@ -196,6 +197,7 @@ However, due to its short running time, it can be executed several times on the 
 
 In analogy to the K-means algorithm, the objective function of the K-medoids algorithm can be rewritten as (\ref{eq:kmeans-problem-with-r}).
 The algorithm is identical to the K-means algorithm, with the difference that the optimization problem of the maximization step is solved with only $X$ as the feasible set.
+\end{comment}
 
 We are now prepared for the theorem connecting the Kantorovich Distance with the K-means algorithm.
 Here, we will focus on the combination of problems \ref{prb:CE-Kantorovich-randvar} and \ref{prb:kmeans-problem-definition}.

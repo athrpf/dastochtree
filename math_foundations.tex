@@ -1,4 +1,5 @@
 \section{Mathematical Foundations}
+\label{sec:math-foundations}
 This section serves as a short introduction to the mathematical concepts used throughout this paper. The reader should be familiar with the most basic concepts of probability theory and measure theory, such as probability spaces, sigma algebras, filtrations and measures.
 
 This section is organized as follows. First, the above description of a real world problem is translated into the context and notation of probability theory. Then the resulting abstract mathematical description is transformed into a numerically tangible formulation.
@@ -155,7 +156,7 @@ The choice of the space of probability measures as the underlying space for stoc
     D(\mathbb{P}_1,\mathbb{P}_2) := \left\Vert \mathbb{P}_1-\mathbb{P}_2\right\Vert = \sum_{t=1}^T\int_{\omega\in\Omega}\left\Vert \mathbb{P}_{1,t}(\omega)-\mathbb{P}_{2,t}(\omega)\right\Vert
   \end{equation}
   This does, however, not yield meaningful results. See figure \ref{fig:example-wrong-distance} for an example.
-\item The definition of the above metric makes use of the pointwise difference of $\mathbb{P}_1$ and $\mathbb{P}_2$
+\item The definition of the above metric makes use of the point wise difference of $\mathbb{P}_1$ and $\mathbb{P}_2$
   This difference is, however, not a meaningful construction, since the difference of two probability measure functions is itself \textbf{never} a probability measure.
 \end{enumerate}
 \input{example_wrong_distance}
@@ -170,7 +171,7 @@ In the context of stability analysis of stochastic programming problems, it has 
   \mu_c(\mathbb{P}, \mathbb{Q}) = \inf\left\{\int_{\Omega\times\Omega}c(\omega, \hat{\omega})\eta(d(\omega,\hat{\omega})),\, \eta\in\mathcal{M}\right\}
 \end{equation}
 represents a  ``natural and suitable''\cite{Dupacova2003} distance for measuring stochastic processes in the context of stochastic programming problems. 
-Here, $\mathcal{M}(\mathbb{P, Q})$ is the space of Borel-measures with marginals $\mathbb{P}$ and $\mathbb{Q}$, meanging that $\eta$ is a probability measure on the space $\Omega\times\Omega$ with the properties
+Here, $\mathcal{M}(\mathbb{P, Q})$ is the space of Borel-measures with marginals $\mathbb{P}$ and $\mathbb{Q}$, meaning that $\eta$ is a probability measure on the space $\Omega\times\Omega$ with the properties
 \begin{equation}
   \label{eq:define-borel-measures}
   \int_{B\times \Omega} \eta(d(\omega,\hat{\omega})) = \mathbb{P}(B),\;   \int_{\Omega\times B} \eta(d(\omega,\hat{\omega})) = \mathbb{Q}(B),\; B \in \mathcal{B}
@@ -189,7 +190,7 @@ For the purposes of this paper, it suffices to say that any vector norm satisfie
 \paragraph{Kantorovich Distance for finite stochastic processes}
 Besides its virtues for the stability analysis \cite{Dupacova2003}, an advantage of the Kantorovich Distance is its simple and intuitive representation for finite dimensional stochastic processes.
 \input{finite_kantorovich_illustration}
-Consider now two finite dimensinal stochastic processes with sets of scenarios $I$ and $J$ respectively.
+Consider now two finite dimensional stochastic processes with sets of scenarios $I$ and $J$ respectively.
 Translating the infinite dimensional representation of the metric (\ref{eq:define-infinitedim-kantorovich}) into this framework is straightforward.
 The integral over the combination of all possible events of the two stochastic processes is replaced by a sum over this finite set.
 The distance $c$ stays the same.
@@ -214,7 +215,7 @@ Let $\mathcal{P}$ denote a stochastic programming problem with the underlying in
 The task is to find a discrete stochastic process $\hat{\xi}$ that satisfies the following properties:
 \begin{enumerate}
 \item $\hat{\xi}$ minimizes the Kantorovich Distance $D_K(\xi_{orig},\hat{\xi})$ defined in (\ref{eq:define-finitedim-Kantorovich}).
-\item $\hat{\xi}$ exibits a given tree structure.
+\item $\hat{\xi}$ exhibits a given tree structure.
 \begin{comment}
   (see figure \ref{fig:generic-tree-structure}
 \end{comment}
@@ -234,7 +235,7 @@ In the literature, especially in \cite{Heitsch2009} and related papers (\cite{Du
 We view the approach of fixing the tree structure beforehand is a more sensible assumption for the following reasons.
 \begin{itemize}
 \item a recursive tree structure makes sense in most applications, as the structure of the decisions to be made is recursive as well. Consider the operator of the pumped-hydro plant mentioned above. He faces the same decision at each time step, and his measure of uncertainty for any event happening a certain amount of time into the future is independent of the current situation.
-\item the number of scenarios is not determined by the error one will allow but is is the other way around: The error is determined by the maximum number of scenarios one can handle computationally. This number of scenarios will be known beforehand. As the correlation of using more scenarios and lowering the approximation error is strictly monotonic, there is no reason to use less scenarios than one could handle.
+\item the number of scenarios is not determined by the error one will allow but is the other way around: The error is determined by the maximum number of scenarios one can handle computationally. This number of scenarios will be known beforehand. As the correlation of using more scenarios and lowering the approximation error is strictly monotonic, there is no reason to use less scenarios than one could handle.
 \item The value of the Kantorovich distance does not necessarily have a real-world interpretation. Therefore it might be difficult to postulate a meaningful bound.
 \item For the method described in the papers cited above, it is not obvious how the original tree which is then reduced was constructed in the first place.
 \end{itemize}
@@ -317,7 +318,6 @@ In cases where intermediate values are sensible choices for scenarios, the algor
   \mathcal{T}_D\subset \mathcal{T}_C,
 \end{equation}
 where $\mathcal{T}_D$ is the set of feasible DE-trees, and $\mathcal{T}_C$ is the set of feasible trees in the continuous case. It is therefore obvious, that the Kantorovich Distance for the continuous case must be equal to or lower than that of the discrete case. This means, that the continuous formulation allows for a tighter approximation.
-\todo[inline]{Dieser Teil muss noch ueberarbeitet werden (wurde quereingefuegt)}
 % \subsubsection{The Kantorovich Distance in a function space approximation interpretation}
 
 %%% Local Variables: 
