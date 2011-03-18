@@ -52,23 +52,27 @@ For the case of $U=\mathbb{R}^n$, $c(x,\mu) = \Vert x-\mu\Vert^2$ it becomes the
 For $U=X$ and an arbitrary dissimilarity measure $c$, there is no general analytic solution, so all distance pairs $c(x_i, x_j)$ have to be evaluated:
 \begin{equation}
   \label{eq:7}
-  \mu_j = \underset{\hat{\mu}\in X}{\argmin}\; \sum_{i}c(x_i,\hat{\mu})
+  \mu_j = \underset{\hat{\mu}\in X}{\argmin}\; \sum_{i}\sum_{j}z_{ij}c(x_i,\hat{\mu})
 \end{equation}
 This is generally not considered to be a significant drawback, since many strategies have been found to limit the number of evaluations in actual implementations.
 
-The algorithm is composed of alternating optimizations of J with respect to $z$ and $\mu$. At every iteration, the objective function is guaranteed to decrease. There is no guarantee that the value that the algorithm converges to is a global optimum. However, If some care is taken at the initialization of the variables, in practice the algorithm generally yields nearly optimal values \cite{Arthur2006}.
+The algorithm is composed of alternating optimizations of J with respect to $z$ and $\mu$.
+At every iteration, the objective function is guaranteed to decrease.
+There is no guarantee that the value that the algorithm converges to is a global optimum.
+However, If some care is taken at the initialization of the variables, in practice the algorithm generally yields nearly optimal values \cite{Arthur2006}.
+The procedure is outlined below in algorithm \ref{alg:k-means}.
 \begin{algorithm}
   \label{alg:k-means}
   \caption{K-Means/K-Medoids Expectation Maximization}
   \KwIn{Metric $c$, data points $X = \{x_1,\ldots , x_N\}$.}
-  \KwOut{Cluster means $M=\{m_1,\ldots , m_K\}$, assignments $r_{ij}$ mapping $X\rightarrow M$.}
+  \KwOut{Cluster means $M=\{m_1,\ldots , m_K\}$, assignments $z_{ij}$ mapping $X\rightarrow M$.}
   \lIf{K-Means}{$U = \mathbb{R}^n$\;}
   \lIf{K-Medoids}{$U = X$\;}
   
   (Randomly) initialize $m_i$\;
-  \While{$r_{ij}$ change}{
-    $r_{ij}\leftarrow \left\{\begin{array}{ll} 1 & \text{if }j = \underset{k}{\argmin}\; c(x_i, m_k)\\0&\text{otherwise}\end{array}\right.$\tcc*{Expectation step}
-    $m_j\leftarrow \underset{\mu\in U}{\argmin}\; c(r_{ij}x_i,\mu)$\tcc*{Maximization step}
+  \While{$z_{ij}$ change}{
+    $z_{ij}\leftarrow \left\{\begin{array}{ll} 1 & \text{if }j = \underset{k}{\argmin}\; c(x_i, \mu_k)\\0&\text{otherwise}\end{array}\right.$\tcc*{Expectation step}
+    $\mu_j\leftarrow \underset{\hat{\mu}\in U}{\argmin}\; \sum_{i}\sum_{j}z_{ij}c(x_i,\hat{\mu})$\tcc*{Maximization step}
   }
 \end{algorithm}
 \subsection{The K-Means Algorithm for Trees}
@@ -76,7 +80,7 @@ The algorithm is composed of alternating optimizations of J with respect to $z$ 
 In section \ref{sec:kantorovich-and-clusters}, we showed that constructing the optimal discrete random variable $\nu$ that best approximates a given discrete uniformly distributed random variable $\xi$ is equivalent to solving the K-Means problem.
 This approach does not directly apply to the tree structured stochastic processes.
 In this section, we will translate the coordinate descent algorithm described in the previous section to the specific case of constructing tree-shaped discrete stochastic processes.
-
+%
 \subsubsection{Tree Representation}
 Different representations of the properties of the tree are possible. A tree is completely defined by the following items:
 \begin{itemize}
@@ -205,20 +209,157 @@ Algorithm \ref{alg:em} summarizes the procedure.
 \begin{algorithm}
   \KwIn{Data $X$}
   \KwOut{Optimal parameters $\theta$}
-  Initialize $\theta^0$\;
+  Initialize $\theta^0$ (randomly)\;
   $k\leftarrow 0$\;
-  ...
+  \While{Not Converged}{
+    
+  }
   \caption{Expectation Maximization Algorithm}
   \label{alg:em}
 \end{algorithm}
 
-The K-Means algorithm can be regarded as an EM algorithm. The expectation step in the K-Means algorithm is the computation of the assignments $z_{ij}$. Instead of probabilities $p(Z|X,\theta)$, the K-Means algorithm always assigns binary values one or zero to the hidden variables (``hard assignments''). The original and most common form of the EM algorithm is, however, the Mixture of Gaussians algorithm. This algorithm is similar to the K-Means algorithm in that it computes a set of clusters characterized by centroids, which are the expected values of the Gaussian Distributions. In contrast to K-Means, the data points are not assigned ``hard'' to one of the clusters, but instead a ``responsibility'' $\gamma$ of each cluster to each data point is used to describe this relation. This way, clusters may share points that are located in between them.
+The model most commonly used in the EM algorithm is the Mixtures of Gaussians model.
+The probability distribution of the data is approximated by a linear combination of Gaussian functions with means $\mu_j$ and covariance matrices $\sigma_j$.
+The model for the probabilities of the can be expressed as
+\begin{equation}
+  \label{eq:22}
+  p(x) = \sum_{j}\pi_j\mathcal{N}(x|\mu_j,\sigma_j). 
+\end{equation}
+where $\pi_j$ are weights on the distributions and $\mathcal{N}$ is the Gaussian distribution.
+
+
+The K-Means algorithm can be regarded as the following limit to a Mixture of Gaussians model with covariance going to zero:
+\begin{equation}
+  \label{eq:23}
+  \lim\limits_{\epsilon\rightarrow 0}\sum_j\pi_j\mathcal{N}(x| \mu_j,\epsilon I)
+\end{equation}
+
+The expectation step in the K-Means algorithm is the computation of the assignments $z_{ij}$. Instead of probabilities $p(Z|X,\theta)$, the K-Means algorithm always assigns binary values one or zero to the hidden variables (``hard assignments'').
+
+In contrast to K-Means, for the Mixture of Gaussians model the data points are not assigned ``hard'' to one of the clusters, but instead a ``responsibility'' $\gamma$ of each cluster to each data point is used to describe this relation. This way, clusters may share points that are located in between them.
 \subsection{Revisiting the Discretization}
 \label{sec:revisiting-discretization}
 In this section, we will revisit the discretization decision of the beginning.
-We will find that the discretization used in the literature exhibits a certain bias with respect to the function space of the approximation. 
+We will find that the discretization used in the literature exhibits a certain bias with respect to the function space of the approximation. The following discussion applies only to continuous-event trees.
 
-propose the mixture of Gaussian approach to generating scenario trees as the correct way to create CE-Trees.
+Consider again the original stochastic process $\xi_{orig}$. To ease the understanding, we will accompany the discussion with an example. The left plot of figure \ref{fig:rev-disc-xiorig} shows the distribution
+\begin{equation}
+  \label{eq:24}
+  p(x) = \frac{2}{3}\mathcal{N}(2,1) + \frac{1}{3}\mathcal{N}(-1,1)
+\end{equation}
+ Following the discretization procedure, a set of 45 events is sampled from the distribution.
+ The notion of the original distribution is discarded, and the Kantorovich distance is minimized for a given number of representative events, which is five in the example.
+ The top right plot of shows the 5 mean values as blue dots on the x-axis.
+ Note that in the K-Means formulation, all points that are closest to a specific mean will be associated with this mean.
+ The resulting square spheres of influence are plotted with the height according to their probabilities.
+
+These previous observations lead to following, important observation.
+Using the discretized Kantorovich distance is equivalent to using a fixed number of piecewise constant functions as the basis functions for the approximation of the original probability distribution.
+It is well known that the choice of basis functions effectively is the same as a prior distribution on the probability distribution that we expect to be underlying the observed events.
+The central limit theorem suggests that Gaussian distributions are the best guess for a prior given no additional information.
+Therefore, the common choice of discretization in the literature (\cite{Dupacova2003}, etc.) is not optimal and should be revised to be the Mixture of Gaussians - EM algorithm.
+\begin{figure}
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}
+      \addplot[domain=-5:5,samples=100, very thick] function {1/(sqrt(2*3.1416))/1.5*exp(-(x-2)**2/2)+0.5/1.5/(sqrt(2*3.1416))*exp(-(x+1)**2/2)};
+      % \pgfmathparse{exp(-x^2)} \draw[dashed] node[right] {x,\pgfmathresult}
+      \addplot+[only marks]  coordinates {
+        (2.537667, 0)
+        (3.833885, 0)
+        (-0.258847, 0)
+        (2.862173, 0)
+        (2.318765, 0)
+        (0.692312, 0)
+        (1.566408, 0)
+        (2.342624, 0)
+        (5.578397, 0)
+        (4.769437, 0)
+        (0.650113, 0)
+        (5.034923, 0)
+        (2.725404, 0)
+        (1.936945, 0)
+        (2.714743, 0)
+        (1.795034, 0)
+        (1.875856, 0)
+        (3.489698, 0)
+        (3.409034, 0)
+        (3.417192, 0)
+        (2.671497, 0)
+        (0.792513, 0)
+        (2.717239, 0)
+        (3.630235, 0)
+        (2.488894, 0)
+        (3.034693, 0)
+        (2.726885, 0)
+        (1.696559, 0)
+        (2.293871, 0)
+        (1.212717, 0)
+        (-0.111604, 0)
+        (-2.147070, 0)
+        (-2.068870, 0)
+        (-1.809499, 0)
+        (-3.944284, 0)
+        (0.438380, 0)
+        (-0.674809, 0)
+        (-1.754928, 0)
+        (0.370299, 0)
+        (-2.711516, 0)
+        (-1.102242, 0)
+        (-1.241447, 0)
+        (-0.680793, 0)
+        (-0.687141, 0)
+        (-1.864880, 0)
+      };
+    \end{axis}
+  \end{tikzpicture}
+  \begin{tikzpicture}
+    \begin{axis}
+      \addplot+[only marks] coordinates {
+        (-3.9443,0)
+        (-1.2414,0)
+        (0.9890,0)
+        (2.7147,0)
+        (3.8339,0)
+      };
+      \addplot[fill=blue!20] coordinates {
+        (-5.2957,0.0242)
+        (-2.5929,0.0242)
+      }
+      |- (axis cs:-5.2957,0) -- cycle;
+      \addplot[fill=blue!60] coordinates {
+        (-2.5929,0.1449)
+        (-0.0144,0.1449)
+      }
+      |- (axis cs:-2.5929,0) -- cycle;
+      \addplot[fill=blue!20] coordinates {
+        (-0.0144,0.1329)
+        (1.9637,0.1329)
+      }
+      |- (axis cs:-0.0144,0) -- cycle;
+      \addplot[fill=blue!60] coordinates {
+        (1.9637,0.1449)
+        (3.2743,0.1449)
+      }
+      |- (axis cs:1.9637,0) -- cycle;
+      \addplot[fill=blue!20] coordinates {
+        (3.2743,0.0966)
+        (4.3935,0.0966)
+      }
+      |- (axis cs:3.2743,0) -- cycle;
+      \addplot[no marks, samples=100, color=black, very thick] function {1/(sqrt(2*3.1416))/1.5*exp(-(x-2)**2/2)+0.5/1.5/(sqrt(2*3.1416))*exp(-(x+1)**2/2)};
+    \end{axis}
+  \end{tikzpicture}
+  \begin{tikzpicture}
+    \begin{axis}
+      \addplot[no marks, samples=100, color=black, fill=blue!60, very thick] function {1/(sqrt(2*3.1416))/1.5*exp(-(x-2)**2/2)+0.5/1.5/(sqrt(2*3.1416))*exp(-(x+1)**2/2)};
+      \addplot[no marks, samples=100, color=black, fill=red!40, very thick] function
+      {1/(sqrt(2*3.1416))/1.5*exp(-(x-2)**2/2)};      
+    \end{axis}
+  \end{tikzpicture}
+  \caption{Left: Original probability distribution. The dots represent random samples from this distribution. Right: K-means approximation with five clusters for the 45 data points on the left plot. Note that there is considerable error. Bottom: The probability distribution is a mixture of Gaussians.}
+  \label{fig:rev-disc-xiorig}
+\end{figure}
 
 %%% Local Variables: 
 %%% mode: latex
