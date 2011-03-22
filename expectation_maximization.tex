@@ -168,13 +168,14 @@ The results are really good.
 Trust me.
 I just haven't had the time to produce the figures...
 Plans of results to put here: Comparison with the stage-wise MILP in timing, optimal value
+\input{comparison_milp_kmedoids}
 \subsection{K-Means as an Expectation Maximization Algorithm}
 \label{sec:k-means-as-EM}
 In this section, we will introduce the Expectation Maximization (EM) algorithm due to \cite{Dempster1977}.
 The aim of this discussion is to give a short overview of the concept of EM.
 This will enable us to analyze the discretization method used to discretize the Kantorovich distance in section \ref{sec:kantoro}.
 See \cite{Bishop2006}, section 9 for a detailed treatment of the subject.
-
+\subsubsection{The Expectation Maximization Algorithm}
 Consider the problem of fitting a model to a given data set.
 Let the model parameters be denoted by $\theta$ and the data set by $X$.
 In a probabilistic framework, fitting the model parameters $\theta$ to the data $X$ means maximizing the log-likelihood of the data given the model
@@ -212,12 +213,15 @@ Algorithm \ref{alg:em} summarizes the procedure.
   Initialize $\theta^0$ (randomly)\;
   $k\leftarrow 0$\;
   \While{Not Converged}{
-    
+    $\gamma^k(Z)\leftarrow p(Z|X,\theta^k)$\tcc*{Expectation Step}
+    $\theta^{k+1}\leftarrow \underset{\theta}{\operatorname{argmax}}\; \sum_Z \gamma^k(Z)\ln p(X,Z|\theta)$\tcc*{Maximization Step}
   }
   \caption{Expectation Maximization Algorithm}
   \label{alg:em}
 \end{algorithm}
-
+%
+\subsubsection{Mixture of Gaussian EM}
+\label{sec:mixture-gaussian-em}
 The model most commonly used in the EM algorithm is the Mixtures of Gaussians model.
 The probability distribution of the data is approximated by a linear combination of Gaussian functions with means $\mu_j$ and covariance matrices $\sigma_j$.
 The model for the probabilities of the can be expressed as
@@ -225,8 +229,35 @@ The model for the probabilities of the can be expressed as
   \label{eq:22}
   p(x) = \sum_{j}\pi_j\mathcal{N}(x|\mu_j,\sigma_j). 
 \end{equation}
-where $\pi_j$ are weights on the distributions and $\mathcal{N}$ is the Gaussian distribution.
-
+where $\pi_j$ are weights on the distributions and $\mathcal{N}$ is the Gaussian distribution
+\begin{equation}
+  \label{eq:25}
+  \mathcal{N}(x|\mu,\sigma) = \frac{1}{\sqrt{2\pi\sigma}}\exp\left(\frac{(x-\mu)^2}{2\sigma}\right)
+\end{equation}
+For the model to be a probability distribution,
+\begin{equation}
+  \label{eq:27}
+  \sum_j\pi_j = 1
+\end{equation}
+has to hold.
+The hidden variables again $z_{ik}$ describe the  assignment of data $x_i$ to clusters $k$.
+In contrast to the K-Means model, the assignments are not fixed to one and zero, but instead are represented by the probability that data point $x_i$ is assigned to cluster $k$.
+The posterior probabilities of $z_{ik}$ given the data and the parameters that describe the model are 
+\begin{equation}
+  \label{eq:26}
+  p(z_{nk}|x, \theta) = \frac{\pi_k\mathcal{N}(x_n|\mu_k,\sigma_k)}{\sum_j\pi_j\mathcal{N}(x_n|\mu_j, \sigma_j)}
+\end{equation}
+This expression is evaluated during the expectation phase of the algorithm.
+The update step for the parameters is defined by the optimization problem \eqref{eq:21}.
+Note that for this model, this is a constrained optimization problem, since \eqref{eq:27} has to hold.
+The derivation is detailed in \cite{Bishop2006}.
+The solution will be stated here for completeness and to show the similarity to the solution for tree structures stated below.
+\begin{align}
+  \label{eq:29}
+  \mu_k^{t+1} &= \frac{\sum_np(z_{nk}|x, \mu, \sigma, \pi)\cdot x_n}{\sum_np(z_{nk}|x, \mu, \sigma, \pi)}\\
+  \sigma_k^{t+1}&= \frac{\sum_np(z_{nk}|x, \mu, \sigma, \pi)\cdot (x_n-\mu_k^{t+1})^2}{\sum_np(z_{nk}|x, \mu, \sigma, \pi)}\\
+  \pi_k^{t+1}&= \frac{1}{N}\sum_{n}p(z_{nk}|x, \mu, \sigma, \pi)
+\end{align}
 
 The K-Means algorithm can be regarded as the following limit to a Mixture of Gaussians model with covariance going to zero:
 \begin{equation}
@@ -234,14 +265,14 @@ The K-Means algorithm can be regarded as the following limit to a Mixture of Gau
   \lim\limits_{\epsilon\rightarrow 0}\sum_j\pi_j\mathcal{N}(x| \mu_j,\epsilon I)
 \end{equation}
 
-The expectation step in the K-Means algorithm is the computation of the assignments $z_{ij}$. Instead of probabilities $p(Z|X,\theta)$, the K-Means algorithm always assigns binary values one or zero to the hidden variables (``hard assignments'').
+The expectation step in the K-Means algorithm is the computation of the assignments $z_{ij}$. Instead of probabilities $p(z_{ik}|x,\theta)$, the K-Means algorithm always assigns binary values one or zero to the hidden variables (``hard assignments'').
 
 In contrast to K-Means, for the Mixture of Gaussians model the data points are not assigned ``hard'' to one of the clusters, but instead a ``responsibility'' $\gamma$ of each cluster to each data point is used to describe this relation. This way, clusters may share points that are located in between them.
 \subsection{Revisiting the Discretization}
 \label{sec:revisiting-discretization}
 In this section, we will revisit the discretization decision of the beginning.
 We will find that the discretization used in the literature exhibits a certain bias with respect to the function space of the approximation. The following discussion applies only to continuous-event trees.
-
+\subsubsection{Bias of Discretizations}
 Consider again the original stochastic process $\xi_{orig}$. To ease the understanding, we will accompany the discussion with an example. The left plot of figure \ref{fig:rev-disc-xiorig} shows the distribution
 \begin{equation}
   \label{eq:24}
@@ -249,7 +280,7 @@ Consider again the original stochastic process $\xi_{orig}$. To ease the underst
 \end{equation}
  Following the discretization procedure, a set of 45 events is sampled from the distribution.
  The notion of the original distribution is discarded, and the Kantorovich distance is minimized for a given number of representative events, which is five in the example.
- The top right plot of shows the 5 mean values as blue dots on the x-axis.
+ The top right plot shows the 5 mean values as blue dots on the x-axis.
  Note that in the K-Means formulation, all points that are closest to a specific mean will be associated with this mean.
  The resulting square spheres of influence are plotted with the height according to their probabilities.
 
@@ -259,6 +290,61 @@ It is well known that the choice of basis functions effectively is the same as a
 The central limit theorem suggests that Gaussian distributions are the best guess for a prior given no additional information.
 Therefore, the common choice of discretization in the literature (\cite{Dupacova2003}, etc.) is not optimal and should be revised to be the Mixture of Gaussians - EM algorithm.
 \input{discretization_animation}
+\subsubsection{EM and the Kantorovich Distance}
+\label{sec:em-kantorovich}
+In this section we will show how the update formulas of the mixture of Gaussian Expectation Maximization algorithm and the Kantorovich Distance relate.
+
+Consider a finite set of samples $\{\xi_i,\, i\in I\}$ sampled from a continuous probability distribution $\mathbb{P}$.
+We would like to find a distribution $\mathbb{Q}$ which from a tractable function space, which optimally approximates the distribution $\mathbb{P}$ in the Kantorovich Distance.
+
+We will assume that the probability distribution $\mathbb{P}$ can be approximated by a sum of  
+
+
+
+\subsection{EM for Trees}
+\label{sec:mixt-gauss-trees}
+In this section, the EM algorithm is adapted to tree structures. 
+
+Consider a tree structure given by the following sets:
+\begin{itemize}
+\item A set of nodes of the tree $N$.
+\item A set $L\in n$ of leaf nodes, that is nodes that don't father any children.
+\item For each $n\in N\setminus L$ a set $C_n$ which holds all children of this node.
+\end{itemize}
+These sets fully define the tree structure.
+An alternative definition makes use of the notion of scenarios in trees.
+A scenario is a set of nodes that can be generated by moving down the tree starting from a leaf node.
+There exists a one-to-one mapping from the set of leaf nodes to the set of scenarios of the tree $J$.
+
+The hidden variables $Z$ of the EM algorithm will be the binary assignment variables $z_{ij}$ that
+assign a sampled scenario $i\in I$ to a scenario $j\in J$ of the tree.
+
+The general model structure under consideration is a parametric probability distribution $\mathcal{D}(x,z|\theta)$ with parameters $\theta$.
+The parameters of the model must be uniquely associated with the dimensions of $x$.
+An example of this property are mean values, that are independent for each dimension of a vector.
+Each tree scenario $j\in J$ is equipped with a mixing parameter $\pi_j$.
+The model for the probability of a scenario $\xi$ given $\theta$ is
+\begin{equation}
+  \label{eq:28}
+  p(\xi|\theta) = \sum_{j\in J}\pi_j\mathcal{D}(x|\theta_j).
+\end{equation}
+$\mathcal{D}$ is a probability distribution, therefore for \eqref{eq:28} to be a probability distribution,
+\begin{equation}
+  \label{eq:30}
+  \sum_{j\in J}\pi_j = 1
+\end{equation}
+has to hold.
+The tree information is preserved through the components of $\theta$.
+The dimensions of $\xi$ represent the time stages.
+Since each parameter is associated with a dimension of $\xi$, we demand that $\theta_{jt}=\theta_{kt}$ for scenarios $j,k\in J$, if $n(j,t)=n(k,t)$.
+
+Using these definitions we can construct the generic EM algorithm for trees.
+The expectation step consists of computing the probabilities 
+
+\subsection{Variance Estimation from EM-Generated Trees}
+\label{sec:variance-estimation}
+
+
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "da"
