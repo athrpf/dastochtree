@@ -164,18 +164,96 @@ the variables $y$ can similarly be computed stage-wise as the optimal nodes of
 This is the optimal value of a scenario selected among all the scenarios that were associated with this specific node.
 \subsubsection{Results}
 \label{sec:kmeans-results}
-The results are really good.
-Trust me.
-I just haven't had the time to produce the figures...
-Plans of results to put here: Comparison with the stage-wise MILP in timing, optimal value
+In this section we will present preliminary computational results. The algorithm was implemented in {\sc matlab}.
+
 \input{comparison_milp_kmedoids}
 \subsection{K-Means as an Expectation Maximization Algorithm}
 \label{sec:k-means-as-EM}
 In this section, we will introduce the Expectation Maximization (EM) algorithm due to \cite{Dempster1977}.
+
+\subsubsection{A Continuous Approach for the Kantorovich Distance}
+\label{sec:cont-appr-kant}
+Consider the K-Means algorithm of the previous section.
+There, each data-point was assigned uniquely to one of the K data clusters.
+These hard assignments stem from the fact that the algorithm operates on the discretized sample $\{\xi,\, i\in I\}$ of the original stochastic process.
+In a probabilistic context such as the scenario tree generation, these hard assignments are difficult to justify.
+Instead of a discretization in terms of a discrete probability distribution (samples), we will analyze the approximation in a parametric function space.
+The most natural parametric function space that has favourable analytic properties are sums of Gaussian distributions.
+Given a set of samples $\{\xi_n,\, n\in I\}$ we assume that these originally formed the probability distribution
+\begin{equation}
+  \label{eq:31}
+  p(x) = \sum_{n=1}^N\frac{1}{N}\mathcal{N}(x|\xi_n,\sigma_n)
+\end{equation}
+with the Normal distribution $\mathcal{N}$.
+Since we assume that the data form a weighted sum of Normal distributions, we will replace the cluster centroids of the X-Means model with Normal distributions as well. The resulting distribution is
+\begin{equation}
+  \label{eq:32}
+  q(x) = \sum_{k=1}^K\pi_k\mathcal{N}(x|\mu_k, \sigma_k)
+\end{equation}
+The parameters $\mu_k$, $\sigma_k$ and $\pi_k$ are the variables of the model.
+The Kantorovich distance of the distributions $p$ and $q$ is
+\begin{equation}
+  \label{eq:33}
+  D_K(p,q) = \min\limits_{\eta}\int\limits_{-\infty}^{\infty}\int\limits_{-\infty}^{\infty}(x-y)^2\eta(x,y)dxdy,\; \int\limits_{-\infty}^{\infty}\eta(x,y)dx = q(y),\;\int\limits_{-\infty}^{\infty}\eta(x,y)dy = p(x)
+\end{equation}
+For the given Gaussian functions, for one cluster $k$ (with fixed parameters) and one sample $n$, the Kantorovich metric can be explicitly computed as
+\begin{equation}
+  \label{eq:34}
+  D(p_n,q_k) = \int\limits_{-\infty}^{\infty}\left(x-\left(\sqrt{\frac{\sigma_n}{\sigma_k}}(x-\mu_k)+\mu_n\right)\right)^2\mathcal{N}(x|\mu_k,\sigma_k)dx.
+\end{equation}
+See figure \ref{fig:kantoro_gauss_explain} for an illustration how the above formula relates to the distributions.
+\input{kantoro_gauss_eta_explanation}
+This only works for one sample and one cluster distribution.
+For the Kantorovich distance between all samples and all clusters, we need to define additional variables $\gamma_{nk}$ for every pair of samples $n$ and clusters $k$.
+These variables correspond to the association variables $z_{ij}$.
+However, in this model the assignments are not hard as they were for the K-Means problem.
+Instead a sample may be assigned to several clusters with different weight.
+The association variables are also called \textit{responsibilities}.
+They satisfy
+\begin{equation}
+  \label{eq:35}
+  \sum_{k=1}^K\gamma_{nk} = 1
+\end{equation}
+which means that if all clusters $k$ are taken into account, the sample has to be fully accounted for.
+In addition, we define
+\begin{equation}
+  \label{eq:36}
+  N_k := \sum_{n=1}^N \gamma_{nk}.
+\end{equation}
+This number represents the total number of node-equivalents, for which cluster $k$ is responsible.
+The value of $N_k/N$ represents the fraction of the data set that a specific cluster is responsible for.
+We will later see that this value corresponds to the mixture parameter $\pi_k$.
+
+The responsibilities make it possible to decompose the Kantorovich distance into the sub parts that only involve one sample and one cluster.
+The full Kantorovich distance can be expressed as the sum of the terms \eqref{eq:34}, weighted by the corresponding responsibilities:
+\begin{equation}
+  \label{eq:37}
+  D_K(p,q) = \sum_{n=1}^N\sum_{k=1}^K\gamma_{nk}\int_\mathbb{R}\left(x-\left(\sqrt{\frac{\sigma_n}{\sigma_k}}(x-\mu_k)+\mu_n\right)\right)^2\pi_k\mathcal{N}(x|\mu_k,\sigma_k)dx
+\end{equation}
+The goal is to find the function $q(x)$ that minimizes \eqref{eq:37}.
+$q$ is parametrized by the mean values $\mu_k$, the variances $\sigma_k$, the mixing coefficients $\pi_k$, and the responsibilities $\gamma_{nk}$:
+\begin{equation}
+  \label{eq:38}
+  \min\limits_{\mu_k,\sigma_k,\pi_k, \gamma_{nk}}D_K(p,q(\mu_k,\sigma_k,\pi_k, \gamma_{nk}))
+\end{equation}
+Just as for K-Means, the optimization problem is hard to solve simultaneously.
+If, however, either the responsibilities $\gamma_{nk}$ or the distribution parameters $(\mu_k, \sigma_k, \pi_k)$ are fixed, the optimization becomes easy.
+This property, which reminds of the structure of K-Means, facilitates the use of coordinate descent.
+In the following, we will derive the update formulas for the parameters.
+We will always fix all but one parameter.
+
+First, we will consider the mean values.
+Differentiating \eqref{eq:37} with respect to $\mu_k$ yields
+\begin{equation}
+  \label{eq:39}
+  \frac{\partial }{\partial\mu_k}D(p,q) = \sum_{n=1}^N\gamma_{nk}\frac{1}{\sqrt{2\pi}}\int_\mathbb{R}\exp\left(-\frac{(x-\mu_k)^2}{2\sigma_k}\right)\left(\sqrt{\frac{\sigma_n}{\sigma_k}}(\mu_k-x)-\mu_n+x\right)\left((x-\mu_1)\left(\sqrt{\frac{\sigma_n}{\sigma_k}}(\mu_k-x)-\mu_n+x\right)+2\sqrt{\sigma_k\sigma_n}\right)
+\end{equation}
+
+\subsubsection{The Expectation Maximization Algorithm}
 The aim of this discussion is to give a short overview of the concept of EM.
 This will enable us to analyze the discretization method used to discretize the Kantorovich distance in section \ref{sec:kantoro}.
 See \cite{Bishop2006}, section 9 for a detailed treatment of the subject.
-\subsubsection{The Expectation Maximization Algorithm}
+
 Consider the problem of fitting a model to a given data set.
 Let the model parameters be denoted by $\theta$ and the data set by $X$.
 In a probabilistic framework, fitting the model parameters $\theta$ to the data $X$ means maximizing the log-likelihood of the data given the model
