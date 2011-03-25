@@ -47,7 +47,7 @@ For the centroids, this depends on the choice of $U$ and $c$.
 For the case of $U=\mathbb{R}^n$, $c(x,\mu) = \Vert x-\mu\Vert^2$ it becomes the solution to a quadratic equation
 \begin{equation}
   \label{eq:6}
-  \mu_j = \left(\sum_{i}z_{ij}x_{ij}\right)\left / \left(\sum_{ij}z\right)\right. .
+  \mu_j = \left(\sum_{i}z_{ij}x_{ij}\right)\left / \left(\sum_{i}z_{ij}\right)\right. .
 \end{equation}
 For $U=X$ and an arbitrary dissimilarity measure $c$, there is no general analytic solution, so all distance pairs $c(x_i, x_j)$ have to be evaluated:
 \begin{equation}
@@ -178,7 +178,7 @@ There, each data-point was assigned uniquely to one of the K data clusters.
 These hard assignments stem from the fact that the algorithm operates on the discretized sample $\{\xi,\, i\in I\}$ of the original stochastic process.
 In a probabilistic context such as the scenario tree generation, these hard assignments are difficult to justify.
 Instead of a discretization in terms of a discrete probability distribution (samples), we will analyze the approximation in a parametric function space.
-The most natural parametric function space that has favourable analytic properties are sums of Gaussian distributions.
+The most natural parametric function space that has favorable analytic properties are sums of Gaussian distributions.
 Given a set of samples $\{\xi_n,\, n\in I\}$ we assume that these originally formed the probability distribution
 \begin{equation}
   \label{eq:31}
@@ -199,7 +199,7 @@ The Kantorovich distance of the distributions $p$ and $q$ is
 For the given Gaussian functions, for one cluster $k$ (with fixed parameters) and one sample $n$, the Kantorovich metric can be explicitly computed as
 \begin{equation}
   \label{eq:34}
-  D(p_n,q_k) = \int\limits_{-\infty}^{\infty}\left(x-\left(\sqrt{\frac{\sigma_n}{\sigma_k}}(x-\mu_k)+\mu_n\right)\right)^2\mathcal{N}(x|\mu_k,\sigma_k)dx.
+  D(p_n,q_k) = \int\limits_{-\infty}^{\infty}\left(x-\left(\sqrt{\frac{\sigma_n}{\sigma_k}}(x-\mu_k)+\xi_n\right)\right)^2\mathcal{N}(x|\mu_k,\sigma_k)dx.
 \end{equation}
 See figure \ref{fig:kantoro_gauss_explain} for an illustration how the above formula relates to the distributions.
 \input{kantoro_gauss_eta_explanation}
@@ -228,7 +228,7 @@ The responsibilities make it possible to decompose the Kantorovich distance into
 The full Kantorovich distance can be expressed as the sum of the terms \eqref{eq:34}, weighted by the corresponding responsibilities:
 \begin{equation}
   \label{eq:37}
-  D_K(p,q) = \sum_{n=1}^N\sum_{k=1}^K\gamma_{nk}\int_\mathbb{R}\left(x-\left(\sqrt{\frac{\sigma_n}{\sigma_k}}(x-\mu_k)+\mu_n\right)\right)^2\pi_k\mathcal{N}(x|\mu_k,\sigma_k)dx
+  D_K(p,q) = \sum_{n=1}^N\sum_{k=1}^K\gamma_{nk}\int_\mathbb{R}\left(x-\left(\sqrt{\frac{\sigma_n}{\sigma_k}}(x-\mu_k)+\xi_n\right)\right)^2\pi_k\mathcal{N}(x|\mu_k,\sigma_k)dx
 \end{equation}
 The goal is to find the function $q(x)$ that minimizes \eqref{eq:37}.
 $q$ is parametrized by the mean values $\mu_k$, the variances $\sigma_k$, the mixing coefficients $\pi_k$, and the responsibilities $\gamma_{nk}$:
@@ -244,11 +244,57 @@ We will always fix all but one parameter.
 
 First, we will consider the mean values.
 Differentiating \eqref{eq:37} with respect to $\mu_k$ yields
-\begin{equation}
+%\begin{equation}
+\begin{multline}
   \label{eq:39}
-  \frac{\partial }{\partial\mu_k}D(p,q) = \sum_{n=1}^N\gamma_{nk}\frac{1}{\sqrt{2\pi}}\int_\mathbb{R}\exp\left(-\frac{(x-\mu_k)^2}{2\sigma_k}\right)\left(\sqrt{\frac{\sigma_n}{\sigma_k}}(\mu_k-x)-\mu_n+x\right)\left((x-\mu_1)\left(\sqrt{\frac{\sigma_n}{\sigma_k}}(\mu_k-x)-\mu_n+x\right)+2\sqrt{\sigma_k\sigma_n}\right)
+  \frac{\partial }{\partial\mu_k}D(p,q) = \sum_{n=1}^N\gamma_{nk}\frac{1}{\sqrt{2\pi}}\int_\mathbb{R}\exp\left(-\frac{(x-\mu_k)^2}{2\sigma_k}\right)\left(\sqrt{\frac{\sigma_n}{\sigma_k}}(\mu_k-x)-\xi_n+x\right)\cdots\\ \left((x-\mu_1)\left(\sqrt{\frac{\sigma_n}{\sigma_k}}(\mu_k-x)-\xi_n+x\right)+2\sqrt{\sigma_k\sigma_n}\right)dx = 0
+\end{multline}
+%\end{equation}
+Evaluating the integral  yields
+\begin{align}
+  \label{eq:40}
+ 0 &=\sum_{n=1}^N\gamma_{nk}\left[(\xi_n-\mu_k)erf\left(\frac{\mu_k-x}{\sqrt{2\sigma_k}}\right) + \exp\left(-\frac{(x-\mu_k)^2}{2\sigma_k}\right)\left(\ldots\right)\right]_{-\infty}^\infty\\
+ &=\sum_{n=1}^N\gamma_{nk}(\mu_k-\xi_n)
+\end{align}
+and finally solving for the parameter $\mu_k$, using the definition \eqref{eq:36} 
+\begin{equation}
+  \label{eq:41}
+  \mu_k = \frac{1}{N_k}\sum_{n=1}^N\gamma_{nk}\xi_n.
 \end{equation}
+The optimal mean value of cluster $k$ for a given set of responsibility variables is the average over all data points it is responsible for.
+Note that this is identical to the update for the K-Means centroids, except that the hard assignments $z_{nk}$ are replaced by the soft assignments $\gamma_{nk}$.
 
+The derivation of the optimal cluster variation follows a similar line.
+After differentiating with respect to $\sigma_k$ and integrating, and solving one gets
+\begin{equation}
+  \label{eq:42}
+  \sigma_k = \frac{1}{N_k}\sum_{n=1}^N \gamma_{nk}\sigma_n
+\end{equation}
+This expression cannot be computed yet, since we did not specify the variances $\sigma_n$ of the samples.
+One simple choice would be to postulate the value of $\sigma_n$ to a fixed value independent of $n$.
+The K-Means approach can be interpreted as using such a fixed, common variance, with the subtle choice of $\sigma_n\rightarrow 0$.
+from \eqref{eq:42}, we have that the variance of the clusters would in that case be identical to the variance of the data.
+Basically, the variance of the clusters is fixed beforehand.
+We would, however, like to infer the variance of the data to make the approximation better.
+Therefore, we use the clusters' mean values computed before to estimate the variance of the data points:
+\begin{equation}
+  \label{eq:43}
+  \sigma_{nk} := (\mu_k-\xi_n)^2
+\end{equation}
+The cluster centroid is regarded as a single sample from the distribution $\mathcal{N}(x|\xi_n, \sigma_{nk})$.
+From this one data point, the variance $\sigma_{nk}$ is inferred.
+Using this definition, the update for $\sigma_k$ is
+\begin{equation}
+  \label{eq:44}
+  \sigma_k = \frac{1}{N_k}\sum_{n=1}^N (\mu_k-\xi_n)^2
+\end{equation}
+This definition might not seems immediately obvious.
+In the sections below, further evidence will be discovered that this update is, in fact, correct.
+%
+%The update of the responsibilities
+
+In the following sections we will further discuss continuous approaches to approximating stochastic processes in tree structures.
+We will introduce the Expectation Maximization algorithm and find out that the algorithm derived above is only an example of a larger group that will become a powerful tool for scenario tree generation.
 \subsubsection{The Expectation Maximization Algorithm}
 The aim of this discussion is to give a short overview of the concept of EM.
 This will enable us to analyze the discretization method used to discretize the Kantorovich distance in section \ref{sec:kantoro}.
@@ -310,7 +356,7 @@ The model for the probabilities of the can be expressed as
 where $\pi_j$ are weights on the distributions and $\mathcal{N}$ is the Gaussian distribution
 \begin{equation}
   \label{eq:25}
-  \mathcal{N}(x|\mu,\sigma) = \frac{1}{\sqrt{2\pi\sigma}}\exp\left(\frac{(x-\mu)^2}{2\sigma}\right)
+  \mathcal{N}(x|\mu,\sigma) = \frac{1}{\sqrt{2\pi\sigma}}\exp\left(-\frac{(x-\mu)^2}{2\sigma}\right)
 \end{equation}
 For the model to be a probability distribution,
 \begin{equation}
@@ -368,17 +414,6 @@ It is well known that the choice of basis functions effectively is the same as a
 The central limit theorem suggests that Gaussian distributions are the best guess for a prior given no additional information.
 Therefore, the common choice of discretization in the literature (\cite{Dupacova2003}, etc.) is not optimal and should be revised to be the Mixture of Gaussians - EM algorithm.
 \input{discretization_animation}
-\subsubsection{EM and the Kantorovich Distance}
-\label{sec:em-kantorovich}
-In this section we will show how the update formulas of the mixture of Gaussian Expectation Maximization algorithm and the Kantorovich Distance relate.
-
-Consider a finite set of samples $\{\xi_i,\, i\in I\}$ sampled from a continuous probability distribution $\mathbb{P}$.
-We would like to find a distribution $\mathbb{Q}$ which from a tractable function space, which optimally approximates the distribution $\mathbb{P}$ in the Kantorovich Distance.
-
-We will assume that the probability distribution $\mathbb{P}$ can be approximated by a sum of  
-
-
-
 \subsection{EM for Trees}
 \label{sec:mixt-gauss-trees}
 In this section, the EM algorithm is adapted to tree structures. 
@@ -406,7 +441,7 @@ The model for the probability of a scenario $\xi$ given $\theta$ is
   \label{eq:28}
   p(\xi|\theta) = \sum_{j\in J}\pi_j\mathcal{D}(x|\theta_j).
 \end{equation}
-$\mathcal{D}$ is a probability distribution, therefore for \eqref{eq:28} to be a probability distribution,
+$\mathcal{D}$ is a probability distribution. Therefore, for \eqref{eq:28} to be a probability distribution,
 \begin{equation}
   \label{eq:30}
   \sum_{j\in J}\pi_j = 1
@@ -415,13 +450,90 @@ has to hold.
 The tree information is preserved through the components of $\theta$.
 The dimensions of $\xi$ represent the time stages.
 Since each parameter is associated with a dimension of $\xi$, we demand that $\theta_{jt}=\theta_{kt}$ for scenarios $j,k\in J$, if $n(j,t)=n(k,t)$.
-
+Figure \ref{fig:em-tree} illustrates the tree structure for a Gaussian mixtures model.
+The scenarios for the tree in the figure are 
+\[
+J = \left\{\hansvec{\mu_1\\\mu_2\\\mu_4},\,\hansvec{\mu_1\\\mu_2\\\mu_5},\,\hansvec{\mu_1\\\mu_3\\\mu_6},\,\hansvec{\mu_1\\\mu_3\\\mu_7}\right\}.
+\]
+Each mean value $\mu_n$ (and its corresponding variance) can be uniquely identified with a specific node of the tree. This makes it possible to enforce the tree structure.
+\input{em_tree}
 Using these definitions we can construct the generic EM algorithm for trees.
-The expectation step consists of computing the probabilities 
+
+The first step of the algorithm is the initialization of the parameters $\mu_n,$, $\sigma_n$ and $\pi_n$.
+The expectation maximization algorithm will in general prove a considerably larger computational burden than the K-Means/K-Medoids algorithm described in section \ref{sec:k-means-algorithm-trees}. 
+One possible initialization strategy is to run the K-Means algorithm on the same samples and infer the initial parameters of the EM-algorithm from the mean, variance and relative responsibilities of the clusters.
+
+In the expectation step, the probabilities $p(z_{nk}|\xi_n, \mu_k,\sigma_k,\pi_k)$ are computed.
+For this step, the scenarios $\xi_i$ of the sample set are regarded as data vectors, while the 
 
 \subsection{Variance Estimation from EM-Generated Trees}
 \label{sec:variance-estimation}
+In this section, we will show how the distribution generated with the mixture of Gaussians EM-algorithm can be used to estimate the variance of the optimal objective function (marginal of the optimization problem) with respect to the tree distribution.
+This approximation assists in evaluating the quality of the approximation of the solution.
+The approximation below is made possible, because EM algorithms, specifically the mixture of Gaussian algorithm that will be used here for illustration, preserve the information about the approximation error relative to each scenario (see figure \ref{fig:variance-estimation}).
 
+Consider the stochastic optimization problem
+\begin{align}
+  \label{eq:49}
+  \min&\;\int \hat{f}(x,\xi) p(\xi)d\xi\\
+\text{s.t.}&\; \hat{h}(x,\xi) = 0\\
+&x\geq 0
+\end{align}
+with a probability distribution $p$, and a random variable (stochastic process) $\xi$.
+The discretized form is
+\begin{align}
+  \label{eq:46}
+  \mathcal{P}(\xi)\; \min\limits_{x}&\; f(x,\xi)\\
+\text{s.t.}&\; h(x,\xi) = 0\\
+&\; x \geq 0
+\end{align}
+where $\xi$ are the values of the tree nodes.
+Let $x^*=x^*(\xi)$ denote the solution to \eqref{eq:46} as a function of the node values.
+Using a NLP solver, $x^*(\xi_0)$ for a fixed set of tree nodes can be computed.
+The Taylor expansion of optimal value $f(x^*,\xi)$ with respect to the node values at $\xi_0$ is
+\begin{equation}
+  \label{eq:47}
+  f(x^*(\xi),\xi) \approx f(x^*(\xi_0),\xi_0) + \nabla_\xi^T \mathcal{L}(x,\xi)(\xi-\xi_0) 
+\end{equation}
+with $\mathcal{L}$ the Lagrangean of the above optimization problem (\cite{Jongen2004}, theorem 3.2.3).
+\input{variance_estimation}
+
+Suppose now that $\xi_0$ was generated using the Mixture of Gaussians EM-algorithm of the previous section.
+Therefore, for each node value $\xi_n$, which represents the mean value of a Gaussian, a variance $\sigma_n$ is known from the result of the algorithm.
+The discretized optimization problem \eqref{eq:46} is solved for the discrete distribution made up of the mean values of the tree node Gaussians.
+For the solution $x^*$, the variance information is not taken into account.
+The node values $\xi_0$ with their tree structure make up a discrete probability distribution.
+$p$, which holds the probabilities of the node values, can in this context be considered a \textbf{distribution over discrete probability distributions}.
+With this interpretation, we can compute the variance of the optimal objective value with respect to the probability distribution of the tree.
+This value assists in identifying whether the tree structure is sufficiently ``dense'' to achieve the desired accuracy in the solution of the stochastic optimization problem.
+
+The variance of the objective value with respect to the node values $\xi$ is defined as the Kantorovich distance between the distribution of scenarios optimal values over scenarios and the optimal solution
+\begin{equation}
+  \label{eq:50}
+  \mathrm{Var}_{\xi}\left[f^{\mathrm{opt}}\right] :=  \sum_{k=1}^K\int_{\mathbb{R}^T} \left(f_k^{\mathrm{opt}}(\xi)-f^{\mathrm{opt}}(\mu_k)\right)^2p_k(\xi)d\xi
+\end{equation}
+The probabilities of the scenarios are given by the model
+\begin{equation}
+  \label{eq:55}
+  p_k(\xi) = \pi_k\mathcal{N}(\xi|\mu_{k},\sigma_k).
+\end{equation}
+It is assumed that the variances $\sigma_k$ are sufficiently small compared to the region in which \eqref{eq:47} holds.
+The integral \eqref{eq:50} can be evaluated as
+\begin{equation}
+  \label{eq:52}
+  \operatorname{Var}_\xi\left[f^{\mathrm{opt}}\right] = \sum_{k=1}^K\int_{\mathbb{R}^T} (\nabla_{\xi_k}^T\mathcal{L}(x^*(\xi_k),\xi_k)(\xi-\xi_k))^2\pi_k\mathcal{N}(\xi|\mu_k,\sigma_k)d\xi
+\end{equation}
+%Using the definition of the Gaussian, the recursive application of
+%\begin{equation}
+%  \label{eq:53}
+%\int_{\mathbb{R}^n}(ax+b)^{tr}(ax+b)|2\pi\sigma|^{-1/2}\exp\of{-\frac{1}{2}(x-\mu)^{tr}\sigma^{-1}(x-\mu)} dx = b^{tr}b + a^2|\sigma|
+%\end{equation}
+leads to the simple approximation
+\begin{equation}
+  \label{eq:54}
+  \operatorname{Var}_\xi\left[f^{\mathrm{opt}}\right] = \sum_{k=1}^K \left(\nabla_{\xi_i} \mathcal{L}\right)^2\pi_k|\sigma_k| .
+\end{equation}
+The sensitivities are usually easily obtained from the solution of the optimization problem.
 
 %%% Local Variables: 
 %%% mode: latex

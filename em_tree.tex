@@ -1,0 +1,51 @@
+\newcommand{\gaussian}[4]{% posx, posy, sigma, height
+  \draw[fill,color=blue!50!black,thick]
+  plot[smooth,domain=(-2*#3+#1):(2*#3+#1),samples=100]
+  function {#2+#4*1/sqrt(2*3.1416*#3)*exp(-(x-#1)*(x-#1)/2/#3) - #4*1/sqrt(2*3.1416*#3)*exp(-(2*#3)*(2*#3)/2/#3)};
+}
+
+\newcommand{\optgaussian}[5][color=blue!50!black,thick]{% posx, posy, sigma, height
+  \draw[#1]
+  plot[smooth,domain=(-2*#4+#2):(2*#4+#2),samples=100]
+  function {#3+#5*1/sqrt(2*3.1416*#4)*exp(-(x-#2)*(x-#2)/2/#4) - #5*1/sqrt(2*3.1416*#4)*exp(-(2*#4)*(2*#4)/2/#4)};
+}
+
+\begin{figure}[b]
+  \centering
+  \begin{tikzpicture}
+    \draw (0,0) -- (-4,3);
+    \draw (0,0) -- (4,3);
+    \optgaussian[fill,color=orange!30,opacity=0.9]{0}{0}{1}{5};
+    \optgaussian[thick]{0}{0}{1}{5};
+    \node[below] at (0,0) {$\mu_1$};
+    \draw (-4,3) -- (-6,5);
+    \draw (-4,3) -- (-3,5);
+    \optgaussian[fill,color=orange!30,opacity=0.9]{-4}{3}{1}{5/2};
+    \optgaussian[thick]{-4}{3}{1}{5/2};
+    \node[below] at (-4,3) {$\mu_2$};
+    \draw (4,3) -- (6,5);
+    \draw (4,3) -- (3,5);
+    \optgaussian[fill,color=orange!30,opacity=0.9]{4}{3}{1}{5/2};
+    \optgaussian[fill,color=orange!30,opacity=0.9]{-6}{5}{1}{5/4};
+    \optgaussian[fill,color=orange!30,opacity=0.9]{-3}{5}{1}{5/4};
+    \optgaussian[fill,color=orange!30,opacity=0.9]{3}{5}{1}{5/4};
+    \optgaussian[fill,color=orange!30,opacity=0.9]{6}{5}{1}{5/4};
+    \optgaussian[thick]{4}{3}{1}{5/2};
+    \optgaussian[thick]{-6}{5}{1}{5/4};
+    \optgaussian[thick]{-3}{5}{1}{5/4};
+    \optgaussian[thick]{3}{5}{1}{5/4};
+    \optgaussian[thick]{6}{5}{1}{5/4};
+    \node[below] at (4,3) {$\mu_3$};
+    \node[below] at (-6,5) {$\mu_4$};
+    \node[below] at (-3,5) {$\mu_5$};
+    \node[below] at (3,5) {$\mu_6$};
+    \node[below] at (6,5) {$\mu_7$};
+  \end{tikzpicture}
+  \caption{The structure of trees for EM-type algorithms}
+  \label{fig:em-tree}
+\end{figure}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "da"
+%%% End: 

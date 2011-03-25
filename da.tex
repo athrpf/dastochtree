@@ -8,6 +8,7 @@
 \usepackage{comment}
 \usepackage{graphicx}
 \usepackage[disable]{todonotes}
+%\usepackage{todonotes}
 \usepackage{pgfplots}
 %\usepackage[inline]{showlabels}
 
@@ -28,7 +29,7 @@
 % TIKZ and pgfplots
 %%%%%%%%%%%%%%%
 \pgfplotsset{compat=1.3}
-\usetikzlibrary{shapes,arrows,fit}
+\usetikzlibrary{shapes,arrows,fit,shadows}
 \tikzstyle{block} = [rectangle, draw, fill=blue!20, text width=5em, text centered, rounded corners, minimum height=4em]
 \tikzstyle{line} = [draw, -latex']
 %%%%%%%%%%%%%%%
@@ -54,6 +55,11 @@
 %%%%%%%%%%%%%%%
 
 \newcommand{\argmin}{\operatorname{argmin}}
+\newcommand{\argmax}{\operatorname{argmax}}
+\newcommand{\erf}{\operatorname{erf}} % Gaussian error function
+\newcommand{\of}[1]{\mathopen{}\left(#1\right)} % for f\of{x}; \mathopen makes space shorter
+\newcommand{\off}[1]{\mathopen{}\left[#1\right]} % for f\of{x}; \mathopen makes space shorter
+\newcommand{\hansvec}[1]{\left[\begin{array}{c} #1 \end{array}\right]}
 
 \begin{document}
 \listoftodos
