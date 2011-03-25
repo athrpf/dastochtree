@@ -8,7 +8,7 @@
       \node [block, text width=10em, right of=xiorig] (infsolver){Infinite Dim. Solver};
       \node [block, right of=infsolver] (xorig){$x$};
       \node [block, text width=10em, below of=infsolver] (nlp) {(N)LP Solver};
-      \node [block, below of=xorig] (x) {$x$};
+      \node [block, below of=xorig] (x) {$\hat{x}$};
 
       \path [line] (xiorig) -- node (xierror) {$D(\xi,\hat{\xi})$} (xi);
       \path [line] (x) -- node (xerror) {$D(x,\hat{x})$} (xorig);
