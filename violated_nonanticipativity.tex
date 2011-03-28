@@ -92,62 +92,64 @@
       \draw (n47) -- (n57);
       \draw (n48) -- (n58);
 
-    \begin{pgfonlayer}{background}
-        \node [fit=(n11) (n24), fill=orange!20] {};
+      
+      \node (root) at (0,-8) [circle,draw] {$x_{\mathrm{now}}$};
+
+      \node (lown1) at (2,-6) [circle, draw] {W};
+      \node (lown2) at (2,-10) [circle, draw] {L};
+
+      \draw (root) -- (lown1);
+      \draw (root) -- (lown2);
+      
+      \node (lown3) at (4,-6) [circle, draw] {$x_{11}$};
+      \node (lown4) at (4,-10) [circle, draw] {$x_{12}$};
+
+      \draw (lown1) -- (lown3);
+      \draw (lown2) -- (lown4);
+
+      \node (lown5) at (6,-5) [circle, draw] {W};
+      \node (lown6) at (6,-7) [circle, draw] {L};
+      \node (lown7) at (6,-11) [circle, draw] {L};
+      \node (lown8) at (6,-9) [circle, draw] {W};
+
+      \draw (lown3) -- (lown5);
+      \draw (lown3) -- (lown6);
+      \draw (lown4) -- (lown7);
+      \draw (lown4) -- (lown8);
+      
+      \node (lown9) at (8,-5) [circle, draw] {$x_{21}$};
+      \node (lown10) at (8,-7) [circle, draw] {$x_{22}$};
+      \node (lown11) at (8,-11) [circle, draw] {$x_{23}$};
+      \node (lown12) at (8,-9) [circle, draw] {$x_{24}$};
+
+      \draw (lown5) -- (lown9) ;
+      \draw (lown6) -- (lown10);
+      \draw (lown7) -- (lown11);
+      \draw (lown8) -- (lown12);
+
+      \node (lown13) at (10,-4.5) [circle,draw]  {W};
+      \node (lown14) at (10,-5.5) [circle,draw]  {L};
+      \node (lown15) at (10,-6.5) [circle,draw]  {W};
+      \node (lown16) at (10,-7.5) [circle,draw]  {L};
+      \node (lown17) at (10,-11.5) [circle,draw] {L};
+      \node (lown18) at (10,-10.5) [circle,draw] {W};
+      \node (lown19) at (10,-9.5) [circle,draw] {L};
+      \node (lown20) at (10,-8.5) [circle,draw] {W};
+
+      \draw (lown9) -- (lown13);
+      \draw (lown9) -- (lown14);
+      \draw (lown10) -- (lown15);
+      \draw (lown10) -- (lown16);
+      \draw (lown11) -- (lown17);
+      \draw (lown11) -- (lown18);
+      \draw (lown12) -- (lown19);
+      \draw (lown12) -- (lown20);
+
+      \begin{pgfonlayer}{background}
+        \node [fit=(n11) (n24), fill=orange!20] (upperbackground) {};
+        \node [fit=(lown1) (lown3), fill=orange!20] (lowerbackground) {};
+        \path[->,very thick] (upperbackground) edge[bend right] (lowerbackground);
       \end{pgfonlayer}
-\end{tikzpicture}
-    \begin{tikzpicture}
-      \node (root) at (0,0) [circle,draw] {$x_{\mathrm{now}}$};
-
-      \node (n1) at (2,1.5) [circle, draw] {W};
-      \node (n2) at (2,-1.5) [circle, draw] {L};
-
-      \draw (root) -- (n1);
-      \draw (root) -- (n2);
-      
-      \node (n3) at (4,1.5) [circle, draw] {$x_{11}$};
-      \node (n4) at (4,-1.5) [circle, draw] {$x_{12}$};
-
-      \draw (n1) -- (n3);
-      \draw (n2) -- (n4);
-
-      \node (n5) at (6,2.5) [circle, draw] {W};
-      \node (n6) at (6,1) [circle, draw] {L};
-      \node (n7) at (6,-2.5) [circle, draw] {L};
-      \node (n8) at (6,-1) [circle, draw] {W};
-
-      \draw (n3) -- (n5);
-      \draw (n3) -- (n6);
-      \draw (n4) -- (n7);
-      \draw (n4) -- (n8);
-      
-      \node (n9) at (8,2.5) [circle, draw] {$x_{21}$};
-      \node (n10) at (8,1) [circle, draw] {$x_{22}$};
-      \node (n11) at (8,-2.5) [circle, draw] {$x_{23}$};
-      \node (n12) at (8,-1) [circle, draw] {$x_{24}$};
-
-      \draw (n5) -- (n9) ;
-      \draw (n6) -- (n10);
-      \draw (n7) -- (n11);
-      \draw (n8) -- (n12);
-
-      \node (n13) at (10,3.5) [circle,draw]  {W};
-      \node (n14) at (10,2.5) [circle,draw]  {L};
-      \node (n15) at (10,1.5) [circle,draw]  {W};
-      \node (n16) at (10,0.5) [circle,draw]  {L};
-      \node (n17) at (10,-3.5) [circle,draw] {L};
-      \node (n18) at (10,-2.5) [circle,draw] {W};
-      \node (n19) at (10,-1.5) [circle,draw] {L};
-      \node (n20) at (10,-0.5) [circle,draw] {W};
-
-      \draw (n9) -- (n13);
-      \draw (n9) -- (n14);
-      \draw (n10) -- (n15);
-      \draw (n10) -- (n16);
-      \draw (n11) -- (n17);
-      \draw (n11) -- (n18);
-      \draw (n12) -- (n19);
-      \draw (n12) -- (n20);
       
     \end{tikzpicture}
     \caption{The non-anticipativity constraints are violated in the first plot.
