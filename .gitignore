@@ -6,4 +6,10 @@
 *.toc
 *.blg
 *.aux
+*.ilg
+*.nlo
+*.nls
+*.gnuplot
+*.table
+*.ist
 \#*\#
