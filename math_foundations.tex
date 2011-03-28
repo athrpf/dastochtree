@@ -34,28 +34,28 @@ The solution is a mapping $x:\Omega\rightarrow \mathbb{R}^{d_2\times T}$.
 The difficulty in multi-stage stochastic programming problems arises from the measurability constraint (\ref{eqn:measurability-constraint}).
 This constraint is specific to multi-stage stochastic programs and leads to a much increased computational complexity of multi-stage programs over two-stage programs \cite{Shapiro2005,Shapiro2008}.
 % 
-\par{Measurability Constraints} 
-mean that the condition
+\paragraph{Measurability Constraints} 
+The measurability constraints imply that the condition
 \begin{equation}
   \label{eq:mathematical-NAC}
   \omega_1,\omega_2\in \Omega \, : \, \xi_\tau(\omega_1) = \xi_\tau(\omega_2)\,\forall \tau\leq t\,\Rightarrow \, x_t(\omega_1) = x_t(\omega_2) 
 \end{equation}
 has to hold for all time steps $t$, and all pairs of events $(\omega_1,\omega_2)$. 
 Note that this implies that the decision variables $x_t$ must only depend on the events of the past up until the present $\xi_1$, ..., $\xi_t$, and explicitly \textbf{not} on $\xi_{t+1},\, ...,\,\xi_T$. 
-This property is often called \textit{non-anticipativity of the solution} $x$. 
-Therefore, these equations model the uncertainty of the future.
+This property is called \textit{non-anticipativity of the solution} $x$. 
+These equations model the uncertainty of the future.
 % 
 \paragraph{Discretization}
 % 
 Stochastic Programs are infinite dimensional optimization problems and as such not immediately accessible to computation.
 To transform the stochastic program into a computable problem, the infinite dimensional stochastic process $\xi$ must be discretized into a finite stochastic process $\hat{\xi}$ (see figure \ref{fig:abstract-discretization}). 
-\input{abstract_discretization}
+
 If certain precautions are taken, it is possible to show (at least for linear stochastic programs) that the solution to the stochastic problem is stable under this discretization operation, meaning that there exists a factor $L$ such that the distance between the solution to the discretized problem $\hat{x}$ and the solution to the original problem $x$ are Lipschitz-continuous with respect to the discretization error:
 \begin{equation}
   D(x , \hat{x}) \leq L\cdot D(\xi,\hat{\xi})
 \end{equation}
 where $D$ is an appropriate norm. See \cite{Heitsch2010} for the proof and further details. The correct choice for $D$ will be discussed in sections \ref{sec:measuring-challenges} and \ref{sec:kantoro}.
-
+\input{abstract_discretization}
 The discretization will be carried out in two steps. 
 First, the infinite dimensional stochastic process $\xi$ is approximated by a set of scenarios sampled using Monte-Carlo techniques. 
 This step is well known and will not be discussed here. 
@@ -63,14 +63,14 @@ To capture the essence of the non-anticipativity constraints, in a second step t
 
 Tree structures introduce the non-anticipativity constraints in intuitive way (see figure \ref{fig:violated-nonanticipativity}.
 The parent node holds the information of the past, while each node is branched into multiple possible future states. 
-It is, in fact, insufficient to represent the stochastic process as a set of non-interdependent scenarios with a common root. 
-As this is a common misconception, for illustration purposes we will give the following
+It is a common mistake to represent the stochastic process as a set of independent scenarios with common root.
+Because this is misconception is so common, for illustration purposes we will give the following
 \begin{example}[Necessity of tree structure]
   \label{ex:tree-necessity}
   % \hangindent=1cm
   Consider a game of coin tosses, played by a player against a bank. 
   The player will play the game for three consecutive coin tosses. 
-  He has three Euros that he all wants to bet. 
+  He has three Euros that he wants to wager. 
   Predicting the outcome of the toss correctly will return 
   \begin{itemize}
   \item $\frac{13}{6}$ the stakes $x$ in the first round,
@@ -78,28 +78,28 @@ As this is a common misconception, for illustration purposes we will give the fo
   \item and only $1.5\cdot x$ in the final round.
   \end{itemize}
   Otherwise the stakes will be lost. 
-  Earnings cannot be used to bet in the game.
+  Earnings cannot be used again as wager.
 
   The player optimizes the expected return.
   Without the need for a calculator we can say that the optimal strategy is to bet everything in the first round, yielding a total expected return of $1.75$.
 
   Consider now a transcription of the problem as an LP, using all possible scenarios (see figure \ref{fig:violated-nonanticipativity}, top).
   For three consecutive coin tosses, there are eight different scenarios.
-  The player wants to use this LP to help him decide, how much he is supposed to bet in the first round.
+  The player wants to use this LP to help him decide how much he is supposed to bet in the first round.
   The corresponding LP is
   \begin{align*}
-    \min\limits_x &\; \sum_{s\in S}\sum_{t=1}^3p_sx_s^t\cdot c_s^t\\
-    \text{s.t.} &\; \sum_{t=1}^3x_s^t = 3 \;\forall\, s\in S\\
-    & \; x_s^1 = x_0^1\;\forall s\in S
+    \min\limits_x &\; \sum_{i\in I}\sum_{t=1}^3p_ix_i^t\cdot \xi_i^t\\
+    \text{s.t.} &\; \sum_{t=1}^3x_i^t = 3 \;\forall\, i\in I\\
+    & \; x_i^1 = x_0^1\;\forall s\in S
   \end{align*}
-  where $S$ is the set of scenarios, $c_s^t$ is the outcome of the game (return per Euro for win, $0$ for loss), $x_s^t$ is the amount that the player is willing to bet at time step $t$ in scenario $s$. The first equation ensures that the player spends exactly the amount he has at his disposal. The second equation fixes the players decision in the first round.
+  where $I$ is the index set of scenarios, $\xi_i^t$ is the outcome of the game (return per Euro for win, $0$ for loss), $x_i^t$ is the amount that the player is willing to bet at time step $t$ in scenario $i$. The first equation ensures that the player spends exactly the amount he has at his disposal. The second equation fixes the players decision in the first round.
 
   The results, summarized in table \ref{tab:coin-toss-results}, show that the solution of the LP does not match the optimal solution, even though the uncertainty was seemingly taken into account. 
   The flaw in the above formulation is that the non-anticipativity constraints are missing for stage 2. 
   The algorithm believes to know what will happen, as soon as the first value is revealed. 
   The game, as it is modeled in the LP is as follows: 
   ``Make one decision with stochastic outcome, then make two decisions with perfect foresight''. 
-  In this situation, the algorithm will correctly decide to wait and spend its money only on bets that it knows the result of beforehand (see figure \ref{fig:violated-nonanticipativity}). 
+  In this situation, the algorithm will correctly decide to wait and only wager, when the result is (seemingly) known beforehand (see figure \ref{fig:violated-nonanticipativity}). 
   \input{violated_nonanticipativity}
   \begin{table}
     \small\centering
@@ -123,12 +123,12 @@ As this is a common misconception, for illustration purposes we will give the fo
   \end{table}
 \end{example}
 
-The above example illustrates the need for tree structured stochastic processes. The construction of this tree structure will be the main point of the following paper. Before we can start constructing these scenario trees, we need to define a measure for the quality of a given approximation $\hat{\xi}$ to a stochastic process $\xi$. The goal is to define a distance function 
+The above example illustrates the need for tree structured discretizations of stochastic processes. The construction of this tree structure will be the main focus of the this paper. Before a scenario tree can be constructed, it is necessary to define a measure which assesses the quality of a given approximation $\hat{\xi}$ to a stochastic process $\xi$. The goal is to define a distance function 
 \begin{equation}
   \label{eq:distance-function-intro}
   D:\mathcal{S} \times \mathcal{S} \rightarrow \mathbb{R}_+,\;(\xi, \hat{\xi})\mapsto D(\xi, \hat{\xi})
 \end{equation}
-where $\mathcal{S}$ is the space of stochastic processes which remains to be defined. The distance function should satisfy at least the definition of a metric. Since the choices for $\mathcal{S}$ and $D$ are by no means obvious, they are discussed in the following section.
+where $\mathcal{S}$ is the space of stochastic processes which remains to be defined. The distance function should satisfy at least the definition of a metric. Since the choices for $\mathcal{S}$ and $D$ are by no means obvious, they are discussed in the following sections.
 \subsection{Challenges in Measuring Stochastic Processes}
 \label{sec:measuring-challenges}
 The purpose of this section is to derive a distance function (\ref{eq:distance-function-intro}) which will serve as a means to evaluate the quality of a scenario tree approximation to a stochastic process.
