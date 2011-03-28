@@ -7,6 +7,8 @@
 \usepackage[ruled,vlined]{algorithm2e}
 \usepackage{comment}
 \usepackage{graphicx}
+\usepackage{harvard}
+\usepackage{nomencl}
 \usepackage[disable]{todonotes}
 %\usepackage{todonotes}
 \usepackage{pgfplots}
@@ -61,6 +63,8 @@
 \newcommand{\off}[1]{\mathopen{}\left[#1\right]} % for f\of{x}; \mathopen makes space shorter
 \newcommand{\hansvec}[1]{\left[\begin{array}{c} #1 \end{array}\right]}
 
+\makenomenclature
+
 \begin{document}
 \listoftodos
 \newpage
@@ -105,8 +109,54 @@ In this paper we will present several ways to generate said scenario trees. The 
 %\include{advanced_algorithms}
 \include{expectation_maximization}
 \include{conclusion}
+\nomenclature{$\xi$}{Stochastic Process}
+\nomenclature{$\xi_i^t$}{Value of scenario $i$ of stochastic process $\xi$ at time step $t$}
+\nomenclature{$\nu_i^t$}{Values of scenario $i$ of stochastic process $\nu$ at time step $t$. $\nu$ is preferably used for trees}
+\nomenclature{$\Omega$}{Arbitrary set, event space}
+\nomenclature{$i$}{Index, typically for sampled scenarios}
+\nomenclature{$j$}{Index, typically for trees scenarios}
+\nomenclature{$T$}{Number of Time steps / Index set of time steps}
+\nomenclature{$I$}{Index set of sampled scenarios}
+\nomenclature{$J$}{Index set of (tree) scenarios}
+\nomenclature{$tr$}{The transpose of a vector/matrix}
+\nomenclature{$D$}{Distance Function / metric}
+\nomenclature{$D_K$}{Kantorovich Distance}
+\nomenclature{$\omega$}{Event of a random variable or stochastic process, $\omega\in\Omega$}
+\nomenclature{$\mathcal{F}$}{Filtration}
+\nomenclature{$x$}{Free variable}
+\nomenclature{$X$}{Feasible set for variable $x$ defined by its bounds}
+\nomenclature{$\mathbb{E}$}{Expected value operator}
+\nomenclature{$\mathbb{P}$}{Continuous probability distribution}
+\nomenclature{$\mathbb{Q}$}{Continuous probability distribution}
+\nomenclature{$t,\tau$}{Time step indices}
+\nomenclature{$\mathfrak{P}$}{Power set operator}
+\nomenclature{$\mathcal{S}$}{Set of stochastic processes}
+\nomenclature{$\zeta$}{In stochastic process: Mapping from event space to value space}
+\nomenclature{$c$}{Metric on the event space}
+\nomenclature{$c_{ij}$}{Discrete metric on the event space}
+\nomenclature{$\eta$}{Measure used in the computation of the Kantorovich Distance}
+\nomenclature{$\eta_{ij}$}{Discrete measure between events/scenarios $i$ and $j$}
+\nomenclature{$p,q$}{Probability distributions on discrete spaces}
+\nomenclature{$\mathcal{B}$}{Borel-$\sigma$-field}
+\nomenclature{$\mathcal{T}$}{Tree feasibility set}
+\nomenclature{$\mathcal{P}$}{Stochastic optimization problem}
+\nomenclature{$\mathcal{T}_D$}{Feasibility set for discrete event trees}
+\nomenclature{$\mathcal{T}_C$}{Feasibility set for continuous event trees}
+\nomenclature{$\lambda$}{Lagrange multiplier for equality constraint}
+\nomenclature{$\mu$}{Lagrange multiplier for inequality constraint}
+\nomenclature{$m_i$}{Optimal value of sub-problem $i$ in optimal weights proof}
+\nomenclature{$K$}{Number of clusters}
+\nomenclature{$f$}{Objective function}
+\nomenclature{$h$}{Equality constraint}
+\nomenclature{$d_1,d_2$}{Number of dimensions of the value space of a stochastic process}
+\nomenclature{$L$}{Lipschitz factor}
+\nomenclature{$L^p$}{Lebesgue space with norm $\Vert\cdot\Vert_p$}
+\nomenclature{$\mathbb{R}$}{Set of real numbers}
+\nomenclature{$n$}{Index for nodes of a tree}
+
+\printnomenclature
 \newpage
-\bibliographystyle{plain}
-%\bibliographystyle{dinat}
+%\bibliographystyle{plain}
+\bibliographystyle{agsm}
 \bibliography{da}
 \end{document}
