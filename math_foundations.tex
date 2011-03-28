@@ -2,16 +2,23 @@
 \label{sec:math-foundations}
 This section serves as a short introduction to the mathematical concepts used throughout this paper. The reader should be familiar with the most basic concepts of probability theory and measure theory, such as probability spaces, sigma algebras, filtrations and measures.
 
-This section is organized as follows. First, the above description of a real world problem is translated into the context and notation of probability theory. Then the resulting abstract mathematical description is transformed into a numerically tangible formulation.
+This section is organized as follows. 
 \subsection{Notation}
-We will only deal with stochastic processes with discrete time steps. These time steps will be indexed from 1 to a final time T. For a stochastic process $\xi$ with a continuous distribution, $\xi^t$ denotes the mapping from events to outcomes at time step $t$. For discrete stochastic processes, index sets for the events, typically denoted by $I$ and $J$, are introduced. For convenience, the stochastic process and its index set are used interchangeably. The outcome of an event $i\in I$ of a discrete stochastic process $\xi$ at time step $t$ is denoted by $\xi_i^t$. If the time step is omitted, this denotes the full scenario $i$, that is the vector of the values $\xi_i^t$ sorted by their times $t$.
+We will only deal with stochastic processes with discrete time steps.
+These time steps will be indexed from 1 to a final time $T$.
+For a stochastic process $\xi$ with a continuous distribution, $\xi^t$ denotes the mapping from events to outcomes at time step $t$.
+For discrete stochastic processes, index sets for the events, typically denoted by $I$ and $J$, are introduced.
+For convenience, the stochastic process and its index set are used interchangeably.
+The outcome of an event $i\in I$ of a discrete stochastic process $\xi$ at time step $t$ is denoted by $\xi_i^t$.
+If the time step is omitted, this denotes the full scenario $i$, that is the vector of the values $\xi_i^t$ sorted by their times $t$.
 
-The vector $e$ denotes a vector of ones in each dimension. The dimension will be chosen in accordance with the context. 
+The vector $e$ denotes a vector of ones in each dimension.
+The dimension will be chosen in accordance with the context. 
 
 In optimization problems, if there are indices in an equation that are not explicitly declared, it is assumed that this equation is stated for each of the indices in the corresponding set.
 The corresponding set will always be obvious in context.
 
-For a set $A$, $\mathfrak{P}(A)$ denotes the power set.
+For a set $\Omega$, $\mathfrak{P}(\Omega)$ denotes the power set.
 \subsection{Stochastic Programming and Scenario Trees}
 Suppose a problem given in the following generic nonlinear multi-stage stochastic structure. 
 \begin{eqnarray}
@@ -21,10 +28,11 @@ Suppose a problem given in the following generic nonlinear multi-stage stochasti
   &&x_t \in X_t\\
   &&x_t \, \mathrm{is}\,\mathcal{F}_t \mathrm{-measurable} \label{eqn:measurability-constraint}
 \end{eqnarray}
-In this problem, the stochastic process $\xi$ can be considered as a mapping $\xi:\Omega\rightarrow \mathbb{R}^{d\times T}$, where $\Omega$ is the sample space of the underlying probability space $(\Omega, \mathcal{F}, \mathbb{P})$. The solution is a mapping $x:\Omega\rightarrow \mathbb{R}^{n\times T}$.
+In this problem, the stochastic process $\xi$ can be considered as a mapping $\xi:\Omega\rightarrow \mathbb{R}^{d_1\times T}$, where $\Omega$ is the sample space of the underlying probability space $(\Omega, \mathcal{F}, \mathbb{P})$.
+The solution is a mapping $x:\Omega\rightarrow \mathbb{R}^{d_2\times T}$.
 
-The difficulty in multi-stage stochastic programming problems arises from the measurability constraint (\ref{eqn:measurability-constraint}). This constraint is specific to multi-stage stochastic programs.
-This additional constraint leads to a much increased computational complexity of multi-stage programs over two-stage programs \cite{Shapiro2005,Shapiro2008}.
+The difficulty in multi-stage stochastic programming problems arises from the measurability constraint (\ref{eqn:measurability-constraint}).
+This constraint is specific to multi-stage stochastic programs and leads to a much increased computational complexity of multi-stage programs over two-stage programs \cite{Shapiro2005,Shapiro2008}.
 % 
 \par{Measurability Constraints} 
 mean that the condition
