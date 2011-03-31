@@ -135,17 +135,18 @@ The purpose of this section is to derive a distance function (\ref{eq:distance-f
 As we are dealing mainly with the numerics of this problem, the theoretical discussion is carried out with a focus on comprehensibility.
 For a detailed and mathematically thorough discussion see \cite{Heitsch2010} and the references therein.
 
-Stochastic processes are very versatile and complex objects.
-Depending on the problem at hand, different interpretations may be useful. 
+Stochastic processes are versatile and complex objects.
+Depending on the problem at hand, different interpretations may be useful.
+As stated above, we will focus exclusively on time-discrete stochastic processes.
 
-In general, a stochastic process (as stated above, we will focus exclusively on time-discrete stochastic processes) is a composition of five objects. The first three objects compose a probability space: a sample space $\Omega$, a filtration (family of $\sigma$-algebras) $\left\{\mathcal{F}_t\right\}_{t=1}^T$, and a probability measure $\mathbb{P}$ which is a mapping from the set of distinguishable events at time $t$ to a probability:
+In general, a stochastic process is a composition of five objects. The first three objects compose a probability space: a sample space $\Omega$, a filtration (family of $\sigma$-algebras) $\left\{\mathcal{F}_t\right\}_{t=1}^T$, and a probability measure $\mathbb{P}$ which is a mapping from the set of distinguishable events at time $t$ to a probability:
 \begin{equation}
   \label{eq:prob-measure-definition}
   \mathbb{P}_t : \mathcal{F}_t \rightarrow \left[0,1\right]. 
 \end{equation}
 The final two elements of the stochastic process are a set of values that the stochastic process can take, and a mapping $\zeta$ from the sample space to the value space. For our purposes, the value space will always be a subset of the Euclidean space $\mathbb{R}^n$.
 
-These elements that make up the stochastic process can lead to different interpretations, by fixing four of these five and considering the space of stochastic processes in terms of the fifth object. One popular way to do this is to fix everything but the mapping $\zeta$ from the sample space to the value space. An example of this usage is the proof of the stability properties of multi-stage stochastic linear programs in (\cite{Heitsch2010}). The corresponding space is the space of functions mapping $\Omega$ to $\mathbb{R}^n$. The exact space depends on the regularity of the functions one would like to consider. A natural choice is the space of p-integrable functions $L^p$ since there is no reason for the assumption of any kind of differentiability of $\zeta$ and $L^p$ has the nice feature of being a Banach Space, which allows for the definition of a norm
+These elements of the stochastic process can lead to different interpretations, by fixing four of these five and considering the space of stochastic processes in terms of the fifth object. One popular way to do this is to fix everything but the mapping $\zeta$ from the sample space to the value space. An example is the proof of the stability properties of multi-stage stochastic linear programs in (\cite{Heitsch2010}). The corresponding space is the space of functions mapping $\Omega$ to $\mathbb{R}^n$. The exact space depends on the regularity of the functions one would like to consider. A natural choice is the space of p-integrable functions $L^p$ since there is no reason for the assumption of any kind of differentiability of $\zeta$, and $L^p$ has the nice feature of being a Banach Space, which allows for the definition of a norm
 \begin{equation}
   \label{eq:Lp-norm}
   \left\Vert\xi\right\Vert_p = \sum_{t=1}^T\left(\int_{\omega\in \Omega}\left\Vert\zeta_t(\omega)\right\Vert^p d\mathbb{P}(\omega)\right)^{1/p}.
