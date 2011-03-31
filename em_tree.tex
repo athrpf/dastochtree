@@ -4,11 +4,6 @@
   function {#2+#4*1/sqrt(2*3.1416*#3)*exp(-(x-#1)*(x-#1)/2/#3) - #4*1/sqrt(2*3.1416*#3)*exp(-(2*#3)*(2*#3)/2/#3)};
 }
 
-\newcommand{\optgaussian}[5][color=blue!50!black,thick]{% posx, posy, sigma, height
-  \draw[#1]
-  plot[smooth,domain=(-2*#4+#2):(2*#4+#2),samples=100]
-  function {#3+#5*1/sqrt(2*3.1416*#4)*exp(-(x-#2)*(x-#2)/2/#4) - #5*1/sqrt(2*3.1416*#4)*exp(-(2*#4)*(2*#4)/2/#4)};
-}
 
 \begin{figure}[b]
   \centering

@@ -34,6 +34,13 @@
 \usetikzlibrary{shapes,arrows,fit,shadows}
 \tikzstyle{block} = [rectangle, draw, fill=blue!20, text width=5em, text centered, rounded corners, minimum height=4em]
 \tikzstyle{line} = [draw, -latex']
+
+% Gaussian distribution
+\newcommand{\optgaussian}[5][color=blue!50!black,thick]{% posx, posy, sigma, height
+  \draw[#1]
+  plot[smooth,domain=(-2*#4+#2):(2*#4+#2),samples=100]
+  function {#3+#5*1/sqrt(2*3.1416*#4)*exp(-(x-#2)*(x-#2)/2/#4) - #5*1/sqrt(2*3.1416*#4)*exp(-(2*#4)*(2*#4)/2/#4)};
+}
 %%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%
@@ -153,7 +160,7 @@ In this paper we will present several ways to generate said scenario trees. The 
 \nomenclature{$L^p$}{Lebesgue space with norm $\Vert\cdot\Vert_p$}
 \nomenclature{$\mathbb{R}$}{Set of real numbers}
 \nomenclature{$n$}{Index for nodes of a tree}
-
+\nomenclature{$e$}{Vector of ones}
 \printnomenclature
 \newpage
 %\bibliographystyle{plain}
