@@ -23,8 +23,12 @@
         \node (selection) [draw, rounded corners,dotted, fill=orange!20, fit=(xiorig) (xi) (xierror) (focus)] {};
       \end{pgfonlayer}
     \end{tikzpicture}
-  \caption{Steps in the discretization of a stochastic program. Since the infinite dimensional solver is just a theoretical enitiy, The path below must be used. A discretization error is introduced when converting $\xi$ to $\hat{\xi}$. This error is propagated through the NLP. For linear stochastic programs, it has been shown %Heitsch2010
-    that there exists a problem specific constant $L$ such that the error between the discretized and the original solution is bounded by the error in the discretization of the stochastic process.}
+  \caption{Steps in the discretization of a stochastic program.
+    Since the infinite dimensional solver is just a theoretical entity, The path below must be used.
+    A discretization error $D(\bs\xi,\hat{\bs\xi})$ is introduced when converting $\bs\xi$ to $\hat{\bs\xi}$.
+    This error is propagated through the NLP.
+    For linear stochastic programs, it has been shown %Heitsch2010
+    that there exists a problem specific constant $L$ such that the error $D(\bs x, \hat{\bs x})$ between the discretized and the original solution is bounded by $D(\bs\xi, \hat{\bs\xi})$.}
   \label{fig:abstract-discretization}
 \end{figure}
 
