@@ -1,16 +1,21 @@
 \section{Two Theorems on fast evaluations of the Kantorovich Distance}
-In this section, two theorems will be presented that will be crucial in the algorithms for stochastic search presented throughout this paper.
+In the previous section it has been shown that the naive approach of solving the MILP resulting from the direct transcription of the Kantorovich distance is not feasible.
+In this section, two theorems will be presented that will be pave the way for a new heuristic approach to solving these problems.
 \subsection{Kantorovich Distance for optimal weights}
 \label{sec:optimal-weights-proof}
-In this section, we will prove a theorem that is of great practical significance for the remainder of this thesis. It is based on the ideas of \cite{Dupacova2003}, theorem 2. 
+In this section, we will prove a theorem on the probability distribution of the optimal
+that is of great practical significance for the remainder of this thesis.
+It is based on the same idea as \cite{Dupacova2003}, theorem 2.
 
-Consider two discrete stochastic processes represented by their index sets $I$ and $J$. The values of each scenario $\xi_i^t,\, i\in I$ and $\nu_j^t,\, j\in J$ at each timestep are known, as are the discrete probabilities $p_i$ of the process $I$. The probabilities of process $J$ are not given explicitly, but defined as the set of weights that minimize the Kantorovich Distance $D_K(I,J)$ between the stochastic processes:
+Consider two discrete random variables $\bs\zeta(I,p)$ and $\bs\chi(J,q)$.
+The values of each scenario $\zeta_i^t,\, i\in I$ and $\chi_j^t,\, j\in J$ at each timestep are known, as are the discrete probabilities $p_i$ of the process $I$.
+The probabilities $q_j$ of process $J$ are not given explicitly, but defined as the set of weights that minimize the Kantorovich Distance $D_K(\bs\zeta,\bs\chi)$:
 \begin{equation}
   \label{eq:define-optimal-weights-q}
-  q := \underset{q}{\operatorname{argmin}}\left\{\sum_{i\in I}\sum_{j\in J}\eta_{ij}c_{ij},\; \sum_{i\in I}\eta_{ij} = q_j,\; \sum_{j\in J}\eta_{ij} = p_i,\;\eta\geq 0,\; q\in \left[0,1\right]^{|J|} \right\}
+  q := \underset{\hat{q}}{\operatorname{argmin}}\left\{\sum_{i\in I}\sum_{j\in J}\eta_{ij}c_{ij}\left|\; \sum_{i\in I}\eta_{ij} = \hat{q}_j,\; \sum_{j\in J}\eta_{ij} = p_i,\;\eta_{ij}\geq 0\right.\right\}
 \end{equation}
-with $c_{ij} := c(\xi_i,\nu_j)$.
-While not fixing $q$ at first seems to make the problem more difficult by introducing more free variables, it actually makes it possible to calculate both the probability distribution $q$ and the value of the Kantorovich Distance $D_K$ in closed form.
+with $c_{ij} := c(\zeta_i,\chi_j)$.
+While not fixing $q$ at first seems to make the problem more difficult by introducing more free variables, it actually makes it possible to calculate both $q$ and $D_K(\bs\zeta,\bs\chi)$ in closed form.
 The following theorem and algorithm \ref{alg:optimal-weights} will show how this can be achieved.
 \begin{thm}[Optimal Weights]
   \label{thm:optimal-weights}
@@ -19,46 +24,52 @@ The following theorem and algorithm \ref{alg:optimal-weights} will show how this
     \label{eq:optimal-weights-in-thm}
     q_j := \sum_{i\in I_j} p_i\;\text{ with } I_j:=\left\{i\in I| j = \underset{k\in J}{\operatorname{argmin}}\; c_{ik}\right\}.
   \end{equation}
-  Using these optimal weights as the discreet probability distribution for $J$, the Kantorovich distance $D_K=D_K(I,J)$ takes on the value
+  Using these optimal weights as the discrete probability distribution for $\bs\chi$, the Kantorovich distance $D_K=D_K(\bs\zeta,\bs\chi)$ takes on the value
   \begin{equation}
     \label{eq:define-Dk-optimalweights-thm}
     D_K = \sum_{i\in I}p_i\min\limits_{j\in J}c_{ij}
   \end{equation}
 \end{thm}
-Dupacova et al. proof a very similar theorem (\cite{Dupacova2003}, theorem 2), whith the difference that there, $J\subset I$. Their proof, which could be applied with only slight modifications, uses the primal and dual representations of the Kantorovich minimum flow problem. Instead, we will try to give the following, more intuitive proof, which better highlights the 
+Theorem 2 of \citeasnoun{Dupacova2003} is similar, whith the difference that there, $\chi(J)\subset \zeta(I)$.
+Their proof, which could be applied with only slight modifications, uses the primal and dual representations of the Kantorovich minimum flow problem.
+Instead, we will try to give the following, more intuitive proof.
 \begin{proof}
-First, we will show the correctness of the representation of $D_K$ in (\ref{eq:define-Dk-optimalweights-thm}). $D_K$ is defined as
+First, we will show the correctness of the representation of $D_K$ in (\ref{eq:define-Dk-optimalweights-thm}).
+$D_K$ is defined as
 \begin{align}
   D_K := \min\limits_{q, \eta}& \sum_{i\in I}\sum_{j\in J}\eta_{ij}c_{ij}\\
   \text{s.t.}&\sum_{i\in I}\eta_{ij} = q_j\label{eqn:eta-q-in-optimalweights-proof}\\
   &\sum_{j\in J}\eta_{ij} = p_i\label{eqn:eta-p-in-optimalweights-proof}\\
-  &\eta \geq 0\\
-  &0 \leq q \leq 1
+  &\eta_{ij} \geq 0\\
+  &0 \leq q_j \leq 1
 \end{align}
-The problem can be solved disregarding the variables $q_j$. The variables only appear in (\ref{eqn:eta-q-in-optimalweights-proof}), and their bounds are implicit in the remainig equations: $q_j\geq 0$ is implicit in $\eta_{ij}\geq 0$, and $q_j\leq 1$ is implicit in 
+The problem can be solved disregarding the variables $q_j$.
+The variables only appear in (\ref{eqn:eta-q-in-optimalweights-proof}), and their bounds are implicit in the remainig equations: $q_j\geq 0$ is implicit in $\eta_{ij}\geq 0$, and $q_j\leq 1$ is implicit in
 \[\sum_{j\in J}q_j=1\]
 which is again implicit in (\ref{eqn:eta-p-in-optimalweights-proof}) as shown above (see (\ref{eq:proof-sum-q-redundant})).
 Therefore, $D_K$ can be computed using the reduced problem
 \begin{align}
   D_K := \min\limits_{\eta}& \sum_{i\in I}\sum_{j\in J}\eta_{ij}c_{ij}\\
   \text{s.t.}&\sum_{j\in J}\eta_{ij} = p_i\\
-  &\eta \geq 0
+  &\eta_{ij} \geq 0
 \end{align}
 and $q$ can be deduced from the resulting $\eta$.
 In this reduced problem, the variables decompose into independent blocks, with $\eta_{ij}$ and $\eta_{kl}$ being independent, iff $i\neq k$.
-This allows us to reformulate the problem as a sum of optimal values of independent optimization problems:
+With this, the problem can be reformulated as a sum of optimal values of independent optimization problems:
 \begin{equation}
   \label{eqn:Dk-decomposition-in-mi}
   D_K = \min \sum_{i\in I} m_i
 \end{equation}
-with
+with $m_i$ defined by the optimization problem
 \begin{align}
   \mathcal{D}_i\; :\; m_i :=\min\limits_{\eta^i}&\sum_{j\in J}\eta_{j}^ic_{j}^i\\
   \text{s.t.}&\sum_{ij}\eta_j^i = p^i\\
   &\eta_j^i\geq 0.
 \end{align}
-The index $i$ is moved into the superscript to visualize that the index is fixed for the optimization problem.
-Each problem $\mathcal{D}_i$ is only has one constraint. The solution is trivial and can be easily deduced from the KKT conditions. The KKT conditions for a problem $\mathcal{D}_i$ are
+The index $i$ is moved into the superscript to visualize that it is fixed for the optimization problem.
+Each problem $\mathcal{D}_i$ only has one constraint.
+The solution can be deduced from the KKT conditions.
+The KKT conditions for a problem $\mathcal{D}_i$ are
 \begin{equation}
   \label{eq:D-i-KKT-in-optimalweightsproof}
   \left[
@@ -74,14 +85,17 @@ Each problem $\mathcal{D}_i$ is only has one constraint. The solution is trivial
     \end{array}
 \right]
 \end{equation}
-with $\mu_j^i\geq 0$. From $c$ being a metric we have $c_j^i\geq 0$. With this information, the KKT conditions allow only for the following solution:
+with constraint multiplier $\lambda^i$ and bound multipliers $\mu_j^i\geq 0$.
+From $c$ being a metric we have $c_j^i\geq 0$.
+With this information, the KKT conditions allow only for the following solution:
 \begin{align}
   \label{eq:optimal-eta-optmimalweightsproof}
   \lambda^{\mathrm{opt}} &:= -\min\limits_{j\in J}c_j^i\\
   \mu_j^{i,\mathrm{opt}} &:= c_j^i - \min\limits_{j\in J}c_j^i\\
   \eta_j^{i,\mathrm{opt}} &:= \left\{ \begin{array}{lr}p_i&\text{if }j=\underset{j\in J}{\operatorname{argmin}}\, c_j^i\\0&\text{otherwise}\end{array}\right.
 \end{align}
-Given LICQ (which obviouly holds since $\eta_{ij}=0\;\forall (i,j)\in I\times J$ is not feasible), the KKT conditions for linear programs are sufficient conditions for optimality. Therefore, we have 
+Given LICQ (which obviouly holds since $\eta_{ij}=0\;\forall (i,j)\in I\times J$ is not feasible), the KKT conditions for linear programs are sufficient conditions for optimality.
+Therefore, we have
 \begin{equation}
   m_i^{\mathrm{opt}} = \sum_{j\in J}\eta_j^{i,\mathrm{opt}}c_j^i = p_i\min\limits_{j\in J}c_j^i.
 \end{equation}
@@ -90,8 +104,8 @@ The optimal solution postulated for $q$ (\ref{eq:optimal-weights-in-thm}) can be
 This completes the proof.
 \end{proof}
 \begin{algorithm}
-  \KwIn{Scenarios and probabilities for SP 1 $(\xi_i,p_i)\, i\in I$, scenarios $\nu_j,\, j\in J$ for SP 2}
-  \KwOut{Optimal weights $q_j$ for the scenarios $j\in J$ and $D_K(I,J)$}
+  \KwIn{Scenarios and probabilities for $(\zeta_i,p_i)\, i\in I$, scenarios $\chi_j,\, j\in J$}
+  \KwOut{Optimal weights $q_j$ for the scenarios $j\in J$ and $D_K(\bs\zeta,\bs\chi)$}
   $c_{ij} \leftarrow \Vert \xi_i - \nu_j\Vert$\tcc*{Any norm can be chosen here}
   $q_j \leftarrow 0$\;
   $D_K(I,J) \leftarrow 0$\;
@@ -105,33 +119,33 @@ This completes the proof.
 \end{algorithm}
 \subsection{Kantorovich Distance and Clustering Algorithms}
 \label{sec:kantorovich-and-clusters}
-In this section, a corrolary to theorem \ref{thm:optimal-weights} is proven, that will allow for a very efficient rephrasing of the problem defined in (\ref{eq:symbolic-optimization-with-minflow2}).
-For this section, we will disregard the time aspect of stochastic processes and only consider random variables.
-Suppose in (\ref{eq:symbolic-optimization-with-minflow2}), instead of a stochastic process we were given a set of samples from a random variable.
-The assignment is to find a smaller set of samples of a given cardinality that approximates the original distribution under the Kantorovich Distance.
+In this section, a corollary to theorem \ref{thm:optimal-weights} is proven, that will allow for a very efficient rephrasing of the problem defined in (\ref{eq:symbolic-optimization-with-minflow2}):
+\[
+  \min_{\bs\chi,\eta,q}\left\{\sum_{i\in I}\sum_{j\in J}\eta_{ij}c(\xi_i,\chi_j)\left|\sum_{i\in I}\eta_{ij}=q_j,\;\sum_{j\in J}\eta_{ij}=p_i,\;\eta_{ij}\geq 0\right.\right\}
+\]
+Suppose the random variable $\bs\chi(J,q)$ in this problem is supposed to be of a certain cardinality $K$.
 This can be formalized as the following
 \begin{problem}[Optimal Kantorovich Approximation (Continuous)]
 \label{prb:CE-Kantorovich-randvar}
-  Given a discrete random variable $\xi :\Omega_1\rightarrow \mathbb{R}^n$, $|\Omega_1|<\infty$ and probability distribution $p:\mathfrak{P}(\Omega_1)\rightarrow [0,1]$, find the discrete random variable $\nu : \Omega_2\rightarrow\mathbb{R}^n$ with $|\Omega_2 | \leq K$ events and probability distribution $q:\mathfrak{P}(\Omega_2)\rightarrow [0,1]$ that minimizes the Kantorovich Distance $D_K(\xi,\nu)$.
+  Given a discrete random variable $\bs\xi(I,p)$, find the discrete random variable $\bs\chi(J,q)$ with $|J | \leq K$ events that minimizes the Kantorovich Distance $D_K(\xi,\chi)$.
 \end{problem}
 A related problem is to find the \textit{optimal reduction} of a random variable:
 \begin{problem}[Optimal Kantorovich Approximation (Discrete)]
   \label{prb:DE-Kantorovich-randvar}
-  Given a discrete random variable $\xi : \Omega_1\rightarrow \mathbb{R}^n$, $|\Omega_1|<\infty$ and probability distribution $p:\mathfrak{P}(\Omega_1)\rightarrow [0,1]$, find the discrete random variable $\nu : \Omega_2\rightarrow\mathbb{R}^n$ with $|\Omega_2 | \leq K$ events and probability distribution $q:\mathfrak{P}(\Omega_2)\rightarrow [0,1]$ that minimizes the Kantorovich Distance $D_K(\xi,\nu)$.
-  In additition, it must hold that $\nu(\Omega_2)\subset\xi(\Omega_1)$.
+  Given a discrete random variable $\bs\xi(I,p)$, find the discrete random variable $\bs\chi(J,q)$ with $\chi(J)\subset\xi(I)$ and $|J | \leq K$ events that minimizes the Kantorovich Distance $D_K(\bs\xi,\bs\chi)$.
 \end{problem}
 These problems are direct transcriptions of the Kantorovich Distance problems for discrete random variables.
 The difference between the two is that the random variable that is a solution to the second problem must map to values that actually appear as outcomes of the first random variable,
 while the solution to the first problem can be any subset of $\mathbb{R}^n$ with the desired cardinality.
 
-The goal of this section is to prove that these problems can be expressed in a much more well known form as the \textbf{$\mathbf{K}$-means and $\mathbf{K}$-medoid clustering} problems.
+The goal of this section is to prove that these problems can be expressed in the well known form of the \textbf{$\mathbf{K}$-means and $\mathbf{K}$-medoid clustering} problems.
 We will introduce these two problems and discuss them.
 \begin{problem}[$K$-Means Clustering]
   \label{prb:kmeans-problem-definition}
-  Given $K\in \mathbb{N}$, a finite set of points $\{x_1,\ldots , x_N\} = X\subset\mathbb{R}^n$ and a metric $c:X\times \mathbb{R}^n\rightarrow\mathbb{R}_+$, find the set $M\subset\mathbb{R}^{n}$, with $|M|=K$, such that
+  Given $K\in \mathbb{N}$, a finite set of points $\{x_1,\ldots , x_N\} = X\subset\mathbb{R}^d$ and a metric $c:X\times \mathbb{R}^d\rightarrow\mathbb{R}_+$, find the set $M\subset\mathbb{R}^d$, with $|M|=K$, such that
   \begin{equation}
     \label{eq:kmeans-problem-definition}
-    M = \underset{\hat{M}\subset\mathbb{R}^{n\cdot K}}{\operatorname{argmin}} \sum_{i=1}^N\min\limits_{m\in \hat{M}}c(x_i, m)
+    M = \underset{\hat{M}\subset\mathbb{R}^{d}}{\operatorname{argmin}} \sum_{i=1}^N\min\limits_{m\in \hat{M}}c(x_i, m)
   \end{equation}
 \end{problem}
 \begin{problem}[$K$-Medoids Clustering]
@@ -140,14 +154,16 @@ We will introduce these two problems and discuss them.
   \begin{equation}
     \label{eq:kmedoids-problem-definition}
     M = \underset{\hat{M}\subset X}{\operatorname{argmin}} \sum_{i=1}^N\min\limits_{m\in \hat{M}}c(x_i, m)
-  \end{equation} 
+  \end{equation}
 \end{problem}
-The $K$-mean and $K$-medoid problems are two of the most extensively used formulations in machine learning and data mining. 
-They are very useful for the unsupervised search of clusters in information. 
-Because of their wide range of applications, much work has gone into the development of efficient algorithms. See \cite{Bishop2006}, section 9.1 for an introduction. 
-In section \ref{sec:k-means-standard}, we will present the most basic algorithms for solving problems \ref{prb:kmeans-problem-definition} and \ref{prb:kmedoids-problem-definition}. %Algorithm \ref{alg:kmeans} is, due to its simplicity and obviousness, commonly given the same name as the problem itself. 
+The $K$-mean and $K$-medoid problems are two of the most extensively used formulations in machine learning and data mining.
+They are very useful for the unsupervised search of clusters in information.
+Because of their wide range of applications, much work has gone into the development of efficient algorithms.
+See \cite{Bishop2006}, section 9.1 for an introduction.
+In section \ref{sec:k-means-standard}, we will present the most basic algorithms for solving problems \ref{prb:kmeans-problem-definition} and \ref{prb:kmedoids-problem-definition}.
+%Algorithm \ref{alg:kmeans} is, due to its simplicity and obviousness, commonly given the same name as the problem itself.
 \begin{comment}
-For convenience, we will introduce a new assignment variable $r_{ij}$ defined as 
+For convenience, we will introduce a new assignment variable $r_{ij}$ defined as
 \begin{equation}
   \label{eq:define_r_kmeans}
   r_{ij}:= \left\{\begin{array}{ll} 1 & \text{if }j = \underset{k}{\argmin}\; c(x_i, m_k)\\0&\text{otherwise}\end{array}\right. .
@@ -161,18 +177,20 @@ Using these new variables, (\ref{eq:kmeans-problem-definition}) can be rewritten
 Note the resemblance to the objective function of the Kantorovich optimization.
 With this notation, we can summarize the $K$-Means algorithm.
 At the beginning of the algorithm, the means $m_j$ are initialized in some random way.
-The initialization step is crucial for the performance of the algorithm, but will not be discussed here. See for example the K-Means++ algorithm introduced by \cite{Arthur2006}. 
+The initialization step is crucial for the performance of the algorithm, but will not be discussed here.
+See for example the K-Means++ algorithm introduced by \cite{Arthur2006}.
 
 After the means are initialized, two steps called the expectation and maximization steps alternate, until the algorithm converges to a set of $r_{ij}$ and $m_j$.
 The nomenclature is based on the larger class of expectation-maxmization algorithms described by \cite{Dempster1977}.
 The expectation step minimizes the objective (\ref{eq:kmeans-problem-with-r}) with respect to $r_{ij}$ for fixed $m_j$.
 This is done by applying the definition of $r_{ij}$ in (\ref{eq:define_r_kmeans}).
-The maximization step conversely minimizes the objective function with respect to $m_j$, while fixing $r_{ij}$. 
+The maximization step conversely minimizes the objective function with respect to $m_j$, while fixing $r_{ij}$.
 \begin{equation}
   \label{eq:definition-mi-update-kmeans}
   m_j = \underset{\mu\in\mathbb{R}^n}{\argmin}\; c(r_{ij}x_i,\mu)
 \end{equation}
-This assignment depends on the metric $c$. For the case of $c(\cdot ) = \Vert \cdot \Vert_2$, it turns out to be the average value:
+This assignment depends on the metric $c$.
+For the case of $c(\cdot ) = \Vert \cdot \Vert_2$, it turns out to be the average value:
 \begin{equation}
   \label{eq:mj-as-average}
   m_j^{opt} = \frac{\sum_{i=1}^nr_{ij}x_i}{\sum_{i=1}^nr_{ij}}
@@ -187,7 +205,7 @@ However, due to its short running time, it can be executed several times on the 
   \KwOut{Cluster means $M=\{m_1,\ldots , m_K\}$, assignments $r_{ij}$ mapping $X\rightarrow M$.}
   \lIf{K-Means}{$U = \mathbb{R}^n$\;}
   \lIf{K-Medoids}{$U = X$\;}
-  
+
   (Randomly) initialize $m_i$\;
   \While{$r_{ij}$ change}{
     $r_{ij}\leftarrow \left\{\begin{array}{ll} 1 & \text{if }j = \underset{k}{\argmin}\; c(x_i, m_k)\\0&\text{otherwise}\end{array}\right.$\tcc*{Expectation step}
@@ -201,55 +219,58 @@ The algorithm is identical to the K-means algorithm, with the difference that th
 
 We are now prepared for the theorem connecting the Kantorovich Distance with the K-means algorithm.
 Here, we will focus on the combination of problems \ref{prb:CE-Kantorovich-randvar} and \ref{prb:kmeans-problem-definition}.
-The theorem and the comments apply almost one-to-one to the combination of problems \ref{prb:CE-Kantorovich-randvar} and \ref{prb:kmeans-problem-definition}, with the obvious adaptions due to the discrete nature of the search space for $\nu$.
-\begin{thm}[Equivalence of K-means (K-Medoids) and optimal Kantorovich Approximation]
+The theorem and the comments apply almost one-to-one to the combination of problems \ref{prb:DE-Kantorovich-randvar} and \ref{prb:kmedoids-problem-definition}, with the obvious adaptions due to the discrete nature of the search space for $\bs\chi$.
+\begin{thm}[Solution of K-means (K-Medoids) and solves optimal Kantorovich Approximation]
   \label{thm:kmeans-kantorovich}
-  Consider a discrete random variable $\xi : \Omega_1\rightarrow \mathbb{R}^n$ with a uniform probability distribution $p_i = \frac{1}{|\Omega_1|}$ and an integer $K$ as input to problem \ref{prb:CE-Kantorovich-randvar}.
-  If the set $M$ is a solution to problem \ref{prb:kmeans-problem-definition} (\ref{prb:kmedoids-problem-definition}) with input set $X=\xi(\Omega_1)$, then the random variable $\nu : M \rightarrow M,\, m\mapsto m$ is a solution to problem \ref{prb:CE-Kantorovich-randvar} (\ref{prb:DE-Kantorovich-randvar}) for the data above.
+  Consider a discrete random variable $\bs\xi(I,p)$ with a uniform probability distribution $p_i = \frac{1}{|I|}$ and an integer $K$ as input to problem \ref{prb:CE-Kantorovich-randvar} (\ref{prb:DE-Kantorovich-randvar}).
+  If the set $M$ is a solution to problem \ref{prb:kmeans-problem-definition} (\ref{prb:kmedoids-problem-definition}) with input set $X=\xi(I)$, then the random variable $\bs\chi(J,q),\; \chi : M \rightarrow M,\, m\mapsto m$ is a solution to problem \ref{prb:CE-Kantorovich-randvar} (\ref{prb:DE-Kantorovich-randvar}) for the data above, and $q$ is given by the optimal weights algorithm.
 \end{thm}
 \begin{proof}
-  The proof is very easy given theorem \ref{thm:optimal-weights}. 
-  We will derive sufficient conditions on the solution $\nu$ to problem \ref{prb:CE-Kantorovich-randvar} and show that the proposed solution $\nu$ meets these conditions.
-  $\nu$ can be characterized by the following optimization problem:
+  The proof builds on theorem \ref{thm:optimal-weights}.
+  We will derive sufficient conditions on the solution $\bs\chi$ to problem \ref{prb:CE-Kantorovich-randvar} and show that the proposed solution $\bs\chi$ meets these conditions.
+  $\chi$ is characterized by the following optimization problem:
   \begin{equation}
     \label{eq:characterize-nu-in-problemequivalence-proof}
-    \min\limits_{\nu}D_K(\xi,\nu)
+    \min\limits_{\bs\chi}D_K(\bs\xi,\bs\chi)
   \end{equation}
-  The objective function $D_K$ is defined by the Kantorovich mass transportation problem
+  The objective function $D_K = D_K(\bs\xi,\bs\chi)$ is defined by the Kantorovich mass transportation problem
   \begin{align}
     \label{eq:kantoro-in-problemequivalence-proof}
-    D_K = \min\limits_{\eta, q}& \sum_{i\in I}\sum_{j\in J}\eta_{ij}c(\xi_i,\nu_j)\\
+    D_K = \min\limits_{\eta, q}& \sum_{i\in I}\sum_{j\in J}\eta_{ij}c(\xi_i,\chi_j)\\
     \text{s.t.}&\sum_{i\in I}\eta_{ij} = q_j\\
     &\sum_{j\in J}\eta_{ij} = p_i\\
-    &0\leq \eta.
+    &\eta_{ij}\geq 0.
   \end{align}
-  A solution trivially always exists, because the feasible set of the optimization problem is not empty, and the objective has a lower bound ($D_K\geq 0$).
-  Note that the choice of the sets $\Omega_1$ and $\Omega_2$ is arbitrary since they do not appear in any form in the optimization problem.
-  All that matters are the sets $\xi(\Omega_1)$ and $\nu(\Omega_2)$.
-  From theorem \ref{thm:optimal-weights} we know that for any fixed values $\nu$, the solution to the inner problem can be directly computed using algorithm \ref{alg:optimal-weights}.
-  For given $\nu$, the solution (see (\ref{eq:define-Dk-optimalweights-thm})) is
+  A solution always exists, because the feasible set of the optimization problem is not empty, and the objective has a lower bound ($D_K\geq 0$).
+  From theorem \ref{thm:optimal-weights} we know that for any fixed values $\chi_j$, the solution to the inner problem can be directly computed using algorithm \ref{alg:optimal-weights}.
+  For given $\chi_j$, the solution (see (\ref{eq:define-Dk-optimalweights-thm})) is
   \begin{equation}
     \label{eq:repeat-Dk-optimalweights-for-kmeansproof}
-    D_K(\xi,\nu) = \sum_{i\in I}p_i\min\limits_{j\in J}c(\xi_i,\nu_j) = \sum_{i\in I}\frac{1}{|\Omega_1|}\min\limits_{j\in J}c(\xi_i,\nu_j). 
+    D_K(\bs\xi,\bs\chi) = \sum_{i\in I}p_i\min\limits_{j\in J}c(\xi_i,\chi_j) = \sum_{i\in I}\frac{1}{|I|}\min\limits_{j\in J}c(\xi_i,\chi_j).
   \end{equation}
-  Combining with (\ref{eq:characterize-nu-in-problemequivalence-proof}), $\nu$ is can finally be characterized by
+  Combining with (\ref{eq:characterize-nu-in-problemequivalence-proof}), $\chi(J)$ can be characterized by
   \begin{equation}
     \label{eq:end-of-kmeans-proof}
-    \nu(\Omega_2) = \argmin \frac{1}{|\Omega_1|}\sum_{i\in I}\min\limits_{j\in J} c(\xi_i,\nu_j) = \argmin \sum_{i\in I}\min\limits_{j\in J} c(\xi_i,\nu_j).
+    \chi(J) = \underset{\{\chi_j\}_{j=1}^K\subset\mathbb{R}^d}{\argmin} \frac{1}{|I|}\sum_{i\in I}\min\limits_{j\in J} c(\xi_i,\chi_j) = \argmin \sum_{i\in I}\min\limits_{j\in J} c(\xi_i,\chi_j).
   \end{equation}
-  The constant factor $\frac{1}{|\Omega_1|}$ is applied to all elements of the set and therefore does not change the result.
-  We now have characterized the set $\nu(\Omega_2)$ as a solution to problem \ref{prb:kmeans-problem-definition}.
+  The constant factor $\frac{1}{|I|}$ is applied to all elements of the set and therefore does not change the result.
+  We now have characterized the set $\chi(J)$ as a solution to problem \ref{prb:kmeans-problem-definition}.
 \end{proof}
 \begin{Note}
   The proof above is only given for uniform distributions.
-  It can be easily extended to cover arbitrary distributions by adapting the objective function of the K-Means and K-Medoids problems.
+  It can be extended to cover arbitrary distributions by adapting the objective function of the K-Means and K-Medoids problems.
   This was not done here, because generally the Monte Carlo samples that are used as inputs to the Kantorovich-approximizations in this paper are by nature of their construction uniformly distributed.
 \end{Note}
-The same relationship can be easily shown for problems \ref{prb:DE-Kantorovich-randvar} and \ref{prb:kmedoids-problem-definition}.
-As theorem \ref{thm:kmeans-kantorovich} can be adopted word by word, only replacing problem \ref{prb:CE-Kantorovich-randvar} with \ref{prb:DE-Kantorovich-randvar} and problem \ref{prb:kmeans-problem-definition} with \ref{prb:kmedoids-problem-definition}, and the proof follows the same idea as the one above, we will skip this repetition.
-%\begin{thm}[Equivalence of K-Medoids and Optimal Discrete Kantorovich Approximation]
-%  Consider a discrete random variable $\xi:\Omega_1\rightarrow\mathbb{R}^n$ with 
-%\end{thm}
+The same relationship can be shown for problems \ref{prb:DE-Kantorovich-randvar} and \ref{prb:kmedoids-problem-definition}.
+As theorem \ref{thm:kmeans-kantorovich} can be adopted word by word, only replacing problem \ref{prb:CE-Kantorovich-randvar} with \ref{prb:DE-Kantorovich-randvar} and problem \ref{prb:kmeans-problem-definition} with \ref{prb:kmedoids-problem-definition}, and the proof follows the same steps as the one above, we will skip this repetition.
+
+The above theorem is a huge step forward in the practical solution of optimal scenario tree problems.
+It has been illustrated in the previous section that the MILP resulting from the direct transcription of the Kantorovich distance is prohibitively hard to solve.
+Theorem \ref{thm:kmeans-kantorovich} opens tho possibilities of a wide range of heuristic solutions that have been found in a different area of research.
+
+The following problems remain to be resolved: It must be shown that the solutions computed by the heuristics are sufficiently close to the optimal solutions.
+Secondly, the equivalence of the problems has only been proven for random variables.
+It has to be shown haw this applies to stochastic processes with fixed filtration trees.
 \begin{comment}
 In this section, we analyze the computation of the Kantorovich distance for a different setup.
 Consider again two discrete stochastic processes $I$ and $J$ over time stages $T$ with values $\xi_i^t,\,i\in I$ and $\nu_j,\, j\in J,\;t\in T$.
@@ -262,14 +283,14 @@ The problem can be expressed as the NLP
   &\eta_{ij}\geq 0\\
   &q\geq 0
 \end{align}
-As shown above in theorem \ref{thm:optimal-weights}, for any given set of $\nu_j^t$ the variables $\eta_{ij}$ and $q$ will take on the values 
+As shown above in theorem \ref{thm:optimal-weights}, for any given set of $\nu_j^t$ the variables $\eta_{ij}$ and $q$ will take on the values
 \begin{align}
   \eta_{ij} &= \left\{\begin{array}{lr}p_i&\text{if }j=\underset{j\in J}{\operatorname{argmin}}\, c(\xi_i,\nu_j)\\0&\text{otherwise}\end{array}\right. ,\\
   q_j &= \sum_{i\in I_j}p_i\text{ with } I_j= \left\{i\in I|j=\underset{k\in J}{\operatorname{argmin}}\, c(\xi_i,\nu_j)\right\}.
 \end{align}
-This corresponds to a \textit{set partitioning} of the set $I$ into $|J|$ parts, defined by a mapping 
+This corresponds to a \textit{set partitioning} of the set $I$ into $|J|$ parts, defined by a mapping
 \[P:I\rightarrow J,\; i\mapsto \underset{j\in J}{\operatorname{argmin}}\, c(\xi_i, \nu_j)\]
-Given the distances $c(\xi_i,\nu_j)$, the optimal partitioning of $I$ can be computed using theorem \ref{thm:optimal-weights} and algorithm \ref{alg:optimal-weights}. 
+Given the distances $c(\xi_i,\nu_j)$, the optimal partitioning of $I$ can be computed using theorem \ref{thm:optimal-weights} and algorithm \ref{alg:optimal-weights}.
 
 Consider now the inverse situation.
 Given a set partitioning $P$, compute the optimal values of the stochastic process $\nu_j^t$.
@@ -280,7 +301,7 @@ A fast and direct way of computing these values without having to solve the opti
     \nu_j := \frac{1}{2}\left(\xi_i+\xi_k)\right)\text{ with }(i,k) = \underset{(r,l)\in I_j^2}{\operatorname{argmax}}\, c(\xi_r,\xi_l)
   \end{equation}
   with $I_j:=P^{-1}(j)$.
-  Given this representation, the Kantorovich Distance can be computed using algorithm \ref{alg:optimal-weights}. 
+  Given this representation, the Kantorovich Distance can be computed using algorithm \ref{alg:optimal-weights}.
 \end{thm}
 \begin{proof}
   The objective fut
@@ -292,7 +313,7 @@ A fast and direct way of computing these values without having to solve the opti
 \todo[inline]{Insert algorithm object for how to compute the optimal tree for fixed flow according to the proof}
 \end{comment}
 
-%%% Local Variables: 
+%%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "da"
-%%% End: 
+%%% End:
