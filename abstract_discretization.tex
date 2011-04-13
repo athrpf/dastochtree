@@ -3,16 +3,16 @@
 \begin{figure}
   \centering
     \begin{tikzpicture}[node distance=5cm, auto]
-      \node [block] (xiorig) {$\xi$};
-      \node [block, below of=xiorig] (xi) {$\hat{\xi}$};
+      \node [block] (xiorig) {$\hat{\bs\xi}$};
+      \node [block, below of=xiorig] (xi) {$\bs\xi$};
       \node [block, text width=10em, right of=xiorig] (infsolver){Infinite Dim. Solver};
-      \node [block, right of=infsolver] (xorig){$x$};
+      \node [block, right of=infsolver] (xorig){$\hat{\bs x}$};
       \node [block, text width=10em, below of=infsolver] (nlp) {(N)LP Solver};
-      \node [block, below of=xorig] (x) {$\hat{x}$};
+      \node [block, below of=xorig] (x) {$\bs x$};
 
-      \path [line] (xiorig) -- node (xierror) {$D(\xi,\hat{\xi})$} (xi);
-      \path [line] (x) -- node (xerror) {$D(x,\hat{x})$} (xorig);
-      \path [line,dashed] (xierror) -- node {$L\cdot D(\xi,\hat{\xi})\geq D(x,\hat{x})$} (xerror);
+      \path [line] (xiorig) -- node (xierror) {$D(\bs\xi,\hat{\bs\xi})$} (xi);
+      \path [line] (x) -- node (xerror) {$D(\bs x,\hat{\bs x})$} (xorig);
+      \path [line,dashed] (xierror) -- node {$L\cdot D(\bs\xi,\hat{\bs\xi})\geq D(\bs x,\hat{\bs x})$} (xerror);
       \path [line] (xiorig) -- (infsolver);
       \path [line] (xi) -- (nlp);
       \path [line] (nlp) -- (x);
@@ -25,14 +25,14 @@
     \end{tikzpicture}
   \caption{Steps in the discretization of a stochastic program.
     Since the infinite dimensional solver is just a theoretical entity, The path below must be used.
-    A discretization error $D(\bs\xi,\hat{\bs\xi})$ is introduced when converting $\bs\xi$ to $\hat{\bs\xi}$.
+    A discretization error $D(\bs\xi,\hat{\bs\xi})$ is introduced when converting $\hat{\bs\xi}$ to $\bs\xi$.
     This error is propagated through the NLP.
     For linear stochastic programs, it has been shown %Heitsch2010
     that there exists a problem specific constant $L$ such that the error $D(\bs x, \hat{\bs x})$ between the discretized and the original solution is bounded by $D(\bs\xi, \hat{\bs\xi})$.}
   \label{fig:abstract-discretization}
 \end{figure}
 
-%%% Local Variables: 
+%%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "da"
-%%% End: 
+%%% End:
