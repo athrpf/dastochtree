@@ -83,37 +83,7 @@
 \author{Hans Pirnay}
 \maketitle
 \tableofcontents
-\newpage
-\section{Introduction}
-%\todo[inline]{write an introduction}
-With the ongoing continuation of Moore's Law, previously computationally intractable problems attract researchers. Multi-Stage Stochastic Programming Problems belong to this class of problems.
-
-Stochastic Programming solves Optimization problems with uncertainty in the data. These problems appear naturally in many of business and engineering applications. Some examples include the operation of a power grid with stochastic demand due to consumer needs and stochastic supply due to the emergence of renewable energies such as wind and solar, which exhibit a considerable amount of uncertainty in their loads.
-
-The scenario tree represents the future as it is seen by the optimization problem.
-The generation of this scenario tree is a key step in the solution of stochastic programming problems.
-
-In this paper, we will derive a new, powerful algorithm to generate scenario trees from arbitrary data.
-This algorithm leads to a whole new perspective on the problem.
-
-The paper is organized as follows. First, an introduction will be given to the mathematical theory of scenario tree generation. Then, two theorems on the Kantorovich distance, which will be the distance used for measuring similarity in stochastic processes, will be presented. Based on these theorems, the new algorithm will be derived. This new algorithm will shed light on some decisions made in the process of discretization of the problem, that would otherwise have gone unnoticed. The paper closes with the conclusion and some notes on possible future directions.
-\begin{comment}
-\section{Stochastic Programming Theory}
-Consider the following real world problem:
-
-An operator in charge of a pumped hydro plant at any given time wants to make the optimal decision whether to pump water up into his reservoir with electrical power purchased at current spot market prices, do nothing, or release water from the reservoir and sell it at the spot market.
-
-For an introduction into the general theory see \cite{Birge1997}. For a more recent overview on optimization under uncertainty, see \cite{Sahinidis2004} and the references therein.
-% here, explain the following terms:
-% - value of the stochastic solution
-% - perfect foresight
-% - here and now / wait and see
-
-% \section{Scenario tree generation}
-The generation of the scenario tree is a key step in the solution of stochastic programming problems.
-
-In this paper we will present several ways to generate said scenario trees. The section is organized as follows. First, a short introduction to the basic mathematical theory will be given that is necessary to follow the derivations of the algorithms. Then, the state of the art in solving this problem is summarized. Finally, several new algorithms are derived. These new algorithms will differ from the ones proposed in the literature in that they attempt to solve the original problem to full optimality. The section will close with a discussion and comparison of the results of the presented algorithms.
-\end{comment}
+\include{introduction}
 \include{math_foundations}
 \include{naive}
 \include{kantorovich_theorems}
@@ -123,17 +93,19 @@ In this paper we will present several ways to generate said scenario trees. The 
 \nomenclature{$\xi$}{Stochastic Process}
 \nomenclature{$\xi_i^t$}{Value of scenario $i$ of stochastic process $\xi$ at time step $t$}
 \nomenclature{$\nu_i^t$}{Values of scenario $i$ of stochastic process $\nu$ at time step $t$. $\nu$ is preferably used for trees}
+\nomenclature{$\nu$}{Node values of a scenario tree}
 \nomenclature{$\Omega$}{Arbitrary set, event space}
 \nomenclature{$i$}{Index, typically for sampled scenarios}
 \nomenclature{$j$}{Index, typically for trees scenarios}
-\nomenclature{$T$}{Number of Time steps / Index set of time steps}
-\nomenclature{$I$}{Index set of sampled scenarios}
-\nomenclature{$J$}{Index set of (tree) scenarios}
+\nomenclature{$T$}{Number of time steps}
+\nomenclature{$I$}{Index set of scenarios }
+\nomenclature{$J$}{Index set of scenarios}
 \nomenclature{$tr$}{The transpose of a vector/matrix}
 \nomenclature{$D$}{Distance Function / metric}
+\nomenclature{$D$}{Set of dimension indices}
 \nomenclature{$D_K$}{Kantorovich Distance}
+\nomenclature{$y$}{Node values of a scenario tree}
 \nomenclature{$\omega$}{Event of a random variable or stochastic process, $\omega\in\Omega$}
-\nomenclature{$\mathcal{F}$}{Filtration}
 \nomenclature{$x$}{Free variable}
 \nomenclature{$X$}{Feasible set for variable $x$ defined by its bounds}
 \nomenclature{$\mathbb{E}$}{Expected value operator}
@@ -141,7 +113,14 @@ In this paper we will present several ways to generate said scenario trees. The 
 \nomenclature{$\mathbb{Q}$}{Continuous probability distribution}
 \nomenclature{$t,\tau$}{Time step indices}
 \nomenclature{$\mathfrak{P}$}{Power set operator}
+\nomenclature{$\mathcal{D}$}{Optimization problem}
+\nomenclature{$\mathcal{F}$}{Filtration}
+\nomenclature{$\mathcal{J}$}{Distortion function / Objective for EM algorithm}
+\nomenclature{$\mathcal{P}$}{Stochastic optimization problem}
 \nomenclature{$\mathcal{S}$}{Set of stochastic processes}
+\nomenclature{$\mathcal{T}$}{Tree feasibility set}
+\nomenclature{$\mathcal{T}_D$}{Feasibility set for discrete event trees}
+\nomenclature{$\mathcal{T}_C$}{Feasibility set for continuous event trees}
 \nomenclature{$\zeta$}{In stochastic process: Mapping from event space to value space}
 \nomenclature{$c$}{Metric on the event space}
 \nomenclature{$c_{ij}$}{Discrete metric on the event space}
@@ -149,10 +128,6 @@ In this paper we will present several ways to generate said scenario trees. The 
 \nomenclature{$\eta_{ij}$}{Discrete measure between events/scenarios $i$ and $j$}
 \nomenclature{$p,q$}{Probability distributions on discrete spaces}
 \nomenclature{$\mathcal{B}$}{Borel-$\sigma$-field}
-\nomenclature{$\mathcal{T}$}{Tree feasibility set}
-\nomenclature{$\mathcal{P}$}{Stochastic optimization problem}
-\nomenclature{$\mathcal{T}_D$}{Feasibility set for discrete event trees}
-\nomenclature{$\mathcal{T}_C$}{Feasibility set for continuous event trees}
 \nomenclature{$\lambda$}{Lagrange multiplier for equality constraint}
 \nomenclature{$\mu$}{Lagrange multiplier for inequality constraint}
 \nomenclature{$m_i$}{Optimal value of sub-problem $i$ in optimal weights proof}

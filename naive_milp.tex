@@ -1,19 +1,20 @@
 \subsection{Discrete-Event Trees}
 \label{sec:MILP-selection-problem}
 In this section we will derive algorithms for solving \eqref{eq:symbolic-optimization-with-minflow2} that are tailored to discrete-event trees.
-It is generally possible to model the resulting selection problem as an MILP. 
+For discrete event trees, the problem of the optimal scenario tree generation becomes one of selecting nodes from the original set of scenarios as nodes for the scenario tree.
+It is generally possible to model the resulting selection problem as an MILP.
 This full-size model, with far beyond 100,000 binary variables and a weak relaxation is, however, computationally intractable.
 
-In the following section, an initial approach to overcome this complexity is discussed.
+In the following section, an approach to overcome this complexity is discussed.
 The model will be decomposed by time steps, each of which is still modeled as an MILP.
 The model will be solved using a state-of-the-art mixed integer programming solver.
-In a second part, some results on this method will be presented.
+Some results on this method will be presented.
 %
 \subsubsection{Stage-Decomposition with MILP}
 %
 To reduce the complexity of the model, instead of solving all stages at the same time, we will solve the problem stage by stage.
 This greatly reduces the computational burden, because using the filtration constraints, we can solve the branches of the tree one at a time.
-These constraints allow us to 
+These constraints allow us to
 \begin{enumerate}
 \item solve the branch starting from each of the previously fixed nodes independently.
 \item for the current branch starting at node $j$, discard all scenarios $i$ for which $\eta_{ij}=0$ in the problem corresponding to the father node of $j$.
@@ -73,7 +74,7 @@ The MILP models the decision which scenarios will be selected as nodes into the 
 The variables $z_j^f$ are the selection variables for the scenarios $\xi_j$.
 If the node $\xi_j^t$ of scenario $j$ at time step $t$ (which is the time step following the current father node $f$) is selected as a node of the tree, the corresponding selection variable is set to $z_j^t=1$.
 Only $n_c$ (number of children, determined by the tree structure) nodes may be selected.
-The inequality constraints \eqref{eq:1} ensure that there are no flows $\eta$ directed to nodes that were not selected. 
+The inequality constraints \eqref{eq:1} ensure that there are no flows $\eta$ directed to nodes that were not selected.
 
 Note that this problem has the worst possible relaxation. The LP solution without integrality constraints is
 \begin{align}
@@ -90,17 +91,18 @@ Note that this problem has the worst possible relaxation. The LP solution withou
 
 Figure \ref{fig:swmilp-explanation} shows the evolution of the algorithm.
 \input{swmilp_explanation} % figure fig:swmilp-explanation
-\subsubsection{Results}
-In this section, we will briefly discuss the preliminary results for this algorithm.
-In this section, we will focus on the two results that are important to the argument of the paper:
-\begin{enumerate}
-\item The results of this algorithm are considerably better than random trees generated from the correct distribution
-\item The algorithm is too slow for data sets of regular sizes
-\end{enumerate}
-Since the Kantorovich Distance is not in itself a meaningful value for evaluating algorithms, because it does not give a measure of how much better the algorithm performs against a completely naive solution of selecting random scenarios from the set of sampled scenarios and building a tree on them.
-\input{naive_milp_results}
 
-%%% Local Variables: 
+The results of this algorithm applied to a small problem will briefly be discussed.
+For a test problem, a geometric brownian motion based on $\mathcal{N}(0,0.5)$ was used.
+
+The first important question was whether using this elaborate approach yields considerably better results than the naive approach of sampling the tree nodes directly from the original distribution.
+This question is answered positively in figure \ref{fig:naive-milp-results-errors}.
+Even for this very regular problem, the error for the random solution was twice as high as that of the optimal solution.
+However, the run time proved to be the main drawback of this algorithm.
+Run times for the geometric brownian motion with different numbers of sampled scenarios are plotted in figure \ref{fig:naive-milp-results-timing}.
+Eve though the state-of-the-art solver Gurobi 4.01 was used, problems with 2000 sampled scenarios could not be solved on a dual core 2500Mhz processor with 4 GB RAM.
+\input{naive_milp_results}
+%%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "da"
-%%% End: 
+%%% End:

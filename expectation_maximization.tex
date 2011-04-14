@@ -8,7 +8,7 @@ Promising results are reported in section \ref{sec:kmeans-results} for this new 
 
 In section \ref{sec:k-means-as-EM}, the relationship between the K-Means algorithm and Expectation Maximization algorithms is explained.
 Building on this relationship, the discretization of the infinite dimensional Kantorovich distance introduced in section \ref{sec:math-foundations} is revisited.
-It is found that the discretization in fact exhibits a hidden prior/bias on the distribution.
+It is found that the discretization exhibits a hidden prior/bias on the distribution.
 \subsection{The K-Means Algorithm}
 \label{sec:k-means-standard}
 In this section, the K-Means algorithm briefly introduced in \ref{sec:kantorovich-and-clusters} will be discussed in detail.
@@ -22,19 +22,19 @@ These choices correspond to the K-Means and the K-Medoids algorithms from the pr
 The general procedure is independent of this choice.
 
 The algorithm demands the number of different labels $K=|Y|$ as an input parameter.
-We introduce binary assignment variables $z_{ij}$ which are one, if label $y_j$ is attached to data point $x_i$, and zero otherwise.
+Binary assignment variables $z_{ij}$ are introduced, which are one, if label $y_j$ is attached to data point $x_i$, and zero otherwise.
 Obviously,
 \[\sum_{j\in Y}z_{ij} = 1\]
 has to hold.
 Using these labels, we can define the objective function (sometimes known as the ``distortion function'') for the K-Means problem as
 \begin{equation}
   \label{eq:5}
-  J(z, \mu) = \sum_{i}\sum_{j}z_{ij}c(x_i, \mu_j).
+  \mathcal{J}(z, \mu) = \sum_{i}\sum_{j}z_{ij}c(x_i, \mu_j).
 \end{equation}
 The K-Means problem can be expressed as
 \begin{equation}
   \label{eq:3}
-  \min\limits_{z, \mu}J(z, \mu).
+  \min\limits_{z, \mu}\mathcal{J}(z, \mu).
 \end{equation}
 This mixed integer optimization problem is in general intractable, due to the often large number of data points.
 The problem, though hard to solve to global optimality, can be solved quite efficiently using coordinate descent.\footnote{Coordinate descent, also known as the alternating variables method, is the cyclic application of gradient descent to each dimension of the variable vector \cite{Nocedal1999}.}
@@ -44,7 +44,7 @@ The solution for the assignment variables is
   \label{eq:4}
   z_{ij} = \left\{\begin{array}{ll}1&\text{if }j=\underset{i}{\argmin}\; c(x_i,\mu_j)\\0&\text{otherwise} \end{array}\right. .
 \end{equation}
-For the centroids, this depends on the choice of $U$ and $c$.
+For the centroids, the optimal value depends on the choice of $U$ and $c$.
 For the case of $U=\mathbb{R}^n$, $c(x,\mu) = \Vert x-\mu\Vert^2$ it becomes the solution to a quadratic equation
 \begin{equation}
   \label{eq:6}
@@ -55,7 +55,7 @@ For $U=X$ and an arbitrary dissimilarity measure $c$, there is no general analyt
   \label{eq:7}
   \mu_j = \underset{\hat{\mu}\in X}{\argmin}\; \sum_{i}\sum_{j}z_{ij}c(x_i,\hat{\mu})
 \end{equation}
-This is generally not considered to be a significant drawback, since many strategies have been found to limit the number of evaluations in actual implementations.
+This is generally not considered to be a significant drawback, since many strategies have been found to limit the number of evaluations in actual implementations (see \citeasnoun{Bishop2006} for details).
 
 The algorithm is composed of alternating optimizations of J with respect to $z$ and $\mu$.
 At every iteration, the objective function is guaranteed to decrease.
@@ -66,7 +66,7 @@ The procedure is outlined below in algorithm \ref{alg:k-means}.
   \label{alg:k-means}
   \caption{K-Means/K-Medoids Expectation Maximization}
   \KwIn{Metric $c$, data points $X = \{x_1,\ldots , x_N\}$.}
-  \KwOut{Cluster means $M=\{m_1,\ldots , m_K\}$, assignments $z_{ij}$ mapping $X\rightarrow M$.}
+  \KwOut{Cluster means $M=\{m_1,\ldots , m_K\}$, assignments $z_{ij}$ mapping $X$ to  $M$.}
   \lIf{K-Means}{$U = \mathbb{R}^n$\;}
   \lIf{K-Medoids}{$U = X$\;}
 
@@ -80,47 +80,47 @@ The procedure is outlined below in algorithm \ref{alg:k-means}.
 \label{sec:k-means-algorithm-trees}
 In section \ref{sec:kantorovich-and-clusters}, we showed that constructing the optimal discrete random variable $\bs\chi$ that best approximates a given discrete uniformly distributed random variable $\bs\xi$ is equivalent to solving the K-Means problem.
 This approach does not directly apply to stochastic processes.
-In this section, we will translate the coordinate descent algorithm described in the previous section to the specific case of constructing discrete stochastic processes given a fixed filtration tree.
+In this section, the K-Means coordinate descent algorithm described in the previous section will be translated to the specific case of constructing discrete stochastic processes given a fixed filtration tree $\mathcal{T}$.
 \subsubsection{The Algorithm}
 \label{sec:k-means-for-trees-alg}
-Consider a discrete stochastic process $\bs\xi(I, \mathcal{F}_1, p_t)$ with uniform distribution $p_T$.
+Consider a discrete stochastic process $\bs\xi(I, \mathcal{F}_1, p)$ with uniform distribution $p$.
 The algorithm will operate only on the scenarios $\xi_i,\; i\in I$ of $\bs\xi$.
-The aim of the algorithm is to find a discrete stochastic process $\bs\chi(J, \mathcal{F}_2,q_t$ which satisfies a given filtration tree $\mathcal{T}$.
-For ease of the derivation we will assume the dissimilarity measure $c$ to be the squared euclidean norm $\Vert\cdot\Vert_2^2$
-In analogy to \eqref{eq:5}, assignment variables $z$ are used to link the scenarios $\xi_i$ to the scenarios $\chi_j$.
+The aim of the algorithm is to find a discrete stochastic process $\bs\chi(J, \mathcal{F}_2,q)$ which satisfies a given filtration tree $\mathcal{T}$.
+For ease of the derivation we will assume the dissimilarity measure $c$ to be the squared euclidean norm $\Vert\cdot\Vert_2^2$.
+In analogy to \eqref{eq:5}, assignment variables $z_{ij}$ are used to link the scenarios $\xi_i$ to the scenarios $\chi_j$.
+The difficulty of the current problem is, that in contrast to the random variable events, the events $\chi_j$ of the tree are not independent.
+Instead, they are linked through the filtration tree to the node values $y$, because all nodes except for the leafs are shared among more than one scenario.
 The objective function is
 \begin{equation}
   \label{eq:8}
-  J(z, y) = \sum_{i\in I}\sum_{j\in J}z_{ij}c(\xi_i, \chi_j(y)).
+  \mathcal{J}(z, y) = \sum_{i\in I}\sum_{j\in J}z_{ij}c(\xi_i, \chi_j(y)).
 \end{equation}
 with $y$ the vector of  node values.
-The difficulty of the current problem is, that in contrast to the random variable events, the events $\chi_j$ of the tree are not independent.
-Instead, they are linked through the filtration tree to the node values, because all nodes except for the leafs are shared among more than one scenario.
-The problem will again be solved using a coordinate descent algorithm on the objective $J$, alternating between iterations in $z$ and $y$.
-The optimization with respect to the assignment variables z is simple.
+The problem will again be solved using a coordinate descent algorithm on the objective $\mathcal{J}$, alternating between iterations in $z$ and $y$.
+The optimization with respect to the assignment variables $z$ is simple.
 The optimal solution always selects the shortest path, given the placements $y$.
 For fixed $y$, similar to \eqref{eq:4} we have
 \begin{equation}
   \label{eq:10}
-  z_{ij} = \left\{\begin{array}{ll}1&\text{if }j=\underset{i}{\argmin}\; c(\xi_i,\chi_j(y))\\0&\text{otherwise} \end{array}\right. .
+  z_{ij} = \left\{\begin{array}{ll}1&\text{if }j=\underset{k}{\argmin}\; c(\xi_i,\chi_k(y))\\0&\text{otherwise} \end{array}\right. .
 \end{equation}
 The optimization with respect to the node values $y$ seems at first glance more difficult, but will prove to be just as easy as with random variables.
 We will first consider the problem for continuous-event trees.
 As discussed above we choose $c(\xi_i, \chi_j) = \Vert \xi_i-\chi_j\Vert^2$ as the dissimilarity function.
 \begin{equation}
   \label{eq:11}
-  \min\limits_y J(z,y) = \min\limits_y \sum_{i\in I}\sum_{j\in J}z_{ij}\Vert \xi_i - \chi_j\Vert^2
+  \min\limits_y \mathcal{J}(z,y) = \min\limits_y \sum_{i\in I}\sum_{j\in J}z_{ij}\Vert \xi_i - \chi_j(y)\Vert^2
 \end{equation}
 As we are dealing with an unconstrained, convex, differentiable optimization problem, the minimum is attained at the zero of the derivative.
 For node $k$ this means
 \begin{equation}
   \label{eq:12}
-  \frac{\partial J(z,y)}{\partial y_k} = \sum_{i\in I}\sum_{j\in J}z_{ij}\frac{\partial c(\xi_i, \chi_j^t)}{\partial y_k}\overset{!}{=} 0.
+  \frac{\partial \mathcal{J}(z,y)}{\partial y_k} = \sum_{i\in I}\sum_{j\in J}z_{ij}\frac{\partial c(\xi_i, \chi_j)}{\partial y_k}\overset{!}{=} 0.
 \end{equation}
 The derivative can be expanded to
 \begin{equation}
   \label{eq:13}
-  \frac{\partial c(\xi_i, \chi_j^t)}{\partial y} = \frac{\partial c(\xi_i, \chi_j^t)}{\partial \chi_j^t}\frac{\partial \chi_j^t}{\partial y_k}.
+  \frac{\partial c(\xi_i, \chi_j)}{\partial y_k} = \frac{\partial c(\xi_i, \chi_j)}{\partial \chi_j^t}\frac{\partial \chi_j^t}{\partial y_k}.
 \end{equation}
 From \eqref{eq:71} we have
 \begin{equation}
@@ -132,13 +132,12 @@ From \eqref{eq:71} we have
     \end{array}
   \right. .
 \end{equation}
-Using the definition, we finally have
+Using the definition, we finally get
 \begin{align}
   \label{eq:15}
-  y_k = \left(\sum_{i\in I}\sum_{(j,t)\in n^{(-1)}(k)}z_{ij}\xi_i^t \right) \left / \left(\sum_{i\in I}\sum_{(j,t)\in n^{(-1)}(k)}z_{ij}\right)\right. ,
+  y_k = \left(\sum_{i\in I}\sum_{(j,t)\in n^{(-1)}(k)}z_{ij}\xi_i^t \right) \left / \left(\sum_{i\in I}\sum_{(j,t)\in n^{(-1)}(k)}z_{ij}\right)\right. .
 \end{align}
-with the set $n^{(-1)}(k)$ of all pairs of scenarios $j$ and time steps $t$ that belong to this node.
-In other words, the optimal value of a node is the average value of all scenarios that are associated with this node through the variables $z_{ij}$ at the time step of the node.
+The optimal value of a node is the average value of all scenarios that are associated with this node through the variables $z_{ij}$ at the time step of the node.
 Note that this is almost the same as the optimal solution to the regular K-Means algorithm \eqref{eq:6}.
 This completes the steps of the algorithm for continuous-event trees.
 
@@ -153,10 +152,12 @@ the variables $y$ can similarly be computed stage-wise as the optimal nodes of
   y_k = \underset{\{l\in I|\exists (j,t)\in n^{(-1)}(k):z_{lj}=1\} }{\argmin}\; \sum_{i\in I}\sum_{(j,t)\in n^{(-1)}(k)}z_{ij}c(\xi_i^t, \xi_l^t).
 \end{equation}
 This is the optimal value of a scenario selected among all the scenarios that were associated with this specific node.
+Algorithm \ref{alg:kmeans-trees} summarizes the steps of the K-Means algorithm for trees.
 \begin{algorithm}
   \caption{K-Means for Trees}
+  \label{alg:kmeans-trees}
   \KwIn{discrete SP $\bs\xi$, filtration tree $\mathcal{T}$}
-  \KwOut{discrete SP $\bs\chi$ with filtration tree $\mathcal{T}$ with $\bs\chi = \argmin D_K(\bs\xi, \bs\chi)$}
+  \KwOut{discrete SP $\bs\chi$ with filtration tree $\mathcal{T}$ with $\bs\chi = \underset{\hat{\bs\chi}}\argmin D_K(\bs\xi, \hat{\bs\chi})$}
   \BlankLine
   \While{$z_{ij}$ change}{
     $z_{ij}\leftarrow \left\{\begin{array}{ll} 1 & \text{if }j = \underset{l}{\argmin}\; c(\xi_i, \chi_l(y))\\0&\text{otherwise}\end{array}\right.$\tcc*{Expectation step}
@@ -174,24 +175,25 @@ Since this algorithm solves the problem to full optimality for a given set of sc
 Two different tests were conducted and the results for both algorithms compared.
 Both tests followed the same general procedure outlined below.
 \begin{enumerate}
-\item A set $\{\xi_i,\, i\in I\}$ of cardinality $N$ was sampled from a stochastic process.
-  The process used here was a geometric brownian motion based on $\mathcal{N}(0,0.25)$ with four time steps.
+\item A discrete SP $\bs\xi$ defined by a set $\{\xi_i,\, i\in I\}$ of cardinality $N$ was sampled from a stochastic process.
+  The process used here was a geometric brownian motion based on $\mathcal{N}(0,0.5)$ with four time steps.
 \item The tree was computed using both algorithms.
-The tree structure was fixed by the number of branches per node $n_c$.
-The run time was measured using {\sc matlab}'s built in timing utilities.
+  The feasibility tree was defined by the number of branches per node $n_c$.
+  The run time was measured using {\sc matlab}'s built-in timing utilities.
 \item Ten new sets of scenarios were used to assess the quality of the computed trees.
   For each of these new sets, the Kantorovich distance to the tree was computed.
 \end{enumerate}
 
-The first test compared the relative error in the Kantorovich distance between the tree and the test sets for different tree structures.
+The first test compared the relative error in the Kantorovich distance between the tree and the test sets for different feasibility tree structures.
 Values for $n_c$ of three, five and seven were tested.
 For this test, the number of scenarios was fixed to $N=1000$ for the MILP algorithm and $N=3000$ for the K-Medoids algorithm.
 The MILP algorithm was given less scenarios simply because it could not handle more in a sensible amount of time.
 Note that even though it had three times as many scenarios to handle, the running time of the K-Medoids algorithm was still by two orders of magnitude lower.
 Figure \ref{fig:compare-milp-kmedoids} shows the results for both algorithms.
 Even though there is no proof that the K-Medoids algorithm will find the optimal solution, it achieves the same level of accuracy as the MILP benchmark algorithm.
-The K-Medoids algorithm is able to outperform the benchmark algorithm, which is supposed to be a lower bound, for the following two reasons:
-Due to its fast running time, the K-Medoids algorithm is able to handle a larger number of scenarios.
+The K-Medoids algorithm is able to outperform the benchmark algorithm, which is supposed to be a lower bound.
+The superior quality of the solution found by the K-Means algorithm is due to its fast running time.
+Because of that, the K-Medoids algorithm is able to handle a larger number of scenarios.
 A larger number of scenarios corresponds to a better quality of the input data, of which the scenario set is only a discretization.
 Consider again \eqref{eq:triangle-montecarlo-kantoro}:
 \[\underbrace{D_K(\bs\chi,\hat{\bs\xi})}_{\text{Full Error}} \leq  \underbrace{D_K(\bs\chi, \bs\xi)}_{\text{algorithm error}} + \overbrace{D_K(\bs\xi,\hat{\bs\xi})}^{\mathclap{\text{Discretization error}}}\leq \underbrace{D_K(\bs\chi,\bs\xi)}_{\text{algorithm error}}+ \overbrace{\epsilon}^{\mathclap{\text{Discretization error}}}
@@ -208,7 +210,7 @@ This is extremely important as the number of dimensions of the stochastic proces
 \input{comparison_milp_kmedoids}
 \subsection{The Expectation Maximization Algorithm}
 \label{sec:k-means-as-EM}
-In this section, we will introduce the Expectation Maximization (EM) algorithm due to \cite{Dempster1977}.
+In this section, the Expectation Maximization (EM) algorithm due to \citeasnoun{Dempster1977} will be introduced.
 It is organized as follows.
 First, we will present an argument how the K-Means algorithm of the previous section can be extended to compute an optimal function space approximation to the data with respect to the Kantorovich distance.
 Then the Expectation Maximization algorithm will be introduced, and its most common implementation, the mixture of Gaussians model, will be presented.
@@ -219,40 +221,41 @@ Note that this notation, coming from the branch of machine learning, may differ 
 \label{sec:cont-appr-kant}
 Consider the K-Means algorithm of the previous section.
 There, each data-point was assigned uniquely to one of the K data clusters.
-These hard assignments stem from the fact that the algorithm operates on the discretized sample $\{\xi,\, i\in I\}$ of the original stochastic process.
+These hard assignments stem from the fact that the algorithm operates on the discretized sample $\{\xi_n,\, n\in I\}$ of the original stochastic process.\footnote{For this section, we assume $\xi_n\in\mathbb{R}$.}
 In a probabilistic context such as the scenario tree generation, these hard assignments are difficult to justify.
 Instead of a discretization in terms of a discrete probability distribution (samples), we will analyze the approximation in a parametric function space.
 A natural parametric function space that has favorable analytic properties are sums of Gaussian distributions.
-Given a set of samples $\{\xi_n,\, n\in I\}$ we assume that these originally formed the probability distribution
+Given a set of samples $\{\xi_n,\, n\in I\}$ with cardinality $|I|=N$, we assume that a probabilistic model of the form
 \begin{equation}
   \label{eq:31}
-  p(x) = \sum_{n=1}^N\frac{1}{N}\mathcal{N}(x|\xi_n,\sigma_n)
+  \mathbb{P}(x) = \sum_{n=1}^N\frac{1}{N}\mathcal{N}(x|\xi_n,\sigma_n)
 \end{equation}
-with the Normal distribution $\mathcal{N}$.
-Since we assume that the data form a weighted sum of Normal distributions, the approximating random variable will have the same underlying model
+Can explain the data.
+The goal is to find a random variable $\bs\chi(J,\mathfrak{A},\mathbb{Q})$ with a more compact representation.
+Since we assume that the data form a weighted sum of Gaussians, the approximating random variable will have the same underlying model
 \begin{equation}
   \label{eq:32}
-  q(x) = \sum_{k=1}^K\pi_k\mathcal{N}(x|\mu_k, \sigma_k)
+  \mathbb{Q}(x) = \sum_{k=1}^K\pi_k\mathcal{N}(x|\mu_k, \sigma_k)
 \end{equation}
-with the means and variances $\mu_k$, $\sigma_k$ of each Gaussian, and the mixture coefficients $\pi_k$ that determine the relative contribution of each of the Gaussians as the variables of the model.
-The Kantorovich distance of the distributions $p$ and $q$ is
+with the means and variances $\mu_k$, $\sigma_k$ of each Gaussian, and the mixture coefficients $\pi_k$ that determine the relative contribution of each of the Gaussians to the model.
+The Kantorovich distance of the distributions $\mathbb{P}$ and $\mathbb{Q}$ is
 \begin{equation}
   \label{eq:33}
-  D_K(p,q) = \min\limits_{\eta}\int\limits_{-\infty}^{\infty}\int\limits_{-\infty}^{\infty}(x-y)^2\eta(x,y)dxdy,\; \int\limits_{-\infty}^{\infty}\eta(x,y)dx = q(y),\;\int\limits_{-\infty}^{\infty}\eta(x,y)dy = p(x)
+  D_K(\mathbb{P,Q}) = \min\limits_{\eta}\int\limits_{-\infty}^{\infty}\int\limits_{-\infty}^{\infty}(x-y)^2\eta(x,y)dxdy,\; \int\limits_{-\infty}^{\infty}\eta(x,y)dx = \mathbb{Q}(y),\;\int\limits_{-\infty}^{\infty}\eta(x,y)dy = \mathbb{P}(x)
 \end{equation}
 For the given Gaussian functions, for one cluster $k$ (with fixed parameters) and one sample $n$, the Kantorovich metric can be explicitly computed as
 \begin{equation}
   \label{eq:34}
-  D(p_n,q_k) = \int\limits_{-\infty}^{\infty}\left(x-\left(\sqrt{\frac{\sigma_n}{\sigma_k}}(x-\mu_k)+\xi_n\right)\right)^2\mathcal{N}(x|\mu_k,\sigma_k)dx.
+  D(\mathbb{p}_n,\mathbb{q}_k) = \int\limits_{-\infty}^{\infty}\left(x-\left(\sqrt{\frac{\sigma_n}{\sigma_k}}(x-\mu_k)+\xi_n\right)\right)^2\mathcal{N}(x|\mu_k,\sigma_k)dx.
 \end{equation}
 See figure \ref{fig:kantoro_gauss_explain} for an illustration how the above formula relates to the distributions.
 \input{kantoro_gauss_eta_explanation}
 This only works for one sample and one cluster distribution.
 For the Kantorovich distance between all samples and all clusters, we need to define additional variables $\gamma_{nk}$ for every pair of samples $n$ and clusters $k$.
-These variables correspond to the association variables $z_{ij}$.
+These variables correspond to the assignment variables $z_{nk}$.
 However, in this model the assignments are not hard as they were for the K-Means problem.
-Instead a sample may be assigned to several clusters with different weight.
-The association variables are also called \textit{responsibilities}.
+Instead, a sample may be assigned to several clusters with different weight.
+The $\gamma_{nk}$ are called \textit{responsibilities}.
 They satisfy
 \begin{equation}
   \label{eq:35}
@@ -268,17 +271,17 @@ This number represents the total number of node-equivalents, for which cluster $
 The value of $N_k/N$ represents the fraction of the data set that a specific cluster is responsible for.
 We will later see that this value corresponds to the mixture parameter $\pi_k$.
 
-The responsibilities make it possible to decompose the Kantorovich distance into the sub parts that only involve one sample and one cluster.
+The responsibilities make it possible to decompose the Kantorovich distance into the sub-parts that only involve one sample and one cluster.
 The full Kantorovich distance can be expressed as the sum of the terms \eqref{eq:34}, weighted by the corresponding responsibilities:
 \begin{equation}
   \label{eq:37}
-  D_K(p,q) = \sum_{n=1}^N\sum_{k=1}^K\gamma_{nk}\int_\mathbb{R}\left(x-\left(\sqrt{\frac{\sigma_n}{\sigma_k}}(x-\mu_k)+\xi_n\right)\right)^2\pi_k\mathcal{N}(x|\mu_k,\sigma_k)dx
+  D_K(\mathbb{P,Q}) = \sum_{n=1}^N\sum_{k=1}^K\gamma_{nk}\int_\mathbb{R}\left(x-\left(\sqrt{\frac{\sigma_n}{\sigma_k}}(x-\mu_k)+\xi_n\right)\right)^2\pi_k\mathcal{N}(x|\mu_k,\sigma_k)dx
 \end{equation}
-The goal is to find the function $q(x)$ that minimizes \eqref{eq:37}.
-$q$ is parametrized by the mean values $\mu_k$, the variances $\sigma_k$, the mixing coefficients $\pi_k$, and the responsibilities $\gamma_{nk}$:
+The goal is to find the function $\mathbb{Q}(x)$ that minimizes \eqref{eq:37}.
+$\mathbb{Q}$ is parametrized by the mean values $\mu_k$, the variances $\sigma_k$, the mixing coefficients $\pi_k$, and the responsibilities $\gamma_{nk}$:
 \begin{equation}
   \label{eq:38}
-  \min\limits_{\mu_k,\sigma_k,\pi_k, \gamma_{nk}}D_K(p,q(\mu_k,\sigma_k,\pi_k, \gamma_{nk}))
+  \min\limits_{\mu_k,\sigma_k,\pi_k, \gamma_{nk}}D_K(\mathbb{P,Q}(\mu_k,\sigma_k,\pi_k, \gamma_{nk}))
 \end{equation}
 Just as for K-Means, the optimization problem is hard to solve simultaneously.
 If, however, either the responsibilities $\gamma_{nk}$ or the distribution parameters $(\mu_k, \sigma_k, \pi_k)$ are fixed, the optimization becomes easy.
@@ -291,7 +294,7 @@ Differentiating \eqref{eq:37} with respect to $\mu_k$ yields
 %\begin{equation}
 \begin{multline}
   \label{eq:39}
-  \frac{\partial }{\partial\mu_k}D(p,q) = \sum_{n=1}^N\gamma_{nk}\frac{1}{\sqrt{2\pi}}\int_\mathbb{R}\exp\left(-\frac{(x-\mu_k)^2}{2\sigma_k}\right)\left(\sqrt{\frac{\sigma_n}{\sigma_k}}(\mu_k-x)-\xi_n+x\right)\cdots\\ \left((x-\mu_1)\left(\sqrt{\frac{\sigma_n}{\sigma_k}}(\mu_k-x)-\xi_n+x\right)+2\sqrt{\sigma_k\sigma_n}\right)dx \overset{!}{=} 0
+  \frac{\partial }{\partial\mu_k}D(\mathbb{P,Q}) = \sum_{n=1}^N\gamma_{nk}\frac{1}{\sqrt{2\pi}}\int_\mathbb{R}\exp\left(-\frac{(x-\mu_k)^2}{2\sigma_k}\right)\left(\sqrt{\frac{\sigma_n}{\sigma_k}}(\mu_k-x)-\xi_n+x\right)\cdots\\ \left((x-\mu_1)\left(\sqrt{\frac{\sigma_n}{\sigma_k}}(\mu_k-x)-\xi_n+x\right)+2\sqrt{\sigma_k\sigma_n}\right)dx \overset{!}{=} 0
 \end{multline}
 %\end{equation}
 Evaluating the integral  yields
@@ -338,7 +341,7 @@ In the sections below, further evidence will be discovered that this update is, 
 %The update of the responsibilities
 
 In the following sections we will further discuss continuous approaches to approximating stochastic processes in tree structures.
-We will introduce the Expectation Maximization algorithm and find out that the algorithm derived above is only an example of a larger group that will become a powerful tool for scenario tree generation.
+We will introduce the Expectation Maximization algorithm and find out that the algorithm derived above is only an example of a larger group of algorithms that will become a powerful tool for scenario tree generation.
 \subsubsection{The Expectation Maximization Algorithm}
 The aim of this discussion is to give a short overview of the concept of EM.
 This will enable us to analyze the discretization method used to discretize the Kantorovich distance in section \ref{sec:kantoro}.
@@ -419,7 +422,7 @@ The posterior probabilities of $z_{ik}$ given the data and the parameters that d
 This expression is evaluated during the expectation phase of the algorithm.
 The update step for the parameters is defined by the optimization problem \eqref{eq:21}.
 Note that for this model, this is a constrained optimization problem, since \eqref{eq:27} has to hold.
-The derivation is detailed in \cite{Bishop2006}.
+The derivation is detailed in \citeasnoun{Bishop2006}.
 The solution will be stated here for completeness and to show the similarity to the solution for tree structures stated below.
 \begin{align}
   \label{eq:29}
@@ -444,53 +447,46 @@ This way, clusters may share points that are located in between them.
 In this section, we will revisit the discretization decision of the beginning.
 We will find that the discretization used in the literature exhibits a certain bias with respect to the function space of the approximation.
 The following discussion applies only to continuous-event trees.
-\subsubsection{Bias of Discretizations}
-Consider again the original stochastic process $\xi_{orig}$.
-To ease the understanding, we will accompany the discussion with an example.
-The left plot of figure \ref{fig:rev-disc-xiorig} shows the distribution
+
+Consider the following example.
+A random variable $\hat{\bs\xi}(\mathbb{R}, \mathfrak{A}, \mathbb{P})$ with a probability distribution
 \begin{equation}
   \label{eq:24}
-  p(x) = \frac{2}{3}\mathcal{N}(2,1) + \frac{1}{3}\mathcal{N}(-1,1)
+  \mathbb{P}(x) = \frac{2}{3}\mathcal{N}(2,1) + \frac{1}{3}\mathcal{N}(-1,1)
 \end{equation}
- Following the discretization procedure, a set of 45 events is sampled from the distribution.
- The notion of the original distribution is discarded, and the Kantorovich distance is minimized for a given number of representative events, which is five in the example.
- The top right plot shows the 5 mean values as blue dots on the x-axis.
- Note that in the K-Means formulation, all points that are closest to a specific mean will be associated with this mean.
- The resulting square spheres of influence are plotted with the height according to their probabilities.
+(see left plot of figure \ref{fig:rev-disc-xiorig}) is to be approximated by a discrete object.
+Following the discretization procedure, a set of 45 events is sampled from the distribution.
+The notion of the original distribution is discarded, and the Kantorovich distance is minimized for a given number of representative events, which shall be five in the example.
+The top right plot shows the 5 mean values as blue dots on the x-axis.
+Note that in the K-Means formulation, all points that are closest to a specific mean will be associated with this mean.
+The resulting square intervals of influence are plotted with the height according to their probabilities.
 
 These previous observations lead to following, important observation.
 Using the discretized Kantorovich distance is equivalent to using a fixed number of piecewise constant functions as the basis functions for the approximation of the original probability distribution.
 It is well known that the choice of basis functions effectively is the same as a prior distribution on the probability distribution that we expect to be underlying the observed events.
 The central limit theorem suggests that Gaussian distributions are the best guess for a prior given no additional information.
-Therefore, the common choice of discretization in the literature (\cite{Dupacova2003}, etc.) is not optimal and should be revised to be the Mixture of Gaussians - EM algorithm.
+Therefore, the common choice of discretization in the literature \cite{Dupacova2003} is not optimal and should be revised to be the Mixture of Gaussians - EM algorithm.
 \input{discretization_animation}
 \subsection{EM for Trees}
 \label{sec:mixt-gauss-trees}
 In this section, the EM algorithm is adapted to tree structures.
+In section \ref{sec:k-means-algorithm-trees}, the K-Means algorithm was adapted to the tree generation problem.
+As the K-Means algorithm is an instance of the class of EM algorithms, the tree generation procedure derived in this section follows the same steps as algorithm \ref{alg:kmeans-trees}.
 
-Consider a tree structure given by the following sets:
-\begin{itemize}
-\item A set of nodes of the tree $N$.
-\item A set $L\in n$ of leaf nodes, that is nodes that don't father any children.
-\item For each $n\in N\setminus L$ a set $C_n$ which holds all children of this node.
-\end{itemize}
-These sets fully define the tree structure.
-An alternative definition makes use of the notion of scenarios in trees.
-A scenario is a set of nodes that can be generated by moving down the tree starting from a leaf node.
-There exists a one-to-one mapping from the set of leaf nodes to the set of scenarios of the tree $J$.
+Consider a set of scenarios $\{\xi_i,\, i\in I\}$ sampled from a stochastic process $\hat{\bs\xi}$.
+The objective of the EM algorithm for trees is to find a scenario tree $\bs\chi$ whose node values, interpreted as parameters of a probabilistic model $\mathcal{D}$, `explain' the data scenarios $\xi_i$.
+The hidden variables of the EM algorithm will be the binary assignment variables $z_{ij}$ that assign a sampled scenario $i\in I$ to a scenario $j\in J$ of the tree.
 
-The hidden variables $Z$ of the EM algorithm will be the binary assignment variables $z_{ij}$ that
-assign a sampled scenario $i\in I$ to a scenario $j\in J$ of the tree.
-
-The general model structure under consideration is a parametric probability distribution $\mathcal{D}(x,z|\theta)$ with parameters $\theta$.
-The parameters of the model must be uniquely associated with the dimensions of $x$.
-An example of this property are mean values, that are independent for each dimension of a vector.
-Each tree scenario $j\in J$ is equipped with a mixing parameter $\pi_j$.
-The model for the probability of a scenario $\xi$ given $\theta$ is
+The general model structure under consideration is a parametric probability distribution $\mathcal{D}(\xi,z|\theta)$ with parameters $\theta$ representing the node values of $\bs\chi$.
+The parameters of the model must be uniquely associated with the time steps of $\bs\xi$.
+An example of this property are mean values.
+Each scenario $j\in J$ of the tree is equipped with a mixing parameter $\pi_j$.
+The model for the probability of a scenario $\xi_i$ given $\theta$ is
 \begin{equation}
   \label{eq:28}
-  p(\xi|\theta) = \sum_{j\in J}\pi_j\mathcal{D}(x|\theta_j).
+  p(\xi_i|\theta) = \sum_{j\in J}\pi_j\mathcal{D}(\xi_i|\theta_j),
 \end{equation}
+where $\theta_j$ is the parameter vector of a scenario.
 $\mathcal{D}$ is a probability distribution.
 Therefore, for \eqref{eq:28} to be a probability distribution,
 \begin{equation}
@@ -499,12 +495,11 @@ Therefore, for \eqref{eq:28} to be a probability distribution,
 \end{equation}
 has to hold.
 The tree information is preserved through the components of $\theta$.
-The dimensions of $\xi$ represent the time stages.
-Since each parameter is associated with a dimension of $\xi$, we demand that $\theta_{jt}=\theta_{kt}$ for scenarios $j,k\in J$, if $n(j,t)=n(k,t)$.
+Since each parameter is associated with a time step $t$ of the vectors $\xi_i$, we demand that $\theta_{jt}=\theta_{kt}$ for scenarios $j,k\in J$, if $n(j,t)=n(k,t)$.
 Figure \ref{fig:em-tree} illustrates the tree structure for a Gaussian mixtures model.
 The scenarios for the tree in the figure are
 \[
-J = \left\{\hansvec{\mu_1\\\mu_2\\\mu_4},\,\hansvec{\mu_1\\\mu_2\\\mu_5},\,\hansvec{\mu_1\\\mu_3\\\mu_6},\,\hansvec{\mu_1\\\mu_3\\\mu_7}\right\}.
+\left\{\hansvec{\mu_1\\\mu_2\\\mu_4},\,\hansvec{\mu_1\\\mu_2\\\mu_5},\,\hansvec{\mu_1\\\mu_3\\\mu_6},\,\hansvec{\mu_1\\\mu_3\\\mu_7}\right\}.
 \]
 Each mean value $\mu_n$ (and its corresponding variance) can be uniquely identified with a specific node of the tree.
 This makes it possible to enforce the tree structure.
@@ -515,7 +510,7 @@ For illustration purposes, we will use the mixture of Gaussians model.
 
 The first step of the algorithm is the initialization of the parameters $\mu_n$, $\sigma_n$ and $\pi_n$.
 The expectation maximization algorithm will in general prove a considerably larger computational burden than the K-Means/K-Medoids algorithm described in section \ref{sec:k-means-algorithm-trees}.
-One possible initialization strategy is to run the K-Means algorithm on the same samples and infer the initial parameters of the EM-algorithm from the mean, variance and relative responsibilities of the clusters.
+Therefore, a possible initialization strategy is to run the K-Means algorithm on the same samples and infer the initial parameters of the EM-algorithm from the mean, variance and relative responsibilities of the clusters.
 
 In the \textbf{expectation step}, the probabilities $p(z_{nk}|\xi, \mu,\sigma,\pi)$ are computed.
 For this step, the scenarios $\xi_i$ of the sample set are regarded as data vectors.
@@ -558,102 +553,104 @@ The update formulas are
       \pi_j = \frac{N_c}{N}
     \end{equation}
 \end{enumerate}
+This shows that for a probabilistic model that satisfies certain independence criteria, the derivation of tree generation algorithm built on the idea of generative models is straightforward.
+Depending on prior knowledge about the structure of the probability distribution of the stochastic process, much more accurate models can be built to approximate this process with less data points.
+For the solution of the stochastic program, only the mean values of the scenarios are used.
+The next section will show how the variance information of the EM-generated tree can be used to estimate the variance of the optimal value of the stochastic program.
 \subsection{Variance Estimation from EM-Generated Trees}
 \label{sec:variance-estimation}
-In this section, we will show how the distribution generated with the mixture of Gaussians EM-algorithm can be used to estimate the variance of the optimal objective function (marginal of the optimization problem) with respect to the tree distribution.
-This approximation assists in evaluating the quality of the approximation of the solution.
-The approximation below is made possible, because EM algorithms, specifically the mixture of Gaussian algorithm that will be used here for illustration, preserve the information about the approximation error relative to each scenario (see figure \ref{fig:variance-estimation}).
+In this section, it will be illustrated how the distribution generated with the mixture of Gaussians EM-algorithm can be used to estimate the variance of the optimal objective function with respect to the tree distribution.
+This approximation assists in evaluating the quality and robustness of the solution.
+The approximation below is possible, because EM algorithms, specifically the mixture of Gaussian algorithm that will be used here for illustration, preserve the information about the variance relative to each scenario (see figure \ref{fig:variance-estimation}).
 
 Consider the stochastic optimization problem
-\begin{align}
-  \label{eq:49}
-  \min&\;\int \hat{f}(x,\xi) p(\xi)d\xi\\
-\text{s.t.}&\; \hat{h}(x,\xi) = 0\\
-&x\geq 0
-\end{align}
-with a probability distribution $p$, and a random variable (stochastic process) $\xi$.
-The discretized form is
-\begin{align}
-  \label{eq:46}
-  \mathcal{P}(\xi)\; \min\limits_{x}&\; f(x,\xi)\\
-\text{s.t.}&\; h(x,\xi) = 0\\
-&\; x \geq 0
-\end{align}
-where $\xi$ are the values of the tree nodes.
-Let $x^*=x^*(\xi)$ denote the solution to \eqref{eq:46} as a function of the node values.
-Using a NLP solver, $x^*(\xi_0)$ for a fixed set of tree nodes can be computed.
-The parametric sensitivity of optimal value $f(x^*,\xi)$ with respect to the node values at $\xi$ is
+\begin{subequations}
+  \begin{align}
+    \label{eq:49}
+    \min&\;\int \hat{f}(x(\omega),\hat{\xi}(\omega))d\mathbb{P}(\omega)\\
+    \text{s.t.}&\; \hat{h}(x(\omega),\hat{\xi}(\omega)) = 0\\
+    &x(\omega)\geq 0
+  \end{align}
+\end{subequations}
+with the stochastic process $\hat{\bs\xi}(\Omega, \mathcal{F}, \mathbb{P})$ representing the uncertain data.
+The discretized form is\begin{subequations}\label{eq:46} \begin{align}
+     \min\limits_{x}&\; f(x,\nu)\\
+    \text{s.t.}&\; h(x,\nu) = 0\\
+    &\; x \geq 0
+  \end{align}
+\end{subequations}
+where $\bs\chi(J, \mathcal{T}, p)$ is the discrete stochastic process with corresponding scenario tree $\bs\chi(\mathcal{T}, \nu, p)$ whose node values $\nu$ are the mean values computed with the mixture-of-Gaussians-algorithm for trees.
+Let $x^*=x^*(\nu)$ denote the solution to \eqref{eq:46} as a function of the node values.
+Using a NLP solver, $x^*(\nu^0)$ for a fixed set of tree nodes can be computed.
+The parametric sensitivity of optimal value $f(x^*,\nu^0)$ with respect to $\nu$ is
 \begin{equation}
   \label{eq:47}
-  \frac{\partial f^{\mathrm{opt}}}{\partial \xi} =  \frac{\partial \mathcal{L}}{\partial \xi}
+  \frac{\partial }{\partial \nu}f^{\mathrm{opt}}(x^*,\nu^0) =  \frac{\partial }{\partial \nu}\mathcal{L}(x^*,\lambda^*, \mu^*,\nu^0)
 \end{equation}
-with $\mathcal{L}$ the Lagrangean of the above optimization problem (\cite{Jongen2004}, theorem 3.2.3).
-The objective function for stochastic programming problems can be expressed as a sum over the scenarios $j\in J$, weighted by the corresponding probabilities
+with $\mathcal{L}$ the Lagrangean of the above optimization problem (\citeasnoun{Jongen2004}, theorem 3.2.3).
+The objective function for stochastic programming problems can be expressed as
 \begin{equation}
   \label{eq:45}
-  f(x,\xi) = \sum_{j\in J} \pi_jf^s(x,\xi_j).
+  f(x,\nu) = \sum_{j\in J} \pi_jf^s(x,\chi_j(\nu)).
 \end{equation}
 where $f^s$ is the objective function for a scenario.
-It is the same for all scenarios of the tree -- the difference in scenarios is fully expressed through the scenarios $\xi_j$.
-The probabilities $\pi_j$ are the mixing parameters of the EM algorithm.
+It is the same for all scenarios of the tree -- the difference in scenarios is expressed through the scenarios $\chi_j(\nu)$, which depend on the node values through the filtration tree $\mathcal{T}$.
+The weights $\pi_j$ are the mixing parameters of the EM algorithm.
 Assume furthermore, that the objective can be decomposed by time steps:
 \begin{equation}
   \label{eq:48}
-  f(x,\xi) = \sum_{t=1}^T\sum_{j\in J}\pi_jf_{t}^s(x,\xi_{jt})
+  f(x,\nu) = \sum_{t=1}^T\sum_{j\in J}\pi_jf_{t}^s(x,\chi_{j}^t(\nu))
 \end{equation}
 For a tree generated with an EM algorithm, the set of scenarios $J$ is identical to the set of clusters $\{1,\ldots,K\}$.
 \input{variance_estimation}
 
-Suppose now that the tree nodes $\xi_n$ were generated using the Mixture of Gaussians EM-algorithm of the previous section.
-Therefore, for each node value $\xi_n$, which represents the mean value of a Gaussian, a variance $\sigma_n$ is known from the result of the algorithm.
+The tree nodes $\nu$ were generated using the Mixture of Gaussians EM-algorithm of the previous section.
+Therefore, for each node value $\nu_n,\, n\in\mathcal{N}$, which represents the mean value of a Gaussian, a variance $\sigma_n$ is known from the result of the algorithm.
 The discretized optimization problem \eqref{eq:46} is solved for the discrete distribution made up of the mean values of the tree node Gaussians.
 For the solution $x^*$, the variance information is not taken into account.
-The node values $\xi_0$ with their tree structure make up a discrete probability distribution.
-$p$, which holds the probabilities of the node values, can in this context be considered a \textbf{distribution over discrete probability distributions}.
+Note that for fixed node values $\nu$, the scenario tree $\bs\chi(\mathcal{T},\nu,p)$ is a discrete random variable.
+With the variances $\sigma$, the result of the EM-algorithm can be interpreted as a \textbf{distribution over discrete random variables}.
 With this interpretation, we can compute the variance of the optimal objective value with respect to the probability distribution of the tree.
-This value assists in identifying whether the tree structure is sufficiently ``dense'' to achieve the desired accuracy in the solution of the stochastic optimization problem.
+This value assists in identifying whether the tree structure is sufficiently `dense' to achieve the desired accuracy in the solution of the stochastic optimization problem.
 
-The variance of the objective value with respect to the node values $\xi$ is defined as the Kantorovich distance between the distribution of scenarios optimal values over scenarios and the optimal solution
+The variance of the objective value with respect to the node values $\nu$ is defined as the Kantorovich distance between the distribution of scenarios optimal values over scenarios and the optimal solution
 \begin{equation}
   \label{eq:50}
-  \mathrm{Var}_{\xi}\left[f^{\mathrm{opt}}\right] :=  \sum_{k=1}^K\int_{\mathbb{R}^T} \left(f^{s,\mathrm{opt}}(\xi)-f^{s,\mathrm{opt}}(\mu_k)\right)^2p_k(\xi)d\xi
+  \mathrm{Var}\left[f^{\mathrm{opt}}\right] :=  \sum_{k=1}^K\int_{\mathbb{R}^T} \left(f^{s,\mathrm{opt}}(\omega)-f^{s,\mathrm{opt}}\of{\chi_k(\nu)}\right)^2\mathbb{P}_k(\omega)d\omega
 \end{equation}
 The probabilities of the scenarios are given by the model
 \begin{equation}
   \label{eq:55}
-  p_k(\xi) = \pi_k\mathcal{N}(\xi|\mu_{k},\sigma_k).
+  \mathbb{P}_k(\omega) = \pi_k\mathcal{N}(\omega|\chi_{k}(\nu),\sigma_k).
 \end{equation}
 It is assumed that the variances $\sigma_k$ are sufficiently small compared to the region in which the first order Taylor expansion of the optimal value using \eqref{eq:47} is a reasonable approximation.
 The integral \eqref{eq:50} can be evaluated as
 \begin{equation}
   \label{eq:52}
-  \operatorname{Var}_\xi\left[f^{\mathrm{opt}}\right] = \sum_{k=1}^K\int_{\mathbb{R}^T} \of{\frac{\partial f^{s,\mathrm{opt}}}{\partial \xi_k}(\xi-\xi_k)}^2\pi_k\mathcal{N}(\xi|\mu_k,\sigma_k)d\xi
+  \operatorname{Var}\left[f^{\mathrm{opt}}\right] = \sum_{k=1}^K\int_{\mathbb{R}^T} \of{\frac{\partial f^{s,\mathrm{opt}}}{\partial \chi_k}(\omega-\chi_k)}^2\pi_k\mathcal{N}(\omega|\chi_k,\sigma_k)d\omega
 \end{equation}
 %Using the definition of the Gaussian, the recursive application of
 %\begin{equation}
 %  \label{eq:53}
 %\int_{\mathbb{R}^n}(ax+b)^{tr}(ax+b)|2\pi\sigma|^{-1/2}\exp\of{-\frac{1}{2}(x-\mu)^{tr}\sigma^{-1}(x-\mu)} dx = b^{tr}b + a^2|\sigma|
 %\end{equation}
-leads to the simple approximation
+which leads to the simple term
 \begin{equation}
   \label{eq:54}
-  \operatorname{Var}_\xi\left[f^{\mathrm{opt}}\right] = \sum_{k=1}^K \left(\frac{\partial f^{s,\mathrm{opt}}}{\partial\xi_k} \right)\left(\frac{\partial f^{s,\mathrm{opt}}}{\partial\xi_k} \right)^{tr}\pi_k|\sigma_k| = \sum_{t=1}^T\sum_{k=1}^K\frac{\partial f^{s,\mathrm{opt}}}{\partial \xi_{kt}} \pi_k|\sigma_k|.
+  \operatorname{Var}\left[f^{\mathrm{opt}}\right] = \sum_{k=1}^K \left(\frac{\partial f^{s,\mathrm{opt}}}{\partial\chi_k} \right)\left(\frac{\partial f^{s,\mathrm{opt}}}{\partial\chi_k} \right)^{tr}\pi_k|\sigma_k| = \sum_{t=1}^T\sum_{k=1}^K\of{\frac{\partial f^{s,\mathrm{opt}}}{\partial \chi_{k}^t}}^2 \pi_k|\sigma_k|.
 \end{equation}
 To compute the sensitivities, we will make use of the stage decomposition \eqref{eq:48} of the objective.
-The scenarios do not explicitly appear as parameters in $\mathcal{P}$.
-Instead, the problem is formulated in terms of the node values $\xi_n$.
-As mentioned before, there exists a mapping $n:T\times J\rightarrow N$ from time steps and scenarios to nodes.
-The following will illustrate, how the partial derivative of a scenario objective $f$ with respect to a scenario can be extracted from \eqref{eq:47}.
 \begin{equation}
   \label{eq:51}
-  \frac{\partial f^{\mathrm{opt}}}{\partial \xi_n} \overset{\eqref{eq:48}}{=} \sum_{(k,t)\in n^{-1}(n)}\pi_k\frac{\partial f_{t}^{s,\mathrm{opt}}}{\partial \xi_{kt}}
+  \frac{\partial f^{\mathrm{opt}}}{\partial \nu_n} \overset{\eqref{eq:48}}{=} \sum_{(k,t)\in n^{-1}(n)}\pi_k\frac{\partial f_{t}^{s,\mathrm{opt}}}{\partial \chi_{k}^t}
 \end{equation}
-Since the variables $\xi_{kt}$ are identical, if they are from the set $n^{-1}$, we can conclude that
+Since the variables $\xi_{k}^t$ are identical, if they are from the set $n^{-1}$, we can conclude that
 \begin{equation}
   \label{eq:56}
-  \frac{\partial f_t^{s,\mathrm{opt}}}{\partial \xi_{k,t}} = \left(\frac{\partial f^{\mathrm{opt}}}{\partial \xi_{n(k,t)}}\right) \left/ \left(\sum_{(j,t)\in n^{-1}(n)} \pi_j\right)\right.
+  \frac{\partial f_t^{s,\mathrm{opt}}}{\partial \chi_{k}^t} = \left(\frac{\partial f^{\mathrm{opt}}}{\partial \nu_{n(k,t)}}\right) \left/ \left(\sum_{(j,t)\in n^{-1}(n)} \pi_j\right)\right.
 \end{equation}
-
+With this, the variance can be directly computed from \eqref{eq:54}.
+This allows for an estimate of the reliability of the solution to the stochastic program.
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "da"

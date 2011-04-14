@@ -1,6 +1,7 @@
 \begin{figure}
+\centering
   \begin{tikzpicture}
-    \begin{axis}
+    \begin{axis}[xticklabels={,,},yticklabels={,,}]
       \addplot [color=black] coordinates {
         (1, 0)
         (2, -3.5)
@@ -51,8 +52,9 @@
       };
     \end{axis}
   \end{tikzpicture}
+  % begin of figure 2
   \begin{tikzpicture}
-    \begin{axis}
+    \begin{axis}[xticklabels={,,},yticklabels={,,}]
       \addplot [color=black] coordinates {
         (2, -1.5)
         (3, -3.5)
@@ -96,11 +98,10 @@
         (4, 3.5)
       };
     \end{axis}
-    
   \end{tikzpicture}
   % begin of figure 3
   \begin{tikzpicture}
-    \begin{axis}
+    \begin{axis}[xticklabels={,,},yticklabels={,,}]
       \addplot [color=black] coordinates {
         (3, -2.5)
         (4, -3.5)
@@ -142,11 +143,10 @@
         (4, 3.5)
       };
     \end{axis}
-    
   \end{tikzpicture}
   % begin of figure 4
   \begin{tikzpicture}
-    \begin{axis}
+    \begin{axis}[xticklabels={,,},yticklabels={,,}]
       \addplot [color=black] coordinates {
         (3, -2.5)
         (4, -3.5)
@@ -188,15 +188,14 @@
     \end{axis}
   \end{tikzpicture}
   \caption{Evolution of the stage-wise MILP algorithm for a tree with two branches to each node.
-    Top left: The tree is initialized with only the root node. 
-    Top right: After solving the MILP of the root node. 
+    Top left: The tree is initialized with only the root node.
+    Top right: After solving the MILP of the root node.
     Bottom left: After solving the lower of the two second stage nodes.
     Bottom right: The tree, completely solved.
   }
   \label{fig:swmilp-explanation}
 \end{figure}
-
-%%% Local Variables: 
+%%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "da"
-%%% End: 
+%%% End:

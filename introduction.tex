@@ -1,0 +1,31 @@
+\section{Introduction}
+Many applications in engineering and economics require decisions to be made under uncertainty.
+Examples are production planning and supply chain deign decisions under uncertain demands and prices, but also robust inventory planning for the case of plant failures.
+
+Stochastic programming problems are optimization problems under uncertainty, which require a recourse decision after the uncertainty variable has taken on its value.
+Problems in which a sequence of such decisions has to be made are called multi-stage stochastic programs.
+
+In this work, two problems in the formulation of multi-stage stochastic programs will be addressed.
+in real-world applications, the uncertainty often is introduced as a continuous random variable.
+Since in the optimization the recourse problem has to be solved for every possible outcome of the random variable, this leads to infinite dimensional problems.
+Even if the underlying random variable is discrete, for multi-stage problems the number of variables grows exponentially with the number of stages.
+Methods have to be developed that reduce the complexity of the problem while sacrificing as little accuracy as possible.
+An important aspect of this reduction is the preservation of the way that the information about the future over time.
+This leads to tree-shaped data structures through which this filtration is encoded.
+These properties, that are special to multi-stage problems, makes even measuring the quality of a reduction a difficult enterprise.
+
+This thesis is organized as follows.
+First, the theoretical groundwork for the scenario generation is laid out.
+The problem of measuring the quality of an approximation is formalized through a metric.
+The optimal scenario tree generation will prove to be representable as an MILP/NLP.
+In a following section, state-of-the-art MILP and NLP solvers are applied to the problem.
+Due to structural reasons, this approach will prove insufficient.
+In section \ref{sec:two-theorems}, the derivation of the new method will begin with two theorems which highlight the special structure of the used metric.
+The structure of the metric exposed through these theorems will be exploited by the new heuristic algorithm derived in section \ref{sec:expect-max-algos}.
+This algorithm is based on the well-known K-Means algorithm.
+Promising results will be presented, that show the scalability of the algorithm, and that the quality of the solution is near optimal.
+Building on the derivation of the new algorithm, the application of Expectation-Maximization algorithms for the tree generation will be discussed.
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "da"
+%%% End:

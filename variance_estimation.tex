@@ -3,15 +3,15 @@
 \begin{figure}
   \centering
     \begin{tikzpicture}[node distance=5cm, auto]
-      \node [block] (xiorig) {$\xi$};
-      \node [block, below of=xiorig] (xi) {$\hat{\xi}$};
+      \node [block] (xiorig) {$\hat{\bs\xi}$};
+      \node [block, below of=xiorig] (xi) {$\bs\chi$};
       \node [block, text width=10em, right of=xiorig] (infsolver){Infinite Dim. Solver};
-      \node [block, right of=infsolver] (xorig){$f^{\mathrm{opt}}(\xi)$};
+      \node [block, right of=infsolver] (xorig){$f^{\mathrm{opt}}(\hat{\bs\xi})$};
       \node [block, text width=10em, below of=infsolver] (nlp) {(N)LP Solver};
-      \node [block, below of=xorig] (x) {$f^{\mathrm{opt}}(\hat{\xi})$};
+      \node [block, below of=xorig] (x) {$f^{\mathrm{opt}}(\bs\chi)$};
 
       \path [line] (xiorig) -- node (xierror) {$\sigma$} (xi);
-      \path [line] (x) -- node (xerror) {$\operatorname{Var}\off{f^{\mathrm{opt}}(\hat{\xi})}$} (xorig);
+      \path [line] (x) -- node (xerror) {$\operatorname{Var}\off{f^{\mathrm{opt}}(\bs\chi)}$} (xorig);
       \path [line,dashed] (xierror) -- node {NLP Sensitivity} (xerror);
       \path [line] (xiorig) -- (infsolver);
       \path [line] (xi) -- (nlp);
@@ -22,7 +22,7 @@
   \label{fig:variance-estimation}
 \end{figure}
 
-%%% Local Variables: 
+%%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "da"
-%%% End: 
+%%% End:
