@@ -18,7 +18,7 @@ Since the exact values of the tree's nodes are not known beforehand, the distanc
 The distance is usually a nonlinear, non-differentiable function.
 For now, we will replace it with an additional variable $c_{ij}$, and deal with modeling it below.
 
-The objective function is again the Kantorovich functional adopted to the particular tree structure.
+The objective function to be minimized is again the Kantorovich functional adopted to the particular tree structure.
 \begin{equation}
   \label{eq:NLP-derivation-objective}
   \sum_{i\in I}\sum_{j\in J} \eta_{ij} c_{ij}
@@ -40,7 +40,7 @@ The bounds
 \end{equation}
 complete the problem except for the distances $c_{ij}$.
 
-To model the distances, a metric must be selected. The choice of the metric depends on the problem belongs to the domain of modeling rather than algorithmic questions that we address here. In the following, we will show how to model the distance $c_{ij}=c(\xi_i,\nu_j)$, where $\nu$ are the node values of the scenario tree $\bs\chi$, in the most common norms $\Vert\cdot\Vert_1$, $\Vert\cdot\Vert_2$, and $\Vert\cdot\Vert_\infty$.
+To model the distances, a metric must be selected. The choice of the metric belongs to the domain of modeling rather than algorithmic questions that we address here. In the following, we will show how to model the distance $c_{ij}=c(\xi_i,\nu_j)$, where $\nu$ are the node values of the scenario tree $\bs\chi$, in the most common norms $\Vert\cdot\Vert_1$, $\Vert\cdot\Vert_2$, and $\Vert\cdot\Vert_\infty$.
 %
 \paragraph{$\infty$-norm} The $\infty$-norm is defined as the maximum over the absolute value of all components.
 \begin{equation}
@@ -73,7 +73,7 @@ The distances are then defined by
   c_{ij} = \sum_{t\in T}\sum_{k \in D} a_{ijtk}.
 \end{equation}
 \end{subequations}
-\paragraph{$\mathbf{2}$-norm} The $2$-norm is much easier to model than the $1$-norm and the $\infty$-norm since the squaring makes the absolute values that give rise to the excessive use of additional inequality constraints.
+\paragraph{$\mathbf{2}$-norm} The $2$-norm is much easier to model than the $1$-norm and the $\infty$-norm since there are no absolute values that give rise to the excessive use of additional inequality constraints.
 Instead, the distance variables can be defined by the simple equations
 \begin{equation}
   \label{eq:c-as-2norm}
@@ -85,7 +85,7 @@ In our implementations, we will use the formulation of the $\infty$-norm, since 
 The $2$-norm has only half the number of equations, but is subject to problems in the scaling and introduces a non-linearity in the constraints, which seems favorable to avoid.
 
 This completes the derivation of the NLP model for generating scenario trees.
-The following sections will be dedicated to solving this NLP.
+The following section will be dedicated to solving this NLP.
 In the next section, experiences with KKT-based solvers is discussed.
 The solution is found to be problematic, with convergence and local optimality issues.
 \subsubsection{Structure of the Optimization Problem}
@@ -122,15 +122,15 @@ where $n=|I||J|$, and $T$ is the number of stages.
 \subsubsection{Solution with local (KKT)-NLP solvers}
 In this section, the applicability of general purpose KKT solvers to the problem stated above will be discussed. There are several issues that make this problem particularly hard to solve for KKT based solvers. Among these problems are
 \begin{description}
-\item[Negative Curvature] KKT solvers use first and second derivatives to generate search directions. KKT points are only stationary points, not guaranteed to be minima of the problem. In the situation of negative curvature, the local maximum is the attractor of Newton's method applied to the KKT-problem. Special care must be taken by the algorithm to reject search directions that lead to a KKT point that is a local maximizer for the objective function
+\item[Negative Curvature] KKT solvers use first and second derivatives to generate search directions. KKT points are only stationary points, not guaranteed to be minima of the problem. In the situation of negative curvature, the local maximum is the attractor of Newton's method applied to the KKT-problem. Special care must be taken by the algorithm to reject search directions that lead to a KKT point that is a local maximizer for the objective function.
 \item[Local Minima] KKT points are an inherently local property of an optimization problem. The only way to find the global optimum is through extensive spatial search. This search can be conducted by applying a deterministic KKT solver to many different, randomly selected starting points.
-\item[Large Scale] Due to the complications in modeling the distances $c$, and the fact that using a greater number of original scenarios will always increase the accuracy of the approximation, the solver has to deal with a very large number of variables - typically on the order of one million.
+\item[Large Scale] Due to the complications in modeling the distances $c$, and the fact that using a greater number of original scenarios will always increase the accuracy of the approximation, the solver has to deal with a very large number of variables.
 \end{description}
 The interior point solver IPOPT \cite{IpoptImplementation2006} was used as the KKT solver. IPOPT is specifically designed to deal with large-scale non-convex programming problems. It has provisions that ensure global convergence to a KKT point associated with a local minimum under weak assumptions.
 
-As is to be expected from the theoretical analysis above, solving the problem from different starting points leads to very different local minima. Figure \ref{fig:different-local-minima-with-ipopt} shows some examples of local minima the algorithm found. In addition to the locality of the solutions, we experienced an unexpectedly slow convergence as the objective value of the iterates approached the optimal solution, with very large primal steps taken by the algorithm.
+As is to be expected from the theoretical analysis above, solving the problem from different starting points leads to very different local minima. Figure \ref{fig:different-local-minima-with-ipopt} shows some examples of local minima the algorithm found. In addition to the locality of the solutions, the algorithm displays an unexpectedly slow convergence as the objective value of the iterates approached the optimal solution, with very large primal steps taken by the algorithm.
 
-The reason for the poor local convergence again lies in the structure of the problem. Consider the conditions derived for locally superlinear convergence of IPOPT given in \citeasnoun{Waechter2005}. There, it is stated that, in order to be able to achieve superlinear local convergence, the sufficient second order conditions (SSOC) must hold for the optimal point.
+The reason for the poor local convergence again lies in the structure of the problem. \citeasnoun{Waechter2005} state that in order to be able to achieve superlinear local convergence, the sufficient second order conditions (SSOC) must hold for the optimal point.
 
 One condition among these is that at the optimal point $\left(x^*,\lambda^*\right)$ the Hessian of the Lagrangean $\nabla_{xx}^2\mathcal{L}(x^*,\lambda^*)$ is positive definite when projected onto the nullspace of the constraint Jacobian matrix $\nabla c(x^*)^T$. In our specific case of a quadratic objective function with only linear constraints, the Hessian of the Lagrangean is the matrix $Q$ introduced in \eqref{eq:structure-of-quadratic-hessian}. The constraints are stated in equations \eqref{eq:full-nlp-restated-q} through \eqref{eq:full-nlp-restated-ineq2}. IPOPT does not deal directly with inequality constraints, so slack variables $s_{1ijt},\,s_{2ijt} \geq 0$ are introduced and \eqref{eq:full-nlp-restated-ineq1} and \eqref{eq:full-nlp-restated-ineq2} restated as
 \begin{subequations}
@@ -144,7 +144,7 @@ With this reformulation, the SSOC for the problem can be determined by simple al
 \begin{figure}
   \centering
   \includegraphics[scale=0.6]{sixgraphs}
-  \caption{Six solutions of the NLP using IPOPT, starting from random starting points. The distribution to be approximated are independent Gaussian distributions. The optimal solution would consist of each node placing its child nodes at the }
+  \caption{Six locally optimal solutions of the NLP using IPOPT, starting from random starting points. The distribution to be approximated are independent Gaussian distributions. The optimal solution would consist of each node placing its child nodes at the Gaussian quadrature points $0$ and $\pm\sqrt{3/5}$.}
   \label{fig:different-local-minima-with-ipopt}
 \end{figure}
 

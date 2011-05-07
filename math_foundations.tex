@@ -1,14 +1,13 @@
 \section{Mathematical Foundations}
 \label{sec:math-foundations}
 This section serves as a short introduction to the mathematical concepts used throughout this paper.
-For the basic concepts of measure theory such as sigma algebras and measures, which will be necessary for understanding the derivations of the metrics in this section, we refer to the textbook by \citeasnoun{Elstrodt2007}.
+\footnote{For the basic concepts of measure theory such as sigma algebras and measures, which will be necessary for understanding the derivations of the metrics in this section, the reader is referred to the textbook by \citeasnoun{Elstrodt2007}.
 For a comprehensive overview on stochastic programming, see \citeasnoun{Birge1997}.
 Concerning probability theory, nothing beyond the basic definitions is used.
 Any introductory text such as \citeasnoun{Billingsley1995} or \citeasnoun{Bauer1991} should suffice.
 In section \ref{sec:expect-max-algos}, some concepts from machine learning are used.
-To the reader unfamiliar with these concepts, the recent textbook by \citeasnoun{Bishop2006} is highly recommended.
-
-This section is organized as follows.
+To the reader unfamiliar with these concepts, the recent textbook by \citeasnoun{Bishop2006} is highly recommended.}
+It is organized as follows.
 First, the notation and basic definitions used in this thesis are introduced.
 The discussion starts with an introduction to the relationship of stochastic programming problems and scenario trees\footnote{The term scenario tree is used colloquially at first. In the following section, a rigorous definition will be given.}.
 Then, the Kantorovich distance is introduced as a metric for measuring the discretization quality of a scenario tree.
@@ -17,12 +16,12 @@ Finally, this metric is used to formalize the problem of optimal scenario tree g
 In this section, the most often used mathematical objects are defined.
 The definitions generally used for random variables and stochastic processes are very broad.
 For the purposes of this paper, the following narrower definitions will suffice.
-The narrow definitions will allow for shorter and more coherent theorems and statements.
-This is not to say that the algorithms presented in this paper are not applicable to a more general set of problems.
-The purpose of this thesis is not, however, to derive the most general theorems, but instead to provide a good understanding of the novel ideas developed in sections \ref{sec:two-theorems} and \ref{sec:expect-max-algos}.
+These definitions will allow for shorter and more coherent theorems and statements.
+This is not to say that the algorithms presented in this thesis are not applicable to a more general set of problems.
+It is, however, not within the scope of this thesis to derive the most general theorems. Instead, some level of abstraction is sacrificed to provide a better understanding of the ideas developed in sections \ref{sec:two-theorems} and \ref{sec:expect-max-algos}.
 \begin{definition}[Random Variable]
   \label{def:random_variable}
-  Let $(\Omega, \mathfrak{A}, \mathbb{P})$ a probability space.
+  Let $(\Omega, \mathfrak{A}, \mathbb{P})$ be a probability space.
   Let $\bs\zeta$ be a mapping $\bs\zeta:\Omega\rightarrow\mathbb{R}^d$, which is $\mathfrak{A}$-measurable.
   Then, $\bs\zeta$ is called a \textbf{random variable}.
   If $|\Omega|<\infty$, $\bs\zeta$ is called a \textbf{discrete random variable}.
@@ -72,8 +71,8 @@ If the time step is omitted, this denotes the full scenario $i$, that is the vec
   In this thesis, the liberal approach of \citeasnoun{Bishop2006} with respect to the terms probability density and probability distribution will be used.
 The term distribution will be used throughout to mean both.
 Given an event space $\Omega$, a $\sigma$-algebra $\mathfrak{A}$, and a continuous distribution $\mathbb{P}$, $\mathbb{P}(\omega)$ for $\omega\in\Omega$ will denote the value of the underlying probability density, while $\mathbb{P}(A)$ for $A\in\mathfrak{A}$ will denote the value of the distribution.
-Though this notation may seem unclear, the meaning will always be obvious.
-On the other hand, by avoiding the proliferation of additional symbols, the notation achieves greater clarity.
+Though this notation may seem ambiguous, the meaning will always be obvious in context.
+On the contrary, by avoiding the proliferation of additional symbols, the notation achieves greater clarity.
 \end{remark}
 The vector $e$ denotes a vector of ones in each dimension.
 The dimension will be chosen in accordance with the context.
@@ -85,17 +84,23 @@ Consider the following multi-stage stochastic programming problem
 \begin{subequations}
   \label{eq:genericSP}
 \begin{eqnarray}
+  \label{eq:9}
   \mathcal{P}(\hat{\bs\xi})\;\min_{\hat{\bs x}} &&\mathbb{E}\left[\sum_{t=1}^Tf_t(\hat{\bs\xi}^t, \hat{\bs x}^t)\right]\\
+  \label{eq:72}
   &\mathrm{s.t.}& h_t(\hat{\bs\xi}^t, \hat{\bs x}^t, \hat{\bs x}^{t-1}) = 0\\
+  \label{eq:73}
   &&\hat{\bs x}^t \in X_t\\
+  \label{eq:74}
   &&\hat{\bs x}^t \, \mathrm{is}\,\mathfrak{A}_t \mathrm{-measurable} \label{eqn:measurability-constraint}
 \end{eqnarray}
 \end{subequations}
 governed by a stochastic process $\hat{\bs\xi}(\Omega, \mathcal{F}, \mathbb{P}_t),\;\hat{\bs\xi}^t : \Omega\rightarrow\mathbb{R}^{d_1}$.
+The objective function \eqref{eq:9} is the expected cost of all stages.
+The constraints \eqref{eq:72} represent the constraints at each stage as well as the inter-stage dependencies of the decisions.
 Note that the solution $\hat{\bs x}$ to this problem is a stochastic process $\hat{\bs x}(\Omega, \mathcal{F}, \mathbb{P}_t),\;\hat{\bs x}^t : \Omega\rightarrow\mathbb{R}^{d_2}$ over the same probability space.
 
-The difficulty in multi-stage stochastic programming problems arises from the measurability constraint (\ref{eqn:measurability-constraint}).
-This constraint is specific to multi-stage stochastic programs and leads to a much increased computational complexity of multi-stage programs over two-stage programs \cite{Shapiro2005,Shapiro2008}.
+The difficulty in multi-stage stochastic programming problems arises from the measurability constraint \eqref{eqn:measurability-constraint}.
+This constraint is specific to multi-stage stochastic programs because it enforces the uncertainty of the future. It leads to a much increased computational complexity of multi-stage programs over two-stage programs \cite{Shapiro2005,Shapiro2008}.
 %
 \paragraph{Measurability Constraints}
 The measurability constraints imply that the condition
@@ -137,7 +142,7 @@ There exists a natural relationship between discrete stochastic processes and ro
 \begin{definition}[Filtration Tree]
   \label{def:filtration_tree}
   Let $\bs\xi$ be a discrete stochastic process $\bs\xi(\Omega, \mathcal{F}, p)$.
-  Let $\mathcal{T}$ be a rooted tree with a set $\mathcal{N}$ of nodes, such that each the path from each leaf node to the root node has the same length.
+  Let $\mathcal{T}$ be a rooted tree with a set $\mathcal{N}$ of nodes, such that the path from the root node to each leaf node has the same length.
   Let $\mathcal{N}_t$ be the set of nodes of $\mathcal{T}$ at depth $t$.
   For every time step $t$, let $\mathfrak{E}_t$ be the (unique) disjoint cover of $\Omega$, such that $\mathcal{F}_t$ is the sigma-algebra generated by $\mathfrak{E}_t$.
   If there exists a family of mappings $\phi_t:\mathfrak{E}_t\rightarrow \mathcal{N}_t$, such that
@@ -154,7 +159,7 @@ There exists a natural relationship between discrete stochastic processes and ro
     n:I\times \{1,\ldots T\}\rightarrow\mathcal{N}
   \end{equation}
   This mapping will be used extensively for the derivation of the algorithms.
-  In an abuse of notation, we will denote the set of all pairs of scenarios and the time step t corresponding to the node $k$ by $n^{(-1)}(k)$.
+  In an abuse of notation, the set of all pairs of scenarios and the time step t corresponding to the node $k$ will be denoted by $n^{(-1)}(k)$.
 \end{remark}
 The filtration tree is the basis for the scenario tree defined in the following.
 \begin{definition}[Scenario Tree]
@@ -179,10 +184,10 @@ Using the filtration tree, the values of the scenarios at each time step can be 
 The value of scenario $i$ at time step $t$ will be denoted by $\nu_i^t$. To make the distinction between node values and scenario values, the following convention is used: Subscripts $i$ and $j$ correspond to scenario values, while the subscript $n$ corresponds to node values.
 \end{remark}
 
-Tree structures introduce the non-anticipativity constraints in intuitive way (see figure \ref{fig:violated-nonanticipativity}).
+Tree structures introduce the non-anticipativity constraints in an intuitive way (see figure \ref{fig:violated-nonanticipativity}).
 The parent node holds the information of the past, while each node is branched into multiple possible future states.
-It is a common mistake to represent the stochastic process as a set of independent scenarios with common root.
-Because this is a common misconception, for illustration purposes we will give the following
+It is a frequent mistake to represent the stochastic process as a set of independent scenarios with common root, leading to a violation of the non-anticipativity for times $t>0$.
+Because this is a widespread misconception, for illustration purposes we will give the following example.
 \begin{example}[Necessity of tree structure]
   \label{ex:tree-necessity}
   % \hangindent=1cm
@@ -210,14 +215,14 @@ Because this is a common misconception, for illustration purposes we will give t
     \text{s.t.} &\; \sum_{t=1}^3x_i^t = 3 \\
     & \; x_i^1 = x_0^1
   \end{align*}
-  where $I$ is the index set of scenarios, $\xi_i^t$ is the outcome of the game (return per Euro for win, $0$ for loss), $x_i^t$ is the amount that the player is willing to bet at time step $t$ in scenario $i$. The first equation ensures that the player spends exactly the amount he has at his disposal. The second equation fixes the players decision in the first round.
+  where $I$ is the index set of scenarios, $\xi_i^t$ is the outcome of the game (return per Euro for win (W), $0$ for loss (L)), $x_i^t$ is the amount that the player is willing to bet at time step $t$ in scenario $i$. The first equation ensures that the player spends exactly the amount he has at his disposal. The second equation fixes the player's decision in the first round.
 
   The results, summarized in table \ref{tab:coin-toss-results}, show that the solution of the LP does not match the optimal solution, even though the uncertainty was seemingly taken into account.
   The flaw in the above formulation is that the non-anticipativity constraints are missing for stage 2.
   The algorithm believes to know what will happen, as soon as the first value is revealed.
   The game, as it is modeled in the LP is as follows:
   ``Make one decision with stochastic outcome, then make two decisions with perfect foresight''.
-  In this situation, the algorithm will decide to wait and only wager, when the result is (seemingly) known beforehand (see figure \ref{fig:violated-nonanticipativity}).
+  In this situation, the algorithm will decide to wait and only wager when the result is (seemingly) known beforehand (see figure \ref{fig:violated-nonanticipativity}).
   \input{violated_nonanticipativity}
   \begin{table}
     \small\centering
@@ -248,7 +253,7 @@ The above example illustrates the need for tree structured discretizations of st
 \bs\xi, \hat{\bs\xi})
 \end{equation}
 where $\mathcal{S}$ is the space of stochastic processes which remains to be defined. The distance function should satisfy at least the properties of a metric.
-The goal will then be to find algorithms that solve the following
+The goal will then be to find algorithms that solve the following problem.
 \begin{problem}[Optimal stochastic process]
   \label{prob:optimal_discrete_sp}
   Given a set $\mathcal{S}$ of stochastic processes, and a metric $D$, find
@@ -315,8 +320,11 @@ See figure \ref{fig:example-wrong-distance} for an example.
 \end{comment}
 \subsection{The Kantorovich Distance}
 \label{sec:kantoro}
-In this section, the Kantorovich Distance is presented as a reasonable and usable metric for measuring the distance between two stochastic processes.
-For a gentle introduction to the Kantorovich Distance see \citeasnoun{Deng2009}.
+In the previous section, the importance of trees for enforcing the non-anticipativity constraints of stochastic programs was illustrated, and tree structures were introduced.
+This section focuses on measuring the distance between two trees and the discrete stochastic processes they represent.
+This is important for assessing the quality of an approximation of one stochastic process to another.
+The Kantorovich Distance is presented as a reasonable and usable metric for measuring the distance between two stochastic processes.
+For an introduction to the Kantorovich Distance see \citeasnoun{Deng2009}.
 % Note that stochastic processes can be represented as random variables by considering each trajectory as an event.
 
 In the context of stability analysis of stochastic programming problems, it has been shown by \citeasnoun{Dupacova2003} that the Kantorovich functional described below
@@ -337,12 +345,11 @@ Here, $\mathcal{M}(\mathbb{P}_1, \mathbb{P}_2)$ is the space of Borel-measures $
 \end{equation}
 where $\mathcal{B}$ is the Borel-$\sigma$-field with respect to $\Omega$.\footnote{For definitions of Borel-measures and Borel-$\sigma$-fields, see for example \citeasnoun{Elstrodt2007}.}
 \end{definition}
-The Kantorovich distance is only defined as a distance between probability.
+The Kantorovich distance is only defined as a distance between probability distributions.
 The definition is easily extended to random variables and stochastic processes in the following way.
 Let $\bs\zeta_1(\Omega_1,\mathfrak{A}_1,\mathbb{P}_1)$ and $\bs\zeta_2(\Omega_2,\mathfrak{A}_2,\mathbb{P}_2)$ be random variables.
 For the stochastic optimization problem, the event space is of no interest.
-Therefore, it can be assumed, that $\zeta_i = id$.
-Note that this is particular to the application to stochastic programming.
+Therefore, it can be assumed that $\zeta_i = id$.
 The Kantorovich distance between these random variables is then defined as
 \begin{equation}
   \label{eq:64}
@@ -392,7 +399,7 @@ The task is to find a discrete stochastic process $\bs\chi$ that satisfies the f
 In this work, the filtration will not be dealt with explicitly.
 See \citeasnoun{Heitsch2010} for an introduction to how this can be done.
 Instead, the filtration will be postulated beforehand.
-The complexity of a stochastic programming problems, which can be measured by the number of variables in the deterministic equivalent,\footnote{see \citeasnoun{Birge1997} for an overview of deterministic equivalents and other solution methods for stochastic programs} is determined by the filtration tree of the scenario tree $\bs\chi$.
+The complexity of a stochastic programming problem, which can be measured by the number of variables in the deterministic equivalent,\footnote{see \citeasnoun{Birge1997} for an overview of deterministic equivalents and other solution methods for stochastic programs} is determined by the filtration tree of the scenario tree $\bs\chi$.
 
 Assume that it is possible to sample from $\hat{\bs\xi}$.
 Using Monte-Carlo methods, a set of pairs of scenarios and corresponding probabilities $(\xi_i,p_i)$ can be sampled.
@@ -428,8 +435,6 @@ In the literature, especially in \citeasnoun{Heitsch2009} and related papers (\c
 We view the approach of fixing the tree structure beforehand is a more sensible assumption for the following reasons.
 \begin{itemize}
 \item a recursive tree structure makes sense in most applications, as the structure of the decisions to be made is recursive as well.
-Consider the operator of the pumped-hydro plant mentioned above.
-He faces the same decision at each time step, and his measure of uncertainty for any event happening a certain amount of time into the future is independent of the current situation.
 \item the number of scenarios is not determined by the error one will allow but is the other way around: The error is determined by the maximum number of scenarios one can handle computationally.
 This number of scenarios will be known beforehand.
 As the correlation of using more scenarios and lowering the approximation error is strictly monotonic, there is no reason to use less scenarios than one can handle computationally.

@@ -1,11 +1,10 @@
 \section{Two Theorems on fast evaluations of the Kantorovich Distance}
 \label{sec:two-theorems}
 In the previous section it has been shown that the naive approach of solving the MILP/NLP resulting from the direct transcription of the Kantorovich distance is not feasible.
-In this section, two theorems will be presented that will open up the possibility for a new heuristic approach to solving these problems.
+In this section, two theorems will be developed that will open up the possibility for a new heuristic approach to solving these problems.
 \subsection{Kantorovich Distance for optimal weights}
 \label{sec:optimal-weights-proof}
 In this section, we will prove a theorem on the optimal probability distribution of a discrete random variable under the Kantorovich distance.
-It is based on the same idea as theorem 2 in \citeasnoun{Dupacova2003}.
 
 Consider two discrete random variables $\bs\zeta(I,p)$ and $\bs\chi(J,q)$.
 The values of each scenario $\zeta_i,\, i\in I$ and $\chi_j,\, j\in J$ at each timestep are known, as are the discrete probabilities $p_i$.
@@ -32,7 +31,7 @@ The following theorem and algorithm \ref{alg:optimal-weights} will show how this
 \end{thm}
 Theorem 2 of \citeasnoun{Dupacova2003} is similar, whith the difference that there, the authors additionally assume $\chi(J)\subset \zeta(I)$.
 Their proof, which could be applied with only slight modifications, uses the primal and dual representations of the Kantorovich minimum flow problem.
-Instead, we will try to give the following, more intuitive proof.
+Instead, here the following, more intuitive proof is given.
 \begin{proof}
 First, we will show the correctness of the representation of $D_K$ in (\ref{eq:define-Dk-optimalweights-thm}).
 $D_K$ is defined as the optimal value of the linear program
@@ -58,7 +57,7 @@ Therefore, $D_K$ can be computed using the reduced problem
 \end{align}
 \end{subequations}
 and $q$ can be deduced from the resulting $\eta$ using equation \eqref{eqn:eta-q-in-optimalweights-proof}.
-In this reduced problem, the variables decompose into independent blocks, with $\eta_{ij}$ and $\eta_{kl}$ being independent, iff $i\neq k$.
+In this reduced problem, the variables decompose into independent blocks, with $\eta_{ij}$ and $\eta_{kl}$ being independent, iff $i\neq k$ for all $j,l\in J$.
 With this, the problem can be reformulated as a sum of optimal values of independent optimization problems:
 \begin{equation}
   \label{eqn:Dk-decomposition-in-mi}
@@ -102,7 +101,7 @@ With this information, the KKT conditions allow only for the following solution:
   \eta_j^{i,\mathrm{opt}} &:= \left\{ \begin{array}{lr}p_i&\text{if }j=\underset{j\in J}{\operatorname{argmin}}\, c_j^i\\0&\text{otherwise}\end{array}\right.
 \end{align}
 \end{subequations}
-Given LICQ (which obviouly holds since $\eta_{ij}=0\;\forall (i,j)\in I\times J$ is not feasible), the KKT conditions for linear programs are sufficient conditions for optimality.
+Given LICQ (which holds since $\eta_{ij}=0\;\forall (i,j)\in I\times J$ is not feasible), the KKT conditions for linear programs are sufficient conditions for optimality.
 Therefore, we have
 \begin{equation}
   m_i^{\mathrm{opt}} = \sum_{j\in J}\eta_j^{i,\mathrm{opt}}c_j^i = p_i\min\limits_{j\in J}c_j^i.
@@ -166,8 +165,7 @@ We will introduce these two problems and discuss them.
 \end{problem}
 The $K$-mean and $K$-medoid problems are two of the most extensively used formulations in machine learning and data mining.
 They are very useful for the unsupervised search of clusters in information.
-Because of their wide range of applications, much work has gone into the development of efficient algorithms.
-See \citeasnoun{Bishop2006}, section 9.1 for an introduction.
+Because of their wide range of applications, much work has gone into the development of efficient algorithms.\footnote{See \citeasnoun{Bishop2006}, section 9.1 for an introduction.}
 Note that even though this problem belongs to the class of \textbf{NP}-hard problems, efficient approximation algorithms have been found \cite{Vazirani2003}.
 In section \ref{sec:k-means-standard}, we will present the most basic algorithms for solving problems \ref{prb:kmeans-problem-definition} and \ref{prb:kmedoids-problem-definition}.
 %Algorithm \ref{alg:kmeans} is, due to its simplicity and obviousness, commonly given the same name as the problem itself.
@@ -232,7 +230,7 @@ The theorem and the comments apply almost one-to-one to the combination of probl
 \begin{thm}[Solution of K-means (K-Medoids) and solves optimal Kantorovich Approximation]
   \label{thm:kmeans-kantorovich}
   Consider a discrete random variable $\bs\xi(I,p)$ with a uniform probability distribution $p_i = \frac{1}{|I|}$ and an integer $K$ as input to problem \ref{prb:CE-Kantorovich-randvar} (\ref{prb:DE-Kantorovich-randvar}).
-  If the set $M$ is a solution to problem \ref{prb:kmeans-problem-definition} (\ref{prb:kmedoids-problem-definition}) with input set $X=\xi(I)$, then the random variable $\bs\chi(J,q),\; \chi : M \rightarrow M,\, m\mapsto m$ is a solution to problem \ref{prb:CE-Kantorovich-randvar} (\ref{prb:DE-Kantorovich-randvar}) for the data above, and $q$ is given by the optimal weights algorithm.
+  If the set $M$ is a solution to problem \ref{prb:kmeans-problem-definition} (\ref{prb:kmedoids-problem-definition}) with input set $X=\xi(I)$, then the random variable $\bs\chi(J,q),\; \chi : M \rightarrow M,\, m\mapsto m$ is a solution to problem \ref{prb:CE-Kantorovich-randvar} (\ref{prb:DE-Kantorovich-randvar}) for the data above, and $q$ is given by the optimal weights (algorithm \ref{alg:optimal-weights}).
 \end{thm}
 \begin{proof}
   The proof builds on theorem \ref{thm:optimal-weights}.
@@ -277,7 +275,7 @@ As theorem \ref{thm:kmeans-kantorovich} can be adopted word by word, only replac
 
 The above theorem is a huge step forward in the practical solution of optimal scenario tree problems.
 It has been illustrated in the previous section that the MILP resulting from the direct transcription of the Kantorovich distance is prohibitively hard to solve.
-Theorem \ref{thm:kmeans-kantorovich} opens tho possibilities of a wide range of heuristic solutions that have been found in a different area of research.
+Theorem \ref{thm:kmeans-kantorovich} opens the possibilities of a wide range of heuristic solutions that have been found in a different area of research.
 
 The following problems remain to be resolved: It must be shown that the solutions computed by the heuristics are sufficiently close to the optimal solutions.
 Secondly, the equivalence of the problems has only been proven for random variables.

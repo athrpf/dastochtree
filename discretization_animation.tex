@@ -94,14 +94,14 @@
     \begin{axis}
       \addplot[no marks, samples=100, color=black, fill=blue!60, very thick] function {1/(sqrt(2*3.1416))/1.5*exp(-(x-2)**2/2)+0.5/1.5/(sqrt(2*3.1416))*exp(-(x+1)**2/2)};
       \addplot[no marks, samples=100, color=black, fill=red!40, very thick] function
-      {1/(sqrt(2*3.1416))/1.5*exp(-(x-2)**2/2)};      
+      {1/(sqrt(2*3.1416))/1.5*exp(-(x-2)**2/2)};
     \end{axis}
   \end{tikzpicture}
-  \caption{Left: Original probability distribution. The dots represent random samples from this distribution. Right: K-means approximation with five clusters for the 45 data points on the left plot. Note that there is considerable error. Bottom: The probability distribution is a mixture of Gaussians.}
+  \caption{Top left: Original probability distribution. The dots represent random samples from this distribution. Top right: K-means approximation with five clusters for the 45 data points on the left plot. Note that there is considerable error. Bottom: The probability distribution is a mixture of Gaussians.}
   \label{fig:rev-disc-xiorig}
 \end{figure}
 
-%%% Local Variables: 
+%%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "da"
-%%% End: 
+%%% End:

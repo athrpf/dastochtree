@@ -1,6 +1,7 @@
 \subsection{Discrete-Event Trees}
 \label{sec:MILP-selection-problem}
-In this section we will derive algorithms for solving \eqref{eq:symbolic-optimization-with-minflow2} that are tailored to discrete-event trees.
+This section focuses on \eqref{eq:symbolic-optimization-with-minflow2}.
+Therefore, algorithms will be derived that are tailored to discrete-event trees.
 For discrete event trees, the problem of the optimal scenario tree generation becomes one of selecting nodes from the original set of scenarios as nodes for the scenario tree.
 It is generally possible to model the resulting selection problem as an MILP.
 This full-size model, with far beyond 100,000 binary variables and a weak relaxation is, however, computationally intractable.
@@ -60,16 +61,19 @@ Only the scenarios that had a non-zero ``mass-flow'' $\eta$ in the Kantorovich f
 This property preserves the filtration information in the stage-wise algorithm.
 
 The problem that is solved for each father node $f$ in the previously defined tree is the following MILP:
+\begin{subequations}
 \begin{eqnarray} % besser align?
   \label{eq:small-milp-in-alg}
   \mathcal{M}_{sw}(f)\; \; \min_{\eta^f,z^f}&&\sum_{i\in I_f}\sum_{j\in I_f}\eta_{ij}^fc(\xi_i^t,\xi_j^t)\\
   \mathrm{s.t.}&&\sum_{j\in I_f}\eta_{ij}^f = \eta_{if}^{father(f)}\\
+  \label{eq:75}
   &&\sum_{j\in I_f}z_j^f \leq n_c^f\\
   \label{eq:1}
   &&\eta_{ij}^f\leq z_j^f\\
   &&0\leq \eta_{ij}^f\\
   &&z_j^f\in\left\{0,1\right\}
 \end{eqnarray}
+\end{subequations}
 The MILP models the decision which scenarios will be selected as nodes into the tree.
 The variables $z_j^f$ are the selection variables for the scenarios $\xi_j$.
 If the node $\xi_j^t$ of scenario $j$ at time step $t$ (which is the time step following the current father node $f$) is selected as a node of the tree, the corresponding selection variable is set to $z_j^t=1$.
