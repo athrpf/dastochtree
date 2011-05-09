@@ -7,27 +7,47 @@
 \usepackage[ruled,vlined]{algorithm2e}
 \usepackage{comment}
 \usepackage{graphicx}
-\usepackage{harvard}
+%\usepackage{harvard}
+\usepackage[numbers,sort]{natbib}
+\usepackage{natmove}
 \usepackage{mathtools}
 \usepackage{nomencl}
+\usepackage{palatino}\linespread{1.05}
+%\usepackage{avant}
+%\usepackage{times}
 \usepackage[disable]{todonotes}
 %\usepackage{todonotes}
 \usepackage{pgfplots}
 %\usepackage[inline]{showlabels}
 
+\definecolor{avtcolor}{rgb}{0,0.537,0.820}
+% Bibliography
+\def\BIBand{and}
+%\def\bibfont{\small}
+
+% Small text for figure captions
+\addtokomafont{captionlabel}{\small\bfseries}
+\addtokomafont{caption}{\small}
+                                        % \setkomafont{Element}{Befehle}
+                                                % ändert die Schrift eines Elements über eine komplett neue Definition
+                                        % \addtokomafont{Element}{Befehle}
+                                                % weitet im Vergleich zu \setkomafont eher die Schrifteinstellungen eines Elementes auf Grundlage der
+                                                % existierenden Definition aus
+
 \pagestyle{headings}
 
 \setlength{\unitlength}{1cm}
-  \setlength{\parindent}{0cm}
-  \setlength{\parskip}{1.8ex plus0.5ex minus0.5ex}
-  \setlength{\baselineskip}{1.5ex plus0.5ex minus0.5ex}
+\setlength{\parindent}{0cm}
+\setlength{\parskip}{1.8ex plus0.5ex minus0.5ex}
+\setlength{\baselineskip}{1.5ex plus0.5ex minus0.5ex}
 
 \setlength{\textwidth}{17cm}
-  \setlength{\textheight}{24cm}
-  \setlength{\evensidemargin}{-0.5cm}
-  \setlength{\oddsidemargin}{-0.5cm}
-  \setlength{\topmargin}{-1cm}
-  \setlength{\footskip }{8ex}
+\setlength{\textheight}{24cm}
+\setlength{\evensidemargin}{-0.5cm}
+\setlength{\oddsidemargin}{-0.5cm}
+\setlength{\topmargin}{-1cm}
+\setlength{\footskip }{8ex}
+
 %%%%%%%%%%%%%%%
 % TIKZ and pgfplots
 %%%%%%%%%%%%%%%
@@ -81,7 +101,10 @@
 \newpage
 \title{Scenario Tree Generation for Stochastic Programming}
 \author{Hans Pirnay}
-\maketitle
+\include{avttitel}
+\include{Erklaerung}
+\thispagestyle{empty}
+\setcounter{page}{0}
 \tableofcontents
 \include{introduction}
 \include{math_foundations}
@@ -142,7 +165,9 @@
 \nomenclature{$e$}{Vector of ones}
 %\printnomenclature
 \newpage
-%\bibliographystyle{plain}
-\bibliographystyle{agsm}
+%\bibliographystyle{abbrvnat}
+%\bibliographystyle{plainnat}
+%\bibliographystyle{agsm}
+\bibliographystyle{iecrv5}
 \bibliography{da}
 \end{document}

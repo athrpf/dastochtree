@@ -1,18 +1,17 @@
-\section{Mathematical Foundations}
+\section{Mathematical foundations}
 \label{sec:math-foundations}
-This section serves as a short introduction to the mathematical concepts used throughout this paper.
-\footnote{For the basic concepts of measure theory such as sigma algebras and measures, which will be necessary for understanding the derivations of the metrics in this section, the reader is referred to the textbook by \citeasnoun{Elstrodt2007}.
-For a comprehensive overview on stochastic programming, see \citeasnoun{Birge1997}.
+This section serves as a short introduction to the mathematical concepts used throughout this paper.\footnote{For the basic concepts of measure theory such as sigma algebras and measures, which will be necessary for understanding the derivations of the metrics in this section, the reader is referred to the textbook by \citet{Elstrodt2007}.
+For a comprehensive overview on stochastic programming, see \citet{Birge1997}.
 Concerning probability theory, nothing beyond the basic definitions is used.
-Any introductory text such as \citeasnoun{Billingsley1995} or \citeasnoun{Bauer1991} should suffice.
+Any introductory text such as \citet{Billingsley1995} or \citet{Bauer1991} should suffice.
 In section \ref{sec:expect-max-algos}, some concepts from machine learning are used.
-To the reader unfamiliar with these concepts, the recent textbook by \citeasnoun{Bishop2006} is highly recommended.}
+To the reader unfamiliar with these concepts, the recent textbook by \citet{Bishop2006} is highly recommended.}
 It is organized as follows.
 First, the notation and basic definitions used in this thesis are introduced.
 The discussion starts with an introduction to the relationship of stochastic programming problems and scenario trees\footnote{The term scenario tree is used colloquially at first. In the following section, a rigorous definition will be given.}.
 Then, the Kantorovich distance is introduced as a metric for measuring the discretization quality of a scenario tree.
 Finally, this metric is used to formalize the problem of optimal scenario tree generation.
-\subsection{Notation and Definitions}
+\subsection{Notation and definitions}
 In this section, the most often used mathematical objects are defined.
 The definitions generally used for random variables and stochastic processes are very broad.
 For the purposes of this paper, the following narrower definitions will suffice.
@@ -68,7 +67,7 @@ The outcome of an event $i\in I$ of a discrete stochastic process $\bs\xi$ at ti
 If the time step is omitted, this denotes the full scenario $i$, that is the vector of the values $\xi_i^t$ sorted by their times $t$.
 \end{remark}
 \begin{remark}[Probability densities and distributions]
-  In this thesis, the liberal approach of \citeasnoun{Bishop2006} with respect to the terms probability density and probability distribution will be used.
+  In this thesis, the liberal approach of \citet{Bishop2006} with respect to the terms probability density and probability distribution will be used.
 The term distribution will be used throughout to mean both.
 Given an event space $\Omega$, a $\sigma$-algebra $\mathfrak{A}$, and a continuous distribution $\mathbb{P}$, $\mathbb{P}(\omega)$ for $\omega\in\Omega$ will denote the value of the underlying probability density, while $\mathbb{P}(A)$ for $A\in\mathfrak{A}$ will denote the value of the distribution.
 Though this notation may seem ambiguous, the meaning will always be obvious in context.
@@ -79,7 +78,7 @@ The dimension will be chosen in accordance with the context.
 
 In optimization problems, if there are indices in an equation that are not explicitly declared, it is assumed that this equation is stated for each of the indices in the corresponding set.
 The corresponding set will always be obvious in context.
-\subsection{Stochastic Programming and Scenario Trees}
+\subsection{Stochastic programming and scenario trees}
 Consider the following multi-stage stochastic programming problem
 \begin{subequations}
   \label{eq:genericSP}
@@ -100,7 +99,7 @@ The constraints \eqref{eq:72} represent the constraints at each stage as well as
 Note that the solution $\hat{\bs x}$ to this problem is a stochastic process $\hat{\bs x}(\Omega, \mathcal{F}, \mathbb{P}_t),\;\hat{\bs x}^t : \Omega\rightarrow\mathbb{R}^{d_2}$ over the same probability space.
 
 The difficulty in multi-stage stochastic programming problems arises from the measurability constraint \eqref{eqn:measurability-constraint}.
-This constraint is specific to multi-stage stochastic programs because it enforces the uncertainty of the future. It leads to a much increased computational complexity of multi-stage programs over two-stage programs \cite{Shapiro2005,Shapiro2008}.
+This constraint is specific to multi-stage stochastic programs because it enforces the uncertainty of the future. It leads to a much increased computational complexity of multi-stage programs over two-stage programs \citep{Shapiro2005,Shapiro2008}.
 %
 \paragraph{Measurability Constraints}
 The measurability constraints imply that the condition
@@ -116,13 +115,15 @@ These equations model the uncertainty of the future.
 \paragraph{Discretization}
 %
 Stochastic programs are infinite dimensional optimization problems and as such not immediately accessible to computation.
-To transform the stochastic program into a computable problem, the infinite dimensional stochastic process $\hat{\bs\xi}$ must be discretized into a finite stochastic process $\bs\xi$ (see figure \ref{fig:abstract-discretization}).
+To transform the stochastic program into a computable problem, the infinite dimensional stochastic process $\hat{\bs\xi}$ must be discretized into a finite stochastic process $\bs\xi$. Figure \ref{fig:abstract-discretization} illustrates the process of solving the infinite dimensional problem through discretization.
+First, the data, which is the stochastic process $\hat{\bs\xi}$ is discretized to $\bs\xi$.
+After discretization, the stochastic program can be solved using the \textit{deterministic equivalent} formulation \citep{Birge1997}.
 
 If certain precautions are taken, it is possible to show (at least for linear stochastic programs) that the solution to the stochastic problem is stable under this discretization operation, meaning that there exists a factor $L$ such that the distance between the solution to the discretized problem $\bs x$ and the solution to the original problem $\hat{\bs x}$ are Lipschitz-continuous with respect to the discretization error:
 \begin{equation}
   D(\bs x , \hat{\bs x}) \leq L\cdot D(\bs\xi,\hat{\bs\xi})
 \end{equation}
-where $D$ is an appropriate metric. See \citeasnoun{Heitsch2010} for the proof and further details.
+where $D$ is an appropriate metric. See \citet{Heitsch2010} for the proof and further details.
 %The correct choice for $D$ will be discussed in sections \ref{sec:measuring-challenges} and \ref{sec:kantoro}.
 \input{abstract_discretization}
 The discretization will be carried out in two steps.
@@ -131,14 +132,14 @@ This step is well known and will not be discussed here.
 To capture the essence of the non-anticipativity constraints, in a second step the scenarios of $\bs\xi$ are recombined into a tree structure.
 Tree structures play a central role in this work.
 For completeness, we will define the basic notions used here in the following definition.
-For a complete overview over the graph theoretical terms, see for example \citeasnoun{Diestel2005}.
-\begin{definition}[Tree \cite{Diestel2005}]
+For a complete overview over the graph theoretical terms, see for example \citet{Diestel2005}.
+\begin{definition}[Tree \citep{Diestel2005}]
   \label{def:tree}
   An acyclic, connected Graph is called a \textbf{tree}.
   The nodes of a tree with degree 1 are called \textbf{leafs}.
   A tree, in which one node is designated as the \textbf{root node} is called a \textbf{rooted tree}.
 \end{definition}
-There exists a natural relationship between discrete stochastic processes and rooted trees.
+The following relationship between discrete stochastic processes and rooted trees will be used throughout this thesis.
 \begin{definition}[Filtration Tree]
   \label{def:filtration_tree}
   Let $\bs\xi$ be a discrete stochastic process $\bs\xi(\Omega, \mathcal{F}, p)$.
@@ -176,7 +177,7 @@ The filtration tree is the basis for the scenario tree defined in the following.
   can be constructed.
   The triple $(\mathcal{T}, \nu, q)$ is called a \textbf{scenario tree}.
 \end{definition}
-Neglecting symmetric solutions, there exists a bijective mapping between discrete stochastic processes and scenario trees.
+Disregarding symmetric solutions, there exists a bijective mapping between discrete stochastic processes and scenario trees.
 Due to this identity, the terms scenario tree and discrete stochastic process will be used interchangeably where appropriate, and both objects will be denoted by the same symbol.
 \begin{remark}[Node values and scenario values]
 The mapping $\nu$ of nodes to node values can be represented by a finite vector.
@@ -268,7 +269,7 @@ Since the choices for $\mathcal{S}$ and $D$ are by no means obvious and have a s
 \label{sec:measuring-challenges}
 The purpose of this section is to derive a distance function (\ref{eq:distance-function-intro}) which will serve as a means to evaluate the quality of a scenario tree approximation to a stochastic process.
 As this work's main concern are the numerics of this problem, the theoretical discussion is carried out with a focus on comprehensibility.
-For a detailed and mathematically thorough discussion see \citeasnoun{Heitsch2010} and the references therein.
+For a detailed and mathematically thorough discussion see \citet{Heitsch2010} and the references therein.
 
 Stochastic processes are versatile and complex objects.
 Depending on the problem at hand, different interpretations may be useful.
@@ -318,17 +319,17 @@ See figure \ref{fig:example-wrong-distance} for an example.
 \end{enumerate}
 \input{example_wrong_distance}
 \end{comment}
-\subsection{The Kantorovich Distance}
+\subsection{The Kantorovich distance}
 \label{sec:kantoro}
 In the previous section, the importance of trees for enforcing the non-anticipativity constraints of stochastic programs was illustrated, and tree structures were introduced.
 This section focuses on measuring the distance between two trees and the discrete stochastic processes they represent.
 This is important for assessing the quality of an approximation of one stochastic process to another.
 The Kantorovich Distance is presented as a reasonable and usable metric for measuring the distance between two stochastic processes.
-For an introduction to the Kantorovich Distance see \citeasnoun{Deng2009}.
+For an introduction to the Kantorovich Distance see \citet{Deng2009}.
 % Note that stochastic processes can be represented as random variables by considering each trajectory as an event.
 
-In the context of stability analysis of stochastic programming problems, it has been shown by \citeasnoun{Dupacova2003} that the Kantorovich functional described below
-represents a  `natural and suitable'\footnote{\citeasnoun{Dupacova2003}} distance for measuring stochastic processes.
+In the context of stability analysis of stochastic programming problems, it has been shown by \citet{Dupacova2003} that the Kantorovich functional described below
+represents a  `natural and suitable'\footnote{\citet{Dupacova2003}} distance for measuring stochastic processes.
 \begin{definition}[Kantorovich distance]
   Let $\mathbb{P}_1:\Omega_1\rightarrow\mathbb{R}$ and $\mathbb{P}_2:\Omega_1\rightarrow\mathbb{R}$ be probability distributions.
   The \textbf{Kantorovich distance} $D_K(\mathbb{P}_1,\mathbb{P}_2)$ is defined as
@@ -336,14 +337,14 @@ represents a  `natural and suitable'\footnote{\citeasnoun{Dupacova2003}} distanc
     \label{eq:define-infinitedim-kantorovich}
     D_K(\mathbb{P}_1, \mathbb{P}_2) = \inf\limits_{\eta\in\mathcal{M}(\mathbb{P}_1,\mathbb{P}_2)}\left\{\int_{\Omega_1\times\Omega_2}c(\omega_1, \omega_2)d\eta(\omega_1,\omega_2)\right\}
   \end{equation}
-  The distance $c$ is a mapping with certain properties, which are specified by \citeasnoun{Dupacova2003}.
+  The distance $c$ is a mapping with certain properties, which are specified by \citet{Dupacova2003}.
   For the purposes of this paper, it suffices to say that any vector norm satisfies these conditions.
 Here, $\mathcal{M}(\mathbb{P}_1, \mathbb{P}_2)$ is the space of Borel-measures $\eta$ with marginals $\mathbb{P}_1$ and $\mathbb{P}_2$, meaning that $\eta$ is a probability measure on the space $\Omega_1\times\Omega_2$ with the properties
 \begin{equation}
   \label{eq:define-borel-measures}
   \int_{B\times \Omega_2} d\eta(\omega_1,\omega_2) = \mathbb{P}_1(B),\;   \int_{\Omega_1\times B} d\eta(\omega_1,\omega_2) = \mathbb{P}_2(B),\; B \in \mathcal{B}
 \end{equation}
-where $\mathcal{B}$ is the Borel-$\sigma$-field with respect to $\Omega$.\footnote{For definitions of Borel-measures and Borel-$\sigma$-fields, see for example \citeasnoun{Elstrodt2007}.}
+where $\mathcal{B}$ is the Borel-$\sigma$-field with respect to $\Omega$.\footnote{For definitions of Borel-measures and Borel-$\sigma$-fields, see for example \citet{Elstrodt2007}.}
 \end{definition}
 The Kantorovich distance is only defined as a distance between probability distributions.
 The definition is easily extended to random variables and stochastic processes in the following way.
@@ -357,11 +358,11 @@ The Kantorovich distance between these random variables is then defined as
 \end{equation}
 Stochastic processes can be measured in the Kantorovich distance by their induced random variables (see remark \ref{remark:stochproc-as-randvar}).
 As stated above, the filtration information is discarded in this transformation.
-Recently, \citeasnoun{Heitsch2010} have shown that disregarding the filtration information in approximating a stochastic process leads to incorrect results.
+Recently, \citet{Heitsch2010} have shown that disregarding the filtration information in approximating a stochastic process leads to incorrect results.
 To deal with this problem, the use of a filtration distance is advocated.
 In this work, the issue of retaining the filtration is solved by postulating the structure of the filtration through a filtration tree.
 \paragraph{Kantorovich Distance for finite stochastic processes}
-Besides its virtues for the stability analysis (see \citeasnoun{Dupacova2003}), an advantage of the Kantorovich Distance is its simple and intuitive representation for discrete random variables.
+Besides its virtues for the stability analysis (see \citet{Dupacova2003}), an advantage of the Kantorovich Distance is its simple and intuitive representation for discrete random variables.
 Consider two discrete random variables $\bs\zeta(I, p)$ and $\bs\chi(J,q)$ with $I,J\subset\mathbb{N}$ (see remark \ref{remark:discrete-randvar-indexsets}).
 Translating the infinite dimensional representation of the metric (\ref{eq:define-infinitedim-kantorovich}) into this framework is straightforward.
 The integral over the combination of all possible events of the two stochastic processes is replaced by a sum over a finite set.
@@ -385,7 +386,7 @@ This formulation is a linear program, more specifically a minimum cost flow prob
 This means that solutions are readily available even for large problems using state of the art LP solvers.
 The above minimum cost flow problem will be at the heart of the derivations of the following sections, as it will serve as the measure for the quality of approximations to infinite dimensional stochastic processes.
 \input{finite_kantorovich_illustration}
-\subsection{Scenario Tree Generation}
+\subsection{Scenario tree generation}
 \label{sec:scen-tree-generation}
 In this section we will briefly state the problem definition for which solutions will be proposed below.
 
@@ -397,9 +398,9 @@ The task is to find a discrete stochastic process $\bs\chi$ that satisfies the f
 \item The filtration of $\bs\chi$ is similar to that of $\hat{\bs\xi}$.
 \end{enumerate}
 In this work, the filtration will not be dealt with explicitly.
-See \citeasnoun{Heitsch2010} for an introduction to how this can be done.
+See \citet{Heitsch2010} for an introduction to how this can be done.
 Instead, the filtration will be postulated beforehand.
-The complexity of a stochastic programming problem, which can be measured by the number of variables in the deterministic equivalent,\footnote{see \citeasnoun{Birge1997} for an overview of deterministic equivalents and other solution methods for stochastic programs} is determined by the filtration tree of the scenario tree $\bs\chi$.
+The complexity of a stochastic programming problem, which can be measured by the number of variables in the deterministic equivalent,\footnote{see \citet{Birge1997} for an overview of deterministic equivalents and other solution methods for stochastic programs} is determined by the filtration tree of the scenario tree $\bs\chi$.
 
 Assume that it is possible to sample from $\hat{\bs\xi}$.
 Using Monte-Carlo methods, a set of pairs of scenarios and corresponding probabilities $(\xi_i,p_i)$ can be sampled.
@@ -431,11 +432,11 @@ The general algorithm will proceed along the steps outlined in algorithm \ref{al
   \textbf{Solve} $\underset{\nu,q}{\argmin}\; D_K((\mathcal{T},\nu, q), \bs\xi)$\;
 \end{algorithm}
 
-In the literature, especially in \citeasnoun{Heitsch2009} and related papers (\cite{Dupacova2003,Heitsch2003,Heitsch2009a,Heitsch2010}), not the tree structure is fixed beforehand, but instead a given tree is reduced by deleting nodes until a maximum distance $D_K(\bs\xi,\hat{\bs\xi})$ is reached.
-We view the approach of fixing the tree structure beforehand is a more sensible assumption for the following reasons.
+In the literature, especially in \citet{Heitsch2009} and related papers (\cite{Dupacova2003,Heitsch2003,Heitsch2009a,Heitsch2010}), not the tree structure is fixed beforehand, but instead a given tree is reduced by deleting nodes until a maximum distance $D_K(\bs\xi,\hat{\bs\xi})$ is reached.
+We regard the approach of fixing the tree structure beforehand as a more sensible assumption for the following reasons.
 \begin{itemize}
-\item a recursive tree structure makes sense in most applications, as the structure of the decisions to be made is recursive as well.
-\item the number of scenarios is not determined by the error one will allow but is the other way around: The error is determined by the maximum number of scenarios one can handle computationally.
+\item A recursive tree structure makes sense in most applications, as the structure of the decisions to be made is recursive as well.
+\item The number of scenarios is not determined by the error one will allow but is the other way around: The error is determined by the maximum number of scenarios one can handle computationally.
 This number of scenarios will be known beforehand.
 As the correlation of using more scenarios and lowering the approximation error is strictly monotonic, there is no reason to use less scenarios than one can handle computationally.
 \item For the method described in the papers cited above, it is not obvious how the original tree which is then reduced was constructed in the first place.

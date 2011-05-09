@@ -1,8 +1,8 @@
-\section{Two Theorems on fast evaluations of the Kantorovich Distance}
+\section{Two theorems on fast evaluations of the Kantorovich distance}
 \label{sec:two-theorems}
 In the previous section it has been shown that the naive approach of solving the MILP/NLP resulting from the direct transcription of the Kantorovich distance is not feasible.
 In this section, two theorems will be developed that will open up the possibility for a new heuristic approach to solving these problems.
-\subsection{Kantorovich Distance for optimal weights}
+\subsection{Kantorovich distance for optimal weights}
 \label{sec:optimal-weights-proof}
 In this section, we will prove a theorem on the optimal probability distribution of a discrete random variable under the Kantorovich distance.
 
@@ -29,7 +29,7 @@ The following theorem and algorithm \ref{alg:optimal-weights} will show how this
     D_K = \sum_{i\in I}p_i\min\limits_{j\in J}c_{ij}
   \end{equation}
 \end{thm}
-Theorem 2 of \citeasnoun{Dupacova2003} is similar, whith the difference that there, the authors additionally assume $\chi(J)\subset \zeta(I)$.
+Theorem 2 of \citet{Dupacova2003} is similar, whith the difference that there, the authors additionally assume $\chi(J)\subset \zeta(I)$.
 Their proof, which could be applied with only slight modifications, uses the primal and dual representations of the Kantorovich minimum flow problem.
 Instead, here the following, more intuitive proof is given.
 \begin{proof}
@@ -124,7 +124,7 @@ This completes the proof.
   \caption{Optimal weights}
   \label{alg:optimal-weights}
 \end{algorithm}
-\subsection{Kantorovich Distance and Clustering Algorithms}
+\subsection{Kantorovich Distance and clustering algorithms}
 \label{sec:kantorovich-and-clusters}
 In this section, a corollary to theorem \ref{thm:optimal-weights} is proven, that will allow for a very efficient rephrasing of the problem defined in (\ref{eq:symbolic-optimization-with-minflow2}):
 \[
@@ -165,8 +165,8 @@ We will introduce these two problems and discuss them.
 \end{problem}
 The $K$-mean and $K$-medoid problems are two of the most extensively used formulations in machine learning and data mining.
 They are very useful for the unsupervised search of clusters in information.
-Because of their wide range of applications, much work has gone into the development of efficient algorithms.\footnote{See \citeasnoun{Bishop2006}, section 9.1 for an introduction.}
-Note that even though this problem belongs to the class of \textbf{NP}-hard problems, efficient approximation algorithms have been found \cite{Vazirani2003}.
+Because of their wide range of applications, much work has gone into the development of efficient algorithms.\footnote{See \citet{Bishop2006}, section 9.1 for an introduction.}
+Note that even though this problem belongs to the class of \textbf{NP}-hard problems, efficient approximation algorithms have been found \citep{Vazirani2003}.
 In section \ref{sec:k-means-standard}, we will present the most basic algorithms for solving problems \ref{prb:kmeans-problem-definition} and \ref{prb:kmedoids-problem-definition}.
 %Algorithm \ref{alg:kmeans} is, due to its simplicity and obviousness, commonly given the same name as the problem itself.
 \begin{comment}
@@ -185,10 +185,10 @@ Note the resemblance to the objective function of the Kantorovich optimization.
 With this notation, we can summarize the $K$-Means algorithm.
 At the beginning of the algorithm, the means $m_j$ are initialized in some random way.
 The initialization step is crucial for the performance of the algorithm, but will not be discussed here.
-See for example the K-Means++ algorithm introduced by \cite{Arthur2006}.
+See for example the K-Means++ algorithm introduced by \citep{Arthur2006}.
 
 After the means are initialized, two steps called the expectation and maximization steps alternate, until the algorithm converges to a set of $r_{ij}$ and $m_j$.
-The nomenclature is based on the larger class of expectation-maxmization algorithms described by \cite{Dempster1977}.
+The nomenclature is based on the larger class of expectation-maxmization algorithms described by \citep{Dempster1977}.
 The expectation step minimizes the objective (\ref{eq:kmeans-problem-with-r}) with respect to $r_{ij}$ for fixed $m_j$.
 This is done by applying the definition of $r_{ij}$ in (\ref{eq:define_r_kmeans}).
 The maximization step conversely minimizes the objective function with respect to $m_j$, while fixing $r_{ij}$.

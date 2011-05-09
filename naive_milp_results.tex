@@ -7,12 +7,12 @@
       xlabel=children per node,
       ylabel=Kantorovich error
       ]
-      \addplot  coordinates { % random selection (ultra-naive algorithm)
+      \addplot[mark=o,thick]  coordinates { % random selection (ultra-naive algorithm)
         (3, 0.9967) %+ (0,0.2379) - (0,0.1479)
         (5, 0.7525) %+ (0,0.1338) - (0,0.0830)
         (7, 0.7837) %+ (0,0.1562) - (0,0.0697)
       };
-      \addplot coordinates { % stage-wise MILP
+      \addplot[mark=square,dashed,mark options={solid},thick] coordinates { % stage-wise MILP
         (3, 0.6927)
         (5, 0.4667)
         (7, 0.4084)
@@ -27,7 +27,7 @@
   \begin{tikzpicture}
     \begin{axis}
       [xlabel=Number of scenarios, ylabel=time in seconds]
-      \addplot coordinates{ % Timing
+      \addplot[mark=square,mark options={solid},thick] coordinates{ % Timing
         (400, 85.1)
         (600, 267.4)
         (800, 1172.9)

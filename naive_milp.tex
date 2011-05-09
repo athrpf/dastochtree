@@ -1,4 +1,4 @@
-\subsection{Discrete-Event Trees}
+\subsection{Discrete-event trees}
 \label{sec:MILP-selection-problem}
 This section focuses on \eqref{eq:symbolic-optimization-with-minflow2}.
 Therefore, algorithms will be derived that are tailored to discrete-event trees.
@@ -11,14 +11,14 @@ The model will be decomposed by time steps, each of which is still modeled as an
 The model will be solved using a state-of-the-art mixed integer programming solver.
 Some results on this method will be presented.
 %
-\subsubsection{Stage-Decomposition with MILP}
+\subsubsection{Stage-decomposition with MILP}
 %
 To reduce the complexity of the model, instead of solving all stages at the same time, we will solve the problem stage by stage.
 This greatly reduces the computational burden, because using the filtration constraints, we can solve the branches of the tree one at a time.
 These constraints allow us to
 \begin{enumerate}
 \item solve the branch starting from each of the previously fixed nodes independently.
-\item for the current branch starting at node $j$, discard all scenarios $i$ for which $\eta_{ij}=0$ in the problem corresponding to the father node of $j$.
+\item For the current branch starting at node $j$, discard all scenarios $i$ for which $\eta_{ij}=0$ in the problem corresponding to the father node of $j$.
 \end{enumerate}
 
 The algorithm for solving the stage-wise tree construction problem will be presented in the following.
@@ -81,6 +81,7 @@ Only $n_c$ (number of children, determined by the tree structure) nodes may be s
 The inequality constraints \eqref{eq:1} ensure that there are no flows $\eta$ directed to nodes that were not selected.
 
 Note that this problem has the worst possible relaxation. The LP solution without integrality constraints is
+\begin{subequations}
 \begin{align}
   \label{eq:2}
   z_j^t &= \eta_j^{father(f)}\\
@@ -90,8 +91,9 @@ Note that this problem has the worst possible relaxation. The LP solution withou
       0&\text{otherwise}
     \end{array}
   \right.\\
-  \sum_{i\in I_f}\sum_{j\in I_f}\eta_{ij}^fc(\xi_i^t,\xi_j^t) = 0
+  \sum_{i\in I_f}&\sum_{j\in I_f}\eta_{ij}^fc(\xi_i^t,\xi_j^t) = 0
 \end{align}
+\end{subequations}
 
 Figure \ref{fig:swmilp-explanation} shows the evolution of the algorithm.
 \input{swmilp_explanation} % figure fig:swmilp-explanation

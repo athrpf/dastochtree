@@ -6,14 +6,14 @@
       title=Approximation Errors,
       legend entries={MILP,K-Medoids},
       xlabel=children per node,
-      ylabel=relative Kantorovich error
+      ylabel=relative Kantorovich error,
       ]
-      \addplot coordinates { % testscen=1000
+      \addplot[mark=o,thick] coordinates { % testscen=1000
         (3, 0.6927)
         (5, 0.4667)
         (7, 0.4084)
       };
-      \addplot coordinates { % testscen=3000
+      \addplot[mark=square,dashed,mark options={solid},thick] coordinates { % testscen=3000
         (3, 0.6646)
         (5, 0.4819)
         (7, 0.3872)
@@ -34,14 +34,14 @@
       %  (5, 39.2829)
       %  (7, 71.1328)
       %};
-      \addplot coordinates{ % MILP
+      \addplot[mark=o,thick] coordinates{ % MILP
         (400, 85.1)
         (600, 267.4)
         (800, 1172.9)
         (1000, 1261.9)
         (1500, 3546.5)
       };
-      \addplot coordinates { % K-medoids
+      \addplot[mark=square,dashed,mark options={solid},thick] coordinates { % K-medoids
         (400, 0.9120)
         (600, 1.3498)
         (800, 1.9716)

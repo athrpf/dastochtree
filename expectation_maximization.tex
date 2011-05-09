@@ -1,4 +1,4 @@
-\section{Expectation Maximization Algorithms}
+\section{Expectation Maximization algorithms}
 \label{sec:expect-max-algos}
 The previous section has established that the solution of the optimal random variable approximation can be deduced from the solution of a K-Means problem.
 This section is organized as follows.
@@ -9,7 +9,7 @@ Promising results are reported in section \ref{sec:kmeans-results} for this new 
 In section \ref{sec:k-means-as-EM}, the relationship between the K-Means algorithm and Expectation Maximization algorithms is explained.
 Building on this relationship, the discretization of the infinite dimensional Kantorovich distance introduced in section \ref{sec:math-foundations} is revisited.
 It is found that the discretization exhibits a hidden prior/bias on the distribution.
-\subsection{The K-Means Algorithm}
+\subsection{The K-Means algorithm}
 \label{sec:k-means-standard}
 In this section, the K-Means algorithm briefly introduced in \ref{sec:kantorovich-and-clusters} will be discussed in detail.
 
@@ -76,12 +76,12 @@ The procedure is outlined below in algorithm \ref{alg:k-means}.
     $\mu_j\leftarrow \underset{\hat{\mu}\in U}{\argmin}\; \sum_{i}\sum_{j}z_{ij}c(x_i,\hat{\mu})$\tcc*{Maximization step}
   }
 \end{algorithm}
-\subsection{The K-Means Algorithm for Trees}
+\subsection{The K-Means algorithm for trees}
 \label{sec:k-means-algorithm-trees}
 In section \ref{sec:kantorovich-and-clusters}, we showed that constructing the optimal discrete random variable $\bs\chi$ that best approximates a given discrete uniformly distributed random variable $\bs\xi$ is equivalent to solving the K-Means problem.
 This approach does not directly apply to stochastic processes.
 In this section, the K-Means coordinate descent algorithm described in the previous section will be translated to the specific case of constructing discrete stochastic processes given a fixed filtration tree $\mathcal{T}$.
-\subsubsection{The Algorithm}
+\subsubsection{The algorithm}
 \label{sec:k-means-for-trees-alg}
 Consider a discrete stochastic process $\bs\xi(I, \mathcal{F}_1, p)$ with uniform distribution $p$.
 The algorithm will operate only on the scenarios $\xi_i,\; i\in I$ of $\bs\xi$.
@@ -209,10 +209,10 @@ The results show that the new K-Medoids algorithm outperforms the stage-wise MIL
 In addition, it is capable of processing much larger sets of scenarios.
 This is extremely important as the number of dimensions of the stochastic process increases.
 \input{comparison_milp_kmedoids}
-\subsection{The Expectation Maximization Algorithm}
+\subsection{The Expectation Maximization algorithm}
 \label{sec:k-means-as-EM}
 In this section, the tree generation algorithm will be translated into a function space representation.
-The resulting algorithm will belong to the family of Expectation Maximization (EM) algorithms due to \citeasnoun{Dempster1977}, which is closely related to the K-Means algorithm of the previous section.
+The resulting algorithm will belong to the family of Expectation Maximization (EM) algorithms due to \citet{Dempster1977}, which is closely related to the K-Means algorithm of the previous section.
 
 The section is organized as follows.
 First, we will present an argument how the K-Means algorithm of the previous section can be extended to compute an optimal function space approximation to the data with respect to the Kantorovich distance.
@@ -221,9 +221,9 @@ The mixture of Gaussians EM algorithm is presented as the natural function space
 The function space approach will prove to be a much more natural and useful way of representing the trees, as it retains the information about the uncertainty of the approximated tree.
 This uncertainty information will later make it possible to estimate a bound on the error of the optimal objective of a stochastic programming problem, for which the scenario tree is used as input data.
 
-The notation in this section is based on \citeasnoun{Bishop2006}.
+The notation in this section is based on \citet{Bishop2006}.
 Note that this notation, coming from the branch of machine learning, differs slightly from that used in probability theory.
-\subsubsection{A Continuous Approach for the Kantorovich Distance}
+\subsubsection{A continuous approach for the Kantorovich distance}
 \label{sec:cont-appr-kant}
 Consider the K-Means algorithm of the previous section.
 There, each data-point was assigned uniquely to one of the K data clusters.
@@ -348,7 +348,7 @@ In the sections below, further evidence will be discovered that this update is, 
 
 In the following sections, the continuous approaches to approximating stochastic processes in tree structures will be discussed further.
 The Expectation Maximization algorithm will be introduced and it will unfold that the algorithm derived above is only an example of the large class of EM algorithms that will become a powerful tool for scenario tree generation.
-\subsubsection{The Expectation Maximization Algorithm}
+\subsubsection{The Expectation Maximization algorithm}
 The aim of this discussion is to give a short overview of the concept of Expectation Maximization.
 This will enable us to analyze the discretization method used to discretize the Kantorovich distance in section \ref{sec:kantoro}.\footnote{See \cite{Bishop2006}, section 9 for a detailed treatment of Expectation Maximization in the context of machine learning.}
 
@@ -428,7 +428,7 @@ The posterior probabilities of $z_{ik}$ given the data and the parameters that d
 This expression is evaluated during the expectation phase of the algorithm.
 The update step for the parameters is defined by the optimization problem \eqref{eq:21}.
 Note that for this model, this is a constrained optimization problem, since \eqref{eq:27} has to hold.
-The derivation is detailed in \citeasnoun{Bishop2006}.
+The derivation is detailed in \citet{Bishop2006}.
 The solution will be stated here for completeness and to show the similarity to the solution for tree structures stated below.
 \begin{align}
   \label{eq:29}
@@ -448,7 +448,7 @@ Instead of probabilities $p(z_{ik}|x,\theta)$, the K-Means algorithm always assi
 
 In contrast to K-Means, for the Mixture of Gaussians model the data points are not assigned ``hard'' to one of the clusters, but instead a ``responsibility'' $\gamma$ of each cluster to each data point is used to describe this relation.
 This way, clusters may share points that are located in between them.
-\subsection{Revisiting the Discretization}
+\subsection{Revisiting the discretization}
 \label{sec:revisiting-discretization}
 In this section, we will revisit the discretization decision of the beginning.
 We will find that the discretization used in the literature exhibits a certain bias with respect to the function space of the approximation.
@@ -473,7 +473,7 @@ It is well known that the choice of basis functions effectively is the same as a
 The central limit theorem suggests that Gaussian distributions are the best guess for a prior given no additional information.
 Therefore, the common choice of discretization in the literature \cite{Dupacova2003} is not optimal and should be revised to be the Mixture of Gaussians - EM algorithm.
 \input{discretization_animation}
-\subsection{EM for Trees}
+\subsection{EM for trees}
 \label{sec:mixt-gauss-trees}
 In this section, the EM algorithm is adapted to tree structures.
 In section \ref{sec:k-means-algorithm-trees}, the K-Means algorithm was adapted to the tree generation problem.
@@ -563,7 +563,7 @@ This shows that for a probabilistic model that satisfies certain independence cr
 Depending on prior knowledge about the structure of the probability distribution of the stochastic process, much more accurate models can be built to approximate this process with less data points.
 For the solution of the stochastic program, only the mean values of the scenarios are used.
 The next section will show how the variance information of the EM-generated tree can be used to estimate the variance of the optimal value of the stochastic program.
-\subsection{Variance Estimation from EM-Generated Trees}
+\subsection{Variance estimation from EM-generated trees}
 \label{sec:variance-estimation}
 In this section, it will be illustrated how the distribution generated with the mixture of Gaussians EM-algorithm can be used to estimate the variance of the optimal objective function with respect to the tree distribution.
 This approximation assists in evaluating the quality and robustness of the solution.
@@ -593,7 +593,7 @@ The parametric sensitivity of optimal value $f(x^*,\nu^0)$ with respect to $\nu$
   \label{eq:47}
   \frac{\partial }{\partial \nu}f^{\mathrm{opt}}(x^*,\nu^0) =  \frac{\partial }{\partial \nu}\mathcal{L}(x^*,\lambda^*, \mu^*,\nu^0)
 \end{equation}
-with $\mathcal{L}$ the Lagrangean of the above optimization problem (\citeasnoun{Jongen2004}, theorem 3.2.3).
+with $\mathcal{L}$ the Lagrangean of the above optimization problem (\citet{Jongen2004}, theorem 3.2.3).
 The objective function for stochastic programming problems can be expressed as
 \begin{equation}
   \label{eq:45}
